@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisPAM - Configurações | Pronto Atendimento Municipal</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" class="sidebar-logo">
+                    <i class="bi bi-hospital"></i>
+                    <div>
+                        <h3 class="sidebar-logo-text">SisPAM</h3>
+                        <p class="sidebar-subtitle">Pronto Atendimento</p>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="../../index.html" class="nav-item">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </a>
+                    <a href="../pacientes/lista.html" class="nav-item">
+                        <i class="bi bi-person-badge"></i>
+                        Pacientes
+                    </a>
+                    <a href="../agendamentos/lista.html" class="nav-item">
+                        <i class="bi bi-calendar-check"></i>
+                        Agendamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Atendimento</div>
+                    <a href="../consultas/lista.html" class="nav-item">
+                        <i class="bi bi-clipboard-check"></i>
+                        Consultas
+                    </a>
+                    <a href="../prontuarios/lista.html" class="nav-item">
+                        <i class="bi bi-file-medical"></i>
+                        Prontuários
+                    </a>
+                    <a href="../medicamentos/lista.html" class="nav-item">
+                        <i class="bi bi-capsule"></i>
+                        Medicamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-bar-chart"></i>
+                        Estatísticas
+                    </a>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Relatórios
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="geral.html" class="nav-item active">
+                        <i class="bi bi-gear"></i>
+                        Configurações
+                    </a>
+                    <a href="../ajuda/index.html" class="nav-item">
+                        <i class="bi bi-question-circle"></i>
+                        Ajuda
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="topbar-title">Configurações do Sistema</h1>
+                <nav class="breadcrumb">
+                    <span>Sistema</span>
+                    <i class="bi bi-chevron-right"></i>
+                    <span>Configurações</span>
+                </nav>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div class="user-details">
+                        <p class="user-name">Admin Sistema</p>
+                        <p class="user-role">Administrador</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-container">
+                <!-- Header -->
+                <div class="header">
+                    <h1><i class="bi bi-gear"></i> Configurações do Sistema</h1>
+                    <p class="subtitle">Administração e Parametrização do SisPAM</p>
+                </div>
+
+                <!-- Content -->
+                <div class="content-wrapper">
+                    <!-- Configuration Tabs -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="section-card">
+                                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                            <i class="bi bi-people"></i> Usuários
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="system-tab" data-bs-toggle="tab" data-bs-target="#system" type="button" role="tab">
+                                            <i class="bi bi-gear"></i> Sistema
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="backup-tab" data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab">
+                                            <i class="bi bi-shield-check"></i> Backup
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">
+                                            <i class="bi bi-list-check"></i> Auditoria
+                                        </button>
+                                    </li>
+                                </ul>
+                                
+                                <div class="tab-content mt-3" id="configTabsContent">
+                                    <!-- Users Tab -->
+                                    <div class="tab-pane fade show active" id="users" role="tabpanel">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h4>Gestão de Usuários</h4>
+                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newUserModal">
+                                                <i class="bi bi-person-plus"></i> Novo Usuário
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table modern-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nome</th>
+                                                        <th>CPF</th>
+                                                        <th>Perfil</th>
+                                                        <th>Status</th>
+                                                        <th>Último Acesso</th>
+                                                        <th>Ações</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td><strong>Dr. Roberto Silva</strong></td>
+                                                        <td>123.456.789-00</td>
+                                                        <td><span class="status-badge" style="background: #dbeafe; color: #1e40af;">Médico</span></td>
+                                                        <td><span class="status-badge status-normal">Ativo</span></td>
+                                                        <td>10/06/2025 09:15</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <button class="btn btn-outline-primary btn-sm" title="Editar">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-warning btn-sm" title="Resetar Senha">
+                                                                    <i class="bi bi-key"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-sm" title="Desativar">
+                                                                    <i class="bi bi-x-circle"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Farmacêutica Maria</strong></td>
+                                                        <td>987.654.321-00</td>
+                                                        <td><span class="status-badge" style="background: #dcfce7; color: #047857;">Farmacêutico</span></td>
+                                                        <td><span class="status-badge status-normal">Ativo</span></td>
+                                                        <td>10/06/2025 08:30</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <button class="btn btn-outline-primary btn-sm" title="Editar">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-warning btn-sm" title="Resetar Senha">
+                                                                    <i class="bi bi-key"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-sm" title="Desativar">
+                                                                    <i class="bi bi-x-circle"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><strong>Recepcionista Silva</strong></td>
+                                                        <td>456.789.123-00</td>
+                                                        <td><span class="status-badge" style="background: #fef3c7; color: #b45309;">Recepcionista</span></td>
+                                                        <td><span class="status-badge status-normal">Ativo</span></td>
+                                                        <td>10/06/2025 07:45</td>
+                                                        <td>
+                                                            <div class="btn-group" role="group">
+                                                                <button class="btn btn-outline-primary btn-sm" title="Editar">
+                                                                    <i class="bi bi-pencil"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-warning btn-sm" title="Resetar Senha">
+                                                                    <i class="bi bi-key"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger btn-sm" title="Desativar">
+                                                                    <i class="bi bi-x-circle"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- System Tab -->
+                                    <div class="tab-pane fade" id="system" role="tabpanel">
+                                        <h4>Configurações Gerais</h4>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-hospital"></i> Informações da Unidade</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Nome da Unidade</label>
+                                                            <input type="text" class="form-control" value="Pronto Atendimento Municipal">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">CNPJ</label>
+                                                            <input type="text" class="form-control" value="12.345.678/0001-90">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Endereço</label>
+                                                            <input type="text" class="form-control" value="Rua da Saúde, 123 - Centro">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Telefone</label>
+                                                            <input type="text" class="form-control" value="(11) 3333-3333">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-sliders"></i> Parâmetros do Sistema</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Timeout de Sessão (minutos)</label>
+                                                            <input type="number" class="form-control" value="60">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tempo Limite Triagem (minutos)</label>
+                                                            <input type="number" class="form-control" value="15">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Capacidade Máxima de Atendimento</label>
+                                                            <input type="number" class="form-control" value="50">
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" id="notifications" checked>
+                                                            <label class="form-check-label" for="notifications">
+                                                                Notificações por Email
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="card mt-3">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-palette"></i> Aparência</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Tema</label>
+                                                            <select class="form-select">
+                                                                <option selected>Claro</option>
+                                                                <option>Escuro</option>
+                                                                <option>Automático</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Cor Primária</label>
+                                                            <input type="color" class="form-control form-control-color" value="#1e3a8a">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="text-end mt-3">
+                                            <button class="btn btn-success">
+                                                <i class="bi bi-check-circle"></i> Salvar Configurações
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Backup Tab -->
+                                    <div class="tab-pane fade" id="backup" role="tabpanel">
+                                        <h4>Backup e Segurança</h4>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-shield-check"></i> Backup Automático</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="form-check mb-3">
+                                                            <input class="form-check-input" type="checkbox" id="autoBackup" checked>
+                                                            <label class="form-check-label" for="autoBackup">
+                                                                Ativar backup automático
+                                                            </label>
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Frequência</label>
+                                                            <select class="form-select">
+                                                                <option selected>Diário</option>
+                                                                <option>Semanal</option>
+                                                                <option>Mensal</option>
+                                                            </select>
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Horário</label>
+                                                            <input type="time" class="form-control" value="02:00">
+                                                        </div>
+                                                        
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Retenção (dias)</label>
+                                                            <input type="number" class="form-control" value="30">
+                                                        </div>
+                                                        
+                                                        <p class="text-muted">
+                                                            <i class="bi bi-info-circle"></i>
+                                                            Último backup: 10/06/2025 02:00 (Sucesso)
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-download"></i> Backup Manual</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <p>Realize um backup completo do sistema agora.</p>
+                                                        
+                                                        <div class="d-grid gap-2">
+                                                            <button class="btn btn-primary" onclick="createBackup()">
+                                                                <i class="bi bi-download"></i> Criar Backup Completo
+                                                            </button>
+                                                            <button class="btn btn-outline-primary" onclick="createDataBackup()">
+                                                                <i class="bi bi-database"></i> Backup Apenas Dados
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <hr>
+                                                        
+                                                        <h6>Restaurar Backup</h6>
+                                                        <div class="mb-3">
+                                                            <input class="form-control" type="file" accept=".backup,.sql">
+                                                        </div>
+                                                        <button class="btn btn-warning">
+                                                            <i class="bi bi-upload"></i> Restaurar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="card mt-3">
+                                                    <div class="card-header">
+                                                        <h6><i class="bi bi-list-ul"></i> Histórico de Backups</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="list-group list-group-flush">
+                                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>10/06/2025 02:00</strong><br>
+                                                                    <small class="text-muted">Backup automático</small>
+                                                                </div>
+                                                                <span class="badge bg-success">Sucesso</span>
+                                                            </div>
+                                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>09/06/2025 02:00</strong><br>
+                                                                    <small class="text-muted">Backup automático</small>
+                                                                </div>
+                                                                <span class="badge bg-success">Sucesso</span>
+                                                            </div>
+                                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <div>
+                                                                    <strong>08/06/2025 02:00</strong><br>
+                                                                    <small class="text-muted">Backup automático</small>
+                                                                </div>
+                                                                <span class="badge bg-success">Sucesso</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Audit Tab -->
+                                    <div class="tab-pane fade" id="audit" role="tabpanel">
+                                        <h4>Log de Auditoria</h4>
+                                        
+                                        <div class="row mb-3">
+                                            <div class="col-md-3">
+                                                <select class="form-select">
+                                                    <option>Todas as Ações</option>
+                                                    <option>Login</option>
+                                                    <option>Cadastro</option>
+                                                    <option>Edição</option>
+                                                    <option>Exclusão</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <select class="form-select">
+                                                    <option>Todos os Usuários</option>
+                                                    <option>Dr. Roberto Silva</option>
+                                                    <option>Farmacêutica Maria</option>
+                                                    <option>Recepcionista Silva</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="date" class="form-control" value="2025-06-10">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button class="btn btn-primary w-100">
+                                                    <i class="bi bi-search"></i> Filtrar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table modern-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Data/Hora</th>
+                                                        <th>Usuário</th>
+                                                        <th>Ação</th>
+                                                        <th>Módulo</th>
+                                                        <th>Detalhes</th>
+                                                        <th>IP</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>10/06/2025 09:45:23</td>
+                                                        <td>Dr. Roberto Silva</td>
+                                                        <td><span class="badge bg-success">Consulta Finalizada</span></td>
+                                                        <td>Consultas</td>
+                                                        <td>Paciente: João da Silva Santos</td>
+                                                        <td>192.168.1.105</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>10/06/2025 09:30:12</td>
+                                                        <td>Farmacêutica Maria</td>
+                                                        <td><span class="badge bg-info">Medicamento Dispensado</span></td>
+                                                        <td>Medicamentos</td>
+                                                        <td>Dipirona 500mg - 20 comp.</td>
+                                                        <td>192.168.1.110</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>10/06/2025 09:15:08</td>
+                                                        <td>Dr. Roberto Silva</td>
+                                                        <td><span class="badge bg-primary">Login</span></td>
+                                                        <td>Sistema</td>
+                                                        <td>Login realizado com sucesso</td>
+                                                        <td>192.168.1.105</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>10/06/2025 08:45:33</td>
+                                                        <td>Recepcionista Silva</td>
+                                                        <td><span class="badge bg-warning">Paciente Editado</span></td>
+                                                        <td>Pacientes</td>
+                                                        <td>Telefone atualizado - Maria Costa</td>
+                                                        <td>192.168.1.102</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>10/06/2025 08:30:45</td>
+                                                        <td>Farmacêutica Maria</td>
+                                                        <td><span class="badge bg-primary">Login</span></td>
+                                                        <td>Sistema</td>
+                                                        <td>Login realizado com sucesso</td>
+                                                        <td>192.168.1.110</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <nav aria-label="Navegação de páginas">
+                                            <ul class="pagination justify-content-center mt-3">
+                                                <li class="page-item disabled">
+                                                    <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                                                </li>
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="#">1</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">2</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">3</a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="#">Próximo</a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New User Modal -->
+    <div class="modal fade" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newUserModalLabel">
+                        <i class="bi bi-person-plus"></i> Novo Usuário
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newUserForm">
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Nome Completo *</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userCPF" class="form-label">CPF *</label>
+                            <input type="text" class="form-control" id="userCPF" placeholder="000.000.000-00" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userProfile" class="form-label">Perfil *</label>
+                            <select class="form-select" id="userProfile" required>
+                                <option value="">Selecione...</option>
+                                <option value="admin">Administrador</option>
+                                <option value="medico">Médico</option>
+                                <option value="enfermeiro">Enfermeiro</option>
+                                <option value="farmaceutico">Farmacêutico</option>
+                                <option value="recepcionista">Recepcionista</option>
+                                <option value="gestor">Gestor</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="userPassword" class="form-label">Senha Temporária *</label>
+                            <input type="password" class="form-control" id="userPassword" required>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="changePassword" checked>
+                            <label class="form-check-label" for="changePassword">
+                                Forçar alteração de senha no primeiro login
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Criar Usuário
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+        });
+        
+        // Create backup
+        function createBackup() {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('Backup completo criado com sucesso!');
+            }, 3000);
+        }
+        
+        // Create data backup
+        function createDataBackup() {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('Backup de dados criado com sucesso!');
+            }, 2000);
+        }
+        
+        // Save configurations
+        document.querySelector('#system .btn-success').addEventListener('click', function() {
+            const button = this;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('Configurações salvas com sucesso!');
+            }, 1500);
+        });
+        
+        // Create new user
+        document.querySelector('#newUserModal .btn-primary').addEventListener('click', function() {
+            const form = document.getElementById('newUserForm');
+            if (form.checkValidity()) {
+                const button = this;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    bootstrap.Modal.getInstance(document.getElementById('newUserModal')).hide();
+                    alert('Usuário criado com sucesso!');
+                }, 1500);
+            } else {
+                form.reportValidity();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisPAM - Consultas | Pronto Atendimento Municipal</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" class="sidebar-logo">
+                    <i class="bi bi-hospital"></i>
+                    <div>
+                        <h3 class="sidebar-logo-text">SisPAM</h3>
+                        <p class="sidebar-subtitle">Pronto Atendimento</p>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="../../index.html" class="nav-item">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </a>
+                    <a href="../pacientes/lista.html" class="nav-item">
+                        <i class="bi bi-person-badge"></i>
+                        Pacientes
+                    </a>
+                    <a href="../agendamentos/lista.html" class="nav-item">
+                        <i class="bi bi-calendar-check"></i>
+                        Agendamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Atendimento</div>
+                    <a href="lista.html" class="nav-item active">
+                        <i class="bi bi-clipboard-check"></i>
+                        Consultas
+                    </a>
+                    <a href="../prontuarios/lista.html" class="nav-item">
+                        <i class="bi bi-file-medical"></i>
+                        Prontuários
+                    </a>
+                    <a href="../medicamentos/lista.html" class="nav-item">
+                        <i class="bi bi-capsule"></i>
+                        Medicamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-bar-chart"></i>
+                        Estatísticas
+                    </a>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Relatórios
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="../configuracoes/geral.html" class="nav-item">
+                        <i class="bi bi-gear"></i>
+                        Configurações
+                    </a>
+                    <a href="../ajuda/index.html" class="nav-item">
+                        <i class="bi bi-question-circle"></i>
+                        Ajuda
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="topbar-title">Fila de Atendimento</h1>
+                <nav class="breadcrumb">
+                    <span>Atendimento</span>
+                    <i class="bi bi-chevron-right"></i>
+                    <span>Consultas</span>
+                </nav>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="user-info">
+                    <div class="user-avatar">DR</div>
+                    <div class="user-details">
+                        <p class="user-name">Dr. Roberto Silva</p>
+                        <p class="user-role">Médico Responsável</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-container">
+                <!-- Header -->
+                <div class="header">
+                    <h1><i class="bi bi-clipboard-check"></i> Fila de Atendimento</h1>
+                    <p class="subtitle">Gestão de Consultas e Atendimentos Médicos</p>
+                </div>
+
+                <!-- Content -->
+                <div class="content-wrapper">
+                    <!-- Queue Stats -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-item">
+                                <div class="stat-number">04</div>
+                                <div class="stat-label">Na Fila</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-item">
+                                <div class="stat-number">02</div>
+                                <div class="stat-label">Em Atendimento</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-item">
+                                <div class="stat-number">01</div>
+                                <div class="stat-label">Emergência</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6">
+                            <div class="stat-item">
+                                <div class="stat-number">15</div>
+                                <div class="stat-label">Hoje</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Queue -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="section-card" style="border-left: 4px solid #dc2626;">
+                                <h2 class="section-title text-danger">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                    Emergência - Atendimento Imediato
+                                </h2>
+                                <div class="table-responsive">
+                                    <table class="table modern-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Chegada</th>
+                                                <th scope="col">Paciente</th>
+                                                <th scope="col">Idade</th>
+                                                <th scope="col">Queixa Principal</th>
+                                                <th scope="col">Sinais Vitais</th>
+                                                <th scope="col">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="table-danger">
+                                                <td><strong>09:15</strong></td>
+                                                <td>Ana Carolina Santos</td>
+                                                <td>35 anos</td>
+                                                <td>Dor torácica intensa</td>
+                                                <td>PA: 180/110 | FC: 120</td>
+                                                <td>
+                                                    <button class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-play-fill"></i> Atender
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regular Queue -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="section-card">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h2 class="section-title mb-0">
+                                        <i class="bi bi-list-ul"></i>
+                                        Fila de Atendimento
+                                    </h2>
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-outline-primary btn-sm" id="filterAll">Todos</button>
+                                        <button class="btn btn-outline-warning btn-sm" id="filterUrgent">Urgente</button>
+                                        <button class="btn btn-outline-success btn-sm" id="filterNormal">Normal</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="table-responsive">
+                                    <table class="table modern-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Prioridade</th>
+                                                <th scope="col">Chegada</th>
+                                                <th scope="col">Espera</th>
+                                                <th scope="col">Paciente</th>
+                                                <th scope="col">Idade</th>
+                                                <th scope="col">Classificação</th>
+                                                <th scope="col">Queixa Principal</th>
+                                                <th scope="col">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="table-warning">
+                                                <td><span class="priority-indicator priority-high"></span><strong>1</strong></td>
+                                                <td>08:30</td>
+                                                <td>45 min</td>
+                                                <td>João da Silva Santos</td>
+                                                <td>30 anos</td>
+                                                <td><span class="status-badge" style="background: #fef3c7; color: #b45309;">Amarelo</span></td>
+                                                <td>Febre alta e cefaleia</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="startConsultation('PA-001')">
+                                                            <i class="bi bi-play-fill"></i> Atender
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" title="Ver Prontuário">
+                                                            <i class="bi bi-file-medical"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="priority-indicator priority-medium"></span><strong>2</strong></td>
+                                                <td>08:45</td>
+                                                <td>30 min</td>
+                                                <td>Maria Oliveira Costa</td>
+                                                <td>25 anos</td>
+                                                <td><span class="status-badge status-normal">Verde</span></td>
+                                                <td>Tosse e mal-estar</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="startConsultation('PA-002')">
+                                                            <i class="bi bi-play-fill"></i> Atender
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" title="Ver Prontuário">
+                                                            <i class="bi bi-file-medical"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="priority-indicator priority-low"></span><strong>3</strong></td>
+                                                <td>09:00</td>
+                                                <td>15 min</td>
+                                                <td>Pedro Henrique Lima</td>
+                                                <td>28 anos</td>
+                                                <td><span class="status-badge" style="background: #dbeafe; color: #1e40af;">Azul</span></td>
+                                                <td>Consulta de rotina</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="startConsultation('PA-003')">
+                                                            <i class="bi bi-play-fill"></i> Atender
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" title="Ver Prontuário">
+                                                            <i class="bi bi-file-medical"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Consultations -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="section-card">
+                                <h2 class="section-title">
+                                    <i class="bi bi-person-check"></i>
+                                    Atendimentos em Andamento
+                                </h2>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card border-success">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-person-circle"></i> Carlos Eduardo Mendes
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Médico:</strong> Dr. Roberto Silva<br>
+                                                    <strong>Consultório:</strong> 1<br>
+                                                    <strong>Início:</strong> 09:00<br>
+                                                    <strong>Duração:</strong> 15 min
+                                                </p>
+                                                <button class="btn btn-success btn-sm">
+                                                    <i class="bi bi-check-circle"></i> Finalizar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-info">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <i class="bi bi-person-circle"></i> Fernanda Souza Lima
+                                                </h5>
+                                                <p class="card-text">
+                                                    <strong>Médico:</strong> Dra. Ana Paula Silva<br>
+                                                    <strong>Consultório:</strong> 2<br>
+                                                    <strong>Início:</strong> 09:10<br>
+                                                    <strong>Duração:</strong> 5 min
+                                                </p>
+                                                <button class="btn btn-info btn-sm">
+                                                    <i class="bi bi-eye"></i> Acompanhar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Consultation Modal -->
+    <div class="modal fade" id="consultationModal" tabindex="-1" aria-labelledby="consultationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="consultationModalLabel">
+                        <i class="bi bi-clipboard-pulse"></i> Nova Consulta
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-person"></i> Dados do Paciente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nome:</strong> <span id="patientName">-</span></p>
+                                    <p><strong>Idade:</strong> <span id="patientAge">-</span></p>
+                                    <p><strong>CPF:</strong> <span id="patientCPF">-</span></p>
+                                    <p><strong>Classificação:</strong> <span id="patientClassification">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <form id="consultationForm">
+                                <div class="mb-3">
+                                    <label for="chiefComplaint" class="form-label">Queixa Principal</label>
+                                    <textarea class="form-control" id="chiefComplaint" rows="2" placeholder="Descreva a queixa principal do paciente..."></textarea>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="anamnesis" class="form-label">Anamnese</label>
+                                        <textarea class="form-control" id="anamnesis" rows="4" placeholder="História da doença atual..."></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="physicalExam" class="form-label">Exame Físico</label>
+                                        <textarea class="form-control" id="physicalExam" rows="4" placeholder="Achados do exame físico..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <label for="diagnosis" class="form-label">Hipótese Diagnóstica</label>
+                                    <input type="text" class="form-control" id="diagnosis" placeholder="CID-10 ou descrição do diagnóstico">
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <label for="conduct" class="form-label">Conduta Médica</label>
+                                    <textarea class="form-control" id="conduct" rows="3" placeholder="Prescrições, orientações, encaminhamentos..."></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary">
+                        <i class="bi bi-file-earmark-medical"></i> Solicitar Exames
+                    </button>
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="bi bi-capsule"></i> Prescrever
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Finalizar Consulta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+        });
+        
+        // Patient data for consultation
+        const patients = {
+            'PA-001': {
+                name: 'João da Silva Santos',
+                age: '30 anos',
+                cpf: '123.456.789-00',
+                classification: 'Amarelo'
+            },
+            'PA-002': {
+                name: 'Maria Oliveira Costa',
+                age: '25 anos',
+                cpf: '987.654.321-00',
+                classification: 'Verde'
+            },
+            'PA-003': {
+                name: 'Pedro Henrique Lima',
+                age: '28 anos',
+                cpf: '456.789.123-00',
+                classification: 'Azul'
+            }
+        };
+        
+        // Start consultation
+        function startConsultation(patientId) {
+            const patient = patients[patientId];
+            if (patient) {
+                document.getElementById('patientName').textContent = patient.name;
+                document.getElementById('patientAge').textContent = patient.age;
+                document.getElementById('patientCPF').textContent = patient.cpf;
+                document.getElementById('patientClassification').textContent = patient.classification;
+                
+                const modal = new bootstrap.Modal(document.getElementById('consultationModal'));
+                modal.show();
+            }
+        }
+        
+        // Filter functions
+        document.getElementById('filterAll').addEventListener('click', function() {
+            // Show all patients
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = '';
+            });
+        });
+        
+        document.getElementById('filterUrgent').addEventListener('click', function() {
+            // Show only urgent patients
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const isUrgent = row.classList.contains('table-warning') || row.classList.contains('table-danger');
+                row.style.display = isUrgent ? '' : 'none';
+            });
+        });
+        
+        document.getElementById('filterNormal').addEventListener('click', function() {
+            // Show only normal patients
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const isNormal = !row.classList.contains('table-warning') && !row.classList.contains('table-danger');
+                row.style.display = isNormal ? '' : 'none';
+            });
+        });
+        
+        // Auto-refresh queue every 30 seconds
+        setInterval(function() {
+            // Update waiting times
+            console.log('Updating queue times...');
+        }, 30000);
+    </script>
+</body>
+
+</html>

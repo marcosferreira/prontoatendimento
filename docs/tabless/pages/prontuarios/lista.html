@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisPAM - Prontuários | Pronto Atendimento Municipal</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../../index.html" class="sidebar-logo">
+                    <i class="bi bi-hospital"></i>
+                    <div>
+                        <h3 class="sidebar-logo-text">SisPAM</h3>
+                        <p class="sidebar-subtitle">Pronto Atendimento</p>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="../../index.html" class="nav-item">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </a>
+                    <a href="../pacientes/lista.html" class="nav-item">
+                        <i class="bi bi-person-badge"></i>
+                        Pacientes
+                    </a>
+                    <a href="../agendamentos/lista.html" class="nav-item">
+                        <i class="bi bi-calendar-check"></i>
+                        Agendamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Atendimento</div>
+                    <a href="../consultas/lista.html" class="nav-item">
+                        <i class="bi bi-clipboard-check"></i>
+                        Consultas
+                    </a>
+                    <a href="lista.html" class="nav-item active">
+                        <i class="bi bi-file-medical"></i>
+                        Prontuários
+                    </a>
+                    <a href="../medicamentos/lista.html" class="nav-item">
+                        <i class="bi bi-capsule"></i>
+                        Medicamentos
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-bar-chart"></i>
+                        Estatísticas
+                    </a>
+                    <a href="../relatorios/lista.html" class="nav-item">
+                        <i class="bi bi-file-earmark-text"></i>
+                        Relatórios
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="../configuracoes/geral.html" class="nav-item">
+                        <i class="bi bi-gear"></i>
+                        Configurações
+                    </a>
+                    <a href="../ajuda/index.html" class="nav-item">
+                        <i class="bi bi-question-circle"></i>
+                        Ajuda
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="mobile-menu-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <h1 class="topbar-title">Prontuários Médicos</h1>
+                <nav class="breadcrumb">
+                    <span>Atendimento</span>
+                    <i class="bi bi-chevron-right"></i>
+                    <span>Prontuários</span>
+                </nav>
+            </div>
+            
+            <div class="topbar-right">
+                <div class="user-info">
+                    <div class="user-avatar">DR</div>
+                    <div class="user-details">
+                        <p class="user-name">Dr. Roberto Silva</p>
+                        <p class="user-role">Médico Responsável</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-container">
+                <!-- Header -->
+                <div class="header">
+                    <h1><i class="bi bi-file-medical"></i> Prontuários Eletrônicos</h1>
+                    <p class="subtitle">Histórico Médico Completo dos Pacientes</p>
+                </div>
+
+                <!-- Content -->
+                <div class="content-wrapper">
+                    <!-- Search Section -->
+                    <div class="row mb-4">
+                        <div class="col-lg-8">
+                            <div class="section-card">
+                                <h3 class="section-title">
+                                    <i class="bi bi-search"></i>
+                                    Buscar Prontuário
+                                </h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="searchType" class="form-label">Buscar por:</label>
+                                        <select class="form-select" id="searchType">
+                                            <option value="name">Nome do Paciente</option>
+                                            <option value="cpf">CPF</option>
+                                            <option value="sus">Cartão SUS</option>
+                                            <option value="prontuario">Nº Prontuário</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="searchValue" class="form-label">Termo de busca:</label>
+                                        <input type="text" class="form-control" id="searchValue" placeholder="Digite o termo de busca...">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">&nbsp;</label>
+                                        <button class="btn btn-primary w-100" onclick="searchMedicalRecord()">
+                                            <i class="bi bi-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="section-card">
+                                <h3 class="section-title">
+                                    <i class="bi bi-graph-up"></i>
+                                    Estatísticas Rápidas
+                                </h3>
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="stat-item-small">
+                                            <div class="stat-number-small">1,247</div>
+                                            <div class="stat-label-small">Prontuários</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-item-small">
+                                            <div class="stat-number-small">89</div>
+                                            <div class="stat-label-small">Este Mês</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Records -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="section-card">
+                                <h2 class="section-title">
+                                    <i class="bi bi-clock-history"></i>
+                                    Prontuários Recentes
+                                </h2>
+                                <div class="table-responsive">
+                                    <table class="table modern-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Nº Prontuário</th>
+                                                <th scope="col">Paciente</th>
+                                                <th scope="col">Último Atendimento</th>
+                                                <th scope="col">Médico</th>
+                                                <th scope="col">CID Principal</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>PRONT-001</strong></td>
+                                                <td>João da Silva Santos</td>
+                                                <td>10/06/2025 09:30</td>
+                                                <td>Dr. Roberto Silva</td>
+                                                <td>J06.9 - Infecção respiratória</td>
+                                                <td><span class="status-badge status-normal">Ativo</span></td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="viewMedicalRecord('PRONT-001')">
+                                                            <i class="bi bi-eye"></i> Visualizar
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" onclick="printRecord('PRONT-001')">
+                                                            <i class="bi bi-printer"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>PRONT-002</strong></td>
+                                                <td>Maria Oliveira Costa</td>
+                                                <td>10/06/2025 08:45</td>
+                                                <td>Dra. Ana Paula Silva</td>
+                                                <td>K59.0 - Constipação</td>
+                                                <td><span class="status-badge status-normal">Ativo</span></td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="viewMedicalRecord('PRONT-002')">
+                                                            <i class="bi bi-eye"></i> Visualizar
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" onclick="printRecord('PRONT-002')">
+                                                            <i class="bi bi-printer"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>PRONT-003</strong></td>
+                                                <td>Carlos Eduardo Mendes</td>
+                                                <td>09/06/2025 16:20</td>
+                                                <td>Dr. Roberto Silva</td>
+                                                <td>I10 - Hipertensão essencial</td>
+                                                <td><span class="status-badge status-normal">Ativo</span></td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <button class="btn btn-primary btn-sm" onclick="viewMedicalRecord('PRONT-003')">
+                                                            <i class="bi bi-eye"></i> Visualizar
+                                                        </button>
+                                                        <button class="btn btn-outline-info btn-sm" onclick="printRecord('PRONT-003')">
+                                                            <i class="bi bi-printer"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medical Record Categories -->
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="section-card">
+                                <h3 class="section-title">
+                                    <i class="bi bi-heart-pulse"></i>
+                                    Condições Crônicas
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Hipertensão</span>
+                                        <span class="badge bg-primary">45</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Diabetes</span>
+                                        <span class="badge bg-primary">32</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Asma</span>
+                                        <span class="badge bg-primary">18</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Cardiopatias</span>
+                                        <span class="badge bg-primary">12</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm mt-3 w-100">
+                                    <i class="bi bi-list-ul"></i> Ver Todos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="section-card">
+                                <h3 class="section-title">
+                                    <i class="bi bi-capsule"></i>
+                                    Medicamentos Contínuos
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Losartana 50mg</span>
+                                        <span class="badge bg-success">28</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Metformina 850mg</span>
+                                        <span class="badge bg-success">22</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Sinvastatina 20mg</span>
+                                        <span class="badge bg-success">15</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Omeprazol 20mg</span>
+                                        <span class="badge bg-success">41</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-success btn-sm mt-3 w-100">
+                                    <i class="bi bi-list-ul"></i> Ver Todos
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="section-card">
+                                <h3 class="section-title">
+                                    <i class="bi bi-exclamation-triangle"></i>
+                                    Alergias Registradas
+                                </h3>
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Penicilina</span>
+                                        <span class="badge bg-danger">8</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Dipirona</span>
+                                        <span class="badge bg-danger">5</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>AAS</span>
+                                        <span class="badge bg-danger">3</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between">
+                                        <span>Iodo</span>
+                                        <span class="badge bg-danger">2</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-danger btn-sm mt-3 w-100">
+                                    <i class="bi bi-list-ul"></i> Ver Todos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Medical Record Modal -->
+    <div class="modal fade" id="medicalRecordModal" tabindex="-1" aria-labelledby="medicalRecordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="medicalRecordModalLabel">
+                        <i class="bi bi-file-medical"></i> Prontuário Médico
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Patient Info -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-person"></i> Dados do Paciente</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nome:</strong> <span id="modalPatientName">-</span></p>
+                                    <p><strong>CPF:</strong> <span id="modalPatientCPF">-</span></p>
+                                    <p><strong>Idade:</strong> <span id="modalPatientAge">-</span></p>
+                                    <p><strong>Cartão SUS:</strong> <span id="modalPatientSUS">-</span></p>
+                                    <p><strong>Telefone:</strong> <span id="modalPatientPhone">-</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h6><i class="bi bi-heart"></i> Informações Importantes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-danger" role="alert">
+                                        <strong>Alergia:</strong> Penicilina
+                                    </div>
+                                    <div class="alert alert-warning" role="alert">
+                                        <strong>Condição:</strong> Hipertensão
+                                    </div>
+                                    <div class="alert alert-info" role="alert">
+                                        <strong>Medicação:</strong> Losartana 50mg
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Medical History -->
+                        <div class="col-md-8">
+                            <ul class="nav nav-tabs" id="recordTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="consultations-tab" data-bs-toggle="tab" data-bs-target="#consultations" type="button" role="tab">
+                                        Consultas
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams" type="button" role="tab">
+                                        Exames
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="medications-tab" data-bs-toggle="tab" data-bs-target="#medications" type="button" role="tab">
+                                        Medicamentos
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="attachments-tab" data-bs-toggle="tab" data-bs-target="#attachments" type="button" role="tab">
+                                        Anexos
+                                    </button>
+                                </li>
+                            </ul>
+                            
+                            <div class="tab-content mt-3" id="recordTabsContent">
+                                <!-- Consultations Tab -->
+                                <div class="tab-pane fade show active" id="consultations" role="tabpanel">
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-primary"></div>
+                                            <div class="timeline-content">
+                                                <h6>10/06/2025 - 09:30</h6>
+                                                <p><strong>Dr. Roberto Silva</strong></p>
+                                                <p><strong>Queixa:</strong> Febre e tosse há 3 dias</p>
+                                                <p><strong>Diagnóstico:</strong> J06.9 - Infecção respiratória aguda</p>
+                                                <p><strong>Conduta:</strong> Sintomáticos, repouso, retorno se necessário</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-secondary"></div>
+                                            <div class="timeline-content">
+                                                <h6>05/06/2025 - 14:15</h6>
+                                                <p><strong>Dra. Ana Paula Silva</strong></p>
+                                                <p><strong>Queixa:</strong> Dor abdominal</p>
+                                                <p><strong>Diagnóstico:</strong> K59.9 - Distúrbio funcional intestinal</p>
+                                                <p><strong>Conduta:</strong> Orientações dietéticas</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Exams Tab -->
+                                <div class="tab-pane fade" id="exams" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Exame</th>
+                                                    <th>Resultado</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>08/06/2025</td>
+                                                    <td>Hemograma completo</td>
+                                                    <td>Normal</td>
+                                                    <td><span class="badge bg-success">Concluído</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>05/06/2025</td>
+                                                    <td>Glicemia de jejum</td>
+                                                    <td>95 mg/dL</td>
+                                                    <td><span class="badge bg-success">Concluído</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <!-- Medications Tab -->
+                                <div class="tab-pane fade" id="medications" role="tabpanel">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Data</th>
+                                                    <th>Medicamento</th>
+                                                    <th>Dosagem</th>
+                                                    <th>Duração</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>10/06/2025</td>
+                                                    <td>Paracetamol</td>
+                                                    <td>750mg 8/8h</td>
+                                                    <td>5 dias</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>10/06/2025</td>
+                                                    <td>Dipirona</td>
+                                                    <td>500mg se dor</td>
+                                                    <td>SOS</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <!-- Attachments Tab -->
+                                <div class="tab-pane fade" id="attachments" role="tabpanel">
+                                    <div class="list-group">
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-file-earmark-pdf text-danger"></i>
+                                                Receita médica - 10/06/2025
+                                            </div>
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-download"></i> Download
+                                            </button>
+                                        </div>
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="bi bi-file-earmark-image text-info"></i>
+                                                Raio-X tórax - 08/06/2025
+                                            </div>
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-eye"></i> Visualizar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary">
+                        <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-outline-info">
+                        <i class="bi bi-download"></i> Baixar PDF
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('mobile-open');
+        });
+        
+        // Medical record data
+        const medicalRecords = {
+            'PRONT-001': {
+                patientName: 'João da Silva Santos',
+                patientCPF: '123.456.789-00',
+                patientAge: '30 anos',
+                patientSUS: '123 4567 8901 2345',
+                patientPhone: '(11) 99999-9999'
+            },
+            'PRONT-002': {
+                patientName: 'Maria Oliveira Costa',
+                patientCPF: '987.654.321-00',
+                patientAge: '25 anos',
+                patientSUS: '987 6543 2109 8765',
+                patientPhone: '(11) 88888-8888'
+            },
+            'PRONT-003': {
+                patientName: 'Carlos Eduardo Mendes',
+                patientCPF: '456.789.123-00',
+                patientAge: '45 anos',
+                patientSUS: '456 7891 2345 6789',
+                patientPhone: '(11) 77777-7777'
+            }
+        };
+        
+        // Search medical record
+        function searchMedicalRecord() {
+            const searchType = document.getElementById('searchType').value;
+            const searchValue = document.getElementById('searchValue').value;
+            
+            if (!searchValue.trim()) {
+                alert('Por favor, digite um termo de busca.');
+                return;
+            }
+            
+            console.log(`Searching ${searchType}: ${searchValue}`);
+            alert(`Buscando prontuário por ${searchType}: ${searchValue}`);
+        }
+        
+        // View medical record
+        function viewMedicalRecord(recordId) {
+            const record = medicalRecords[recordId];
+            if (record) {
+                document.getElementById('modalPatientName').textContent = record.patientName;
+                document.getElementById('modalPatientCPF').textContent = record.patientCPF;
+                document.getElementById('modalPatientAge').textContent = record.patientAge;
+                document.getElementById('modalPatientSUS').textContent = record.patientSUS;
+                document.getElementById('modalPatientPhone').textContent = record.patientPhone;
+                
+                const modal = new bootstrap.Modal(document.getElementById('medicalRecordModal'));
+                modal.show();
+            }
+        }
+        
+        // Print record
+        function printRecord(recordId) {
+            console.log('Printing medical record:', recordId);
+            alert('Imprimindo prontuário...');
+        }
+        
+        // Search input enter key
+        document.getElementById('searchValue').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchMedicalRecord();
+            }
+        });
+    </script>
+
+    <style>
+        .stat-item-small {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--light-gray);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-number-small {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label-small {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--medium-gray);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -2rem;
+            top: 0.25rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+        }
+        
+        .timeline-content {
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .timeline-content h6 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .timeline-content p {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .timeline-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .timeline {
+                padding-left: 1.5rem;
+            }
+            
+            .timeline-marker {
+                left: -1.5rem;
+            }
+        }
+    </style>
+</body>
+
+</html>
