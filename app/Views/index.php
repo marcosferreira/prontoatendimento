@@ -20,7 +20,7 @@
         <!-- Content -->
         <div class="content-wrapper">
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                     <div class="section-card">
                         <h2 class="section-title">
                             <i class="bi bi-person-badge"></i>
@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-4">
                     <div class="section-card">
                         <h2 class="section-title">
                             <i class="bi bi-clipboard-check"></i>

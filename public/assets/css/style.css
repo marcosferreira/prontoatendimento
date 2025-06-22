@@ -22,7 +22,7 @@
 
 * {
     box-sizing: border-box;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
 }
 
 body {
@@ -320,6 +320,7 @@ body {
     border-bottom: 1px solid var(--light-gray);
     color: var(--text-primary);
 }
+
 
 .modern-table tbody tr {
     transition: background-color 0.15s ease;
