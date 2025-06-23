@@ -15,5 +15,5 @@ jobs:
         password: ${{ secrets.PASS }}
         localDir: .
         remoteDir: /
-        forceSsl: false  # ou false, dependendo do seu servidor
+        forceSsl: true  # ou false, dependendo do seu servidor
         options: ''
