@@ -84,7 +84,10 @@ phpunit
 #-------------------------
 # Composer
 #-------------------------
-vendor/
+# vendor add this if you want to ignore the vendor directory
+# but it is not recommended to do so, as it is needed for the application to run
+# If you want to ignore the vendor directory, uncomment the line below:
+# vendor/
 
 #-------------------------
 # IDE / Development Files
