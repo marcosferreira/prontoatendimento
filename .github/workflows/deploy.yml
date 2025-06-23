@@ -13,5 +13,6 @@ jobs:
         host: ${{ secrets.HOST }} 
         user: ${{ secrets.USER }}
         password: ${{ secrets.PASS }}
-        localDir: "."
-        remoteDir: "."
+        localDir: .
+        remoteDir: /
+        forceSsl: true  # ou false, dependendo do seu servidor
