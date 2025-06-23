@@ -15,3 +15,5 @@ jobs:
           password: ${{ secrets.PASS }}
           localDir: "."
           remoteDir: "/prontoatendimento/"
+          forceSsl: true
+          options: ""
