@@ -11,7 +11,6 @@ class Home extends BaseController
             'description' => 'Bem vindo ao SisPAM',
             'keywords' => 'home, bem vindo, application, SisPAM'
         ];
-
         return view('index', $data);
     }
 }
