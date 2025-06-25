@@ -19,7 +19,8 @@ jobs:
           localDir: "."
           remoteDir: "/prontoatendimento/"
           forceSsl: false
-          options: |
-            .git*
-            .git*/**
-            node_modules/**
+          options: ""
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
