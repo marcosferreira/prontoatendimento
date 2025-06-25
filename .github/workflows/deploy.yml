@@ -19,4 +19,4 @@ jobs:
           localDir: "."
           remoteDir: "/prontoatendimento/"
           forceSsl: false
-          options: "--ignore .git"
+          options: "--exclude .git/"
