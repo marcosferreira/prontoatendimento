@@ -17,6 +17,10 @@ jobs:
         server: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         password: ${{ secrets.PASS }}
+        protocol: ftps
+        port: 22
+        local-dir: "./"
+        server-dir: "./prontoatendimento/"
         exclude: |
           **/.git*
           **/.git*/**
