@@ -19,6 +19,21 @@ use CodeIgniter\Config\BaseService;
  */
 class Services extends BaseService
 {
+    /**
+     * Retorna uma instância personalizada do serviço de Email
+     * que funciona melhor em ambiente de desenvolvimento
+     */
+    public static function email($config = null, bool $getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('email', $config);
+        }
+
+        $config ??= config('Email');
+
+        return new \App\Libraries\Email($config);
+    }
+
     /*
      * public static function example($getShared = true)
      * {

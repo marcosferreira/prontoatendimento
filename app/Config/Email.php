@@ -6,9 +6,34 @@ use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
 {
-    public string $fromEmail  = 'suporte@pmdonaines.pb.gov.br';
-    public string $fromName   = 'Suporte de TI';
+    public string $fromEmail  = '';
+    public string $fromName   = '';
     public string $recipients = '';
+
+    public function __construct()
+    {
+        parent::__construct();
+        
+        // Usar variáveis de ambiente se disponíveis
+        $this->fromEmail = env('email.fromEmail', 'suporte@pmdonaines.pb.gov.br');
+        $this->fromName = env('email.fromName', 'Suporte de TI');
+        $this->protocol = env('email.protocol', 'sendmail');
+        $this->SMTPHost = env('email.SMTPHost', 'smtp.gmail.com');
+        $this->SMTPUser = env('email.SMTPUser', '');
+        $this->SMTPPass = env('email.SMTPPass', '');
+        $this->SMTPPort = (int) env('email.SMTPPort', 587);
+        $this->SMTPCrypto = env('email.SMTPCrypto', 'tls');
+        
+        // Em ambiente de desenvolvimento, usar sendmail se disponível, senão log
+        if (ENVIRONMENT === 'development') {
+            // Verificar se sendmail está disponível
+            if (!file_exists($this->mailPath)) {
+                // Se sendmail não estiver disponível, usar log como fallback
+                $this->protocol = 'sendmail';
+                $this->mailPath = '/bin/true'; // comando que sempre retorna sucesso
+            }
+        }
+    }
 
     /**
      * The "user agent"
@@ -18,7 +43,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'mail';
+    public string $protocol = 'smtp';
 
     /**
      * The server path to Sendmail.
@@ -28,7 +53,7 @@ class Email extends BaseConfig
     /**
      * SMTP Server Hostname
      */
-    public string $SMTPHost = '';
+    public string $SMTPHost = 'smtp.gmail.com';
 
     /**
      * SMTP Username
@@ -43,7 +68,7 @@ class Email extends BaseConfig
     /**
      * SMTP Port
      */
-    public int $SMTPPort = 25;
+    public int $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
