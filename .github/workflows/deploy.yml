@@ -17,6 +17,8 @@ jobs:
         server: ${{ secrets.HOST }}
         username: ${{ secrets.USER }}
         password: ${{ secrets.PASS }}
+        protocol: ftps-legacy
+        port: 22
         local-dir: "./"
         server-dir: "./prontoatendimento/"
         exclude: |
