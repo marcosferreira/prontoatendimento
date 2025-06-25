@@ -20,6 +20,6 @@ jobs:
           remoteDir: "/prontoatendimento/"
           forceSsl: false
           options: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+            .git*
+            .git*/**
+            node_modules/**
