@@ -1,27 +1,20 @@
-name: 🚀 Deploy via ftp
+name: Deploy via ftp
 on: 
   push:
     branches:
       - main
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
-    
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+    - uses: actions/checkout@v3
+
+    - name: FTP Deploy Locaweb
+      uses: locaweb/ftp-deploy@1.0.0
       with:
-        server: ${{ secrets.HOST }}
-        username: ${{ secrets.USER }}
+        host: ${{ secrets.HOST }} 
+        user: ${{ secrets.USER }}
         password: ${{ secrets.PASS }}
-        protocol: ftps
-        port: 22
-        local-dir: "./"
-        server-dir: "./prontoatendimento/"
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
+        localDir: "./"
+        remoteDir: "./prontoatendimento/"
