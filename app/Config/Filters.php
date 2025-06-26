@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'noregistration' => \App\Filters\NoRegistrationIfUsersExist::class,
+        'admin'         => \App\Filters\AdminFilter::class,
     ];
 
     /**
@@ -108,5 +109,6 @@ class Filters extends BaseFilters
      */
     public array $filters = [
         'noregistration' => ['before' => ['register', 'register/*']],
+        'admin'          => ['before' => ['admin', 'admin/*']],
     ];
 }

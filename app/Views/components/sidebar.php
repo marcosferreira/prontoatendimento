@@ -56,6 +56,12 @@
         
         <div class="nav-section">
             <div class="nav-section-title">Sistema</div>
+            <?php if(auth()->user() && auth()->user()->inGroup('superadmin')): ?>
+            <a href="/admin" class="nav-item">
+                <i class="bi bi-shield-check"></i>
+                Administração
+            </a>
+            <?php endif; ?>
             <a href="pages/configuracoes/geral.html" class="nav-item">
                 <i class="bi bi-gear"></i>
                 Configurações
