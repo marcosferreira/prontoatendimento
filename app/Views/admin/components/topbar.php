@@ -30,8 +30,8 @@
                     <i class="bi bi-three-dots-vertical"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="/profile"><i class="bi bi-person"></i> Perfil</a></li>
-                    <li><a class="dropdown-item" href="/admin/settings"><i class="bi bi-gear"></i> Configurações</a></li>
+                    <li><a class="dropdown-item" href="<?php echo base_url('/profile'); ?>"><i class="bi bi-person"></i> Perfil</a></li>
+                    <li><a class="dropdown-item" href="<?php echo base_url('/admin/settings'); ?>"><i class="bi bi-gear"></i> Configurações</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="#" onclick="confirmLogout()"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
                 </ul>
