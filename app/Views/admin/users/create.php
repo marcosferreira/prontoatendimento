@@ -21,7 +21,7 @@
                                 <p class="admin-subtitle">Adicionar um novo usuário ao sistema</p>
                             </div>
                             <div>
-                                <a href="/admin/users" class="btn btn-secondary">
+                                <a href="<?php echo base_url('/admin/users'); ?>" class="btn btn-secondary">
                                     <i class="bi bi-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -49,7 +49,7 @@
                                     </div>
                                     <?php endif; ?>
                                     
-                                    <form action="/admin/users/store" method="post" class="admin-form">
+                                    <form action="<?php echo base_url('/admin/users/store'); ?>" method="post" class="admin-form">
                                         <?= csrf_field() ?>
                                         
                                         <div class="row">
@@ -144,7 +144,7 @@
                                             <button type="submit" class="btn btn-primary">
                                                 <i class="bi bi-check"></i> Criar Usuário
                                             </button>
-                                            <a href="/admin/users" class="btn btn-secondary">
+                                            <a href="<?php echo base_url('/admin/users'); ?>" class="btn btn-secondary">
                                                 <i class="bi bi-x"></i> Cancelar
                                             </a>
                                         </div>

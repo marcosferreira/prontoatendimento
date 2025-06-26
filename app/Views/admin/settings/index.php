@@ -190,7 +190,7 @@
                                                 <i class="bi bi-file-earmark-text"></i>
                                                 <h5>View Logs</h5>
                                                 <p>Visualizar logs do sistema</p>
-                                                <a href="/admin/logs" class="btn btn-outline-info btn-sm">
+                                                <a href="<?php echo base_url('/admin/logs'); ?>" class="btn btn-outline-info btn-sm">
                                                     Ver Logs
                                                 </a>
                                             </div>

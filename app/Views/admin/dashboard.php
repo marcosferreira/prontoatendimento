@@ -82,25 +82,25 @@
                                     </h2>
                                     <div class="row">
                                         <div class="col-lg-3 col-md-6 mb-3">
-                                            <a href="/admin/users/create" class="admin-quick-action">
+                                            <a href="<?php echo base_url('/admin/users/create'); ?>" class="admin-quick-action">
                                                 <i class="bi bi-person-plus"></i>
                                                 <span>Criar Usuário</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-3 col-md-6 mb-3">
-                                            <a href="/admin/users" class="admin-quick-action">
+                                            <a href="<?php echo base_url('/admin/users'); ?>" class="admin-quick-action">
                                                 <i class="bi bi-people"></i>
                                                 <span>Gerenciar Usuários</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-3 col-md-6 mb-3">
-                                            <a href="/admin/settings" class="admin-quick-action">
+                                            <a href="<?php echo base_url('/admin/settings'); ?>" class="admin-quick-action">
                                                 <i class="bi bi-gear"></i>
                                                 <span>Configurações</span>
                                             </a>
                                         </div>
                                         <div class="col-lg-3 col-md-6 mb-3">
-                                            <a href="/admin/logs" class="admin-quick-action">
+                                            <a href="<?php echo base_url('/admin/logs'); ?>" class="admin-quick-action">
                                                 <i class="bi bi-file-text"></i>
                                                 <span>Ver Logs</span>
                                             </a>
@@ -164,7 +164,7 @@
                                         </table>
                                     </div>
                                     <div class="text-center mt-3">
-                                        <a href="/admin/users" class="btn btn-outline-primary">
+                                        <a href="<?php echo base_url('/admin/users'); ?>" class="btn btn-outline-primary">
                                             Ver Todos os Usuários
                                         </a>
                                     </div>

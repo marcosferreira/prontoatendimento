@@ -1,6 +1,6 @@
 <aside class="admin-sidebar">
     <div class="admin-sidebar-header">
-        <a href="/admin" class="admin-sidebar-logo">
+        <a href="<?php echo base_url('/admin'); ?>" class="admin-sidebar-logo">
             <i class="bi bi-shield-check"></i>
             <div>
                 <h3 class="admin-sidebar-logo-text">Admin Panel</h3>
@@ -12,11 +12,11 @@
     <nav class="admin-sidebar-nav">
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Painel Principal</div>
-            <a href="/admin" class="admin-nav-item <?= (current_url() == site_url('admin')) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin'); ?>" class="admin-nav-item <?= (current_url() == site_url('admin')) ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i>
                 Dashboard
             </a>
-            <a href="/" class="admin-nav-item" target="_blank">
+            <a href="<?php echo base_url('/'); ?>" class="admin-nav-item" target="_blank">
                 <i class="bi bi-arrow-up-right-square"></i>
                 Ver Site
             </a>
@@ -24,11 +24,11 @@
         
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Gerenciamento</div>
-            <a href="/admin/users" class="admin-nav-item <?= (strpos(current_url(), 'admin/users') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/users'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/users') !== false) ? 'active' : '' ?>">
                 <i class="bi bi-people"></i>
                 Usuários
             </a>
-            <a href="/admin/settings" class="admin-nav-item <?= (strpos(current_url(), 'admin/settings') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/settings'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/settings') !== false) ? 'active' : '' ?>">
                 <i class="bi bi-gear"></i>
                 Configurações
             </a>
@@ -36,11 +36,11 @@
         
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Monitoramento</div>
-            <a href="/admin/logs" class="admin-nav-item <?= (strpos(current_url(), 'admin/logs') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/logs'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/logs') !== false) ? 'active' : '' ?>">
                 <i class="bi bi-file-text"></i>
                 Logs do Sistema
             </a>
-            <a href="/admin/reports" class="admin-nav-item <?= (strpos(current_url(), 'admin/reports') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/reports'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/reports') !== false) ? 'active' : '' ?>">
                 <i class="bi bi-bar-chart"></i>
                 Relatórios
             </a>
@@ -69,7 +69,7 @@ function confirmLogout() {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/logout';
+            window.location.href = '<?php echo base_url('/logout'); ?>';
         }
     });
 }

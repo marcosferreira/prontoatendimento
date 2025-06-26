@@ -21,7 +21,7 @@
                                 <p class="admin-subtitle">Administração de usuários do sistema</p>
                             </div>
                             <div>
-                                <a href="/admin/users/create" class="btn btn-primary">
+                                <a href="<?php echo base_url('/admin/users/create'); ?>" class="btn btn-primary">
                                     <i class="bi bi-person-plus"></i> Novo Usuário
                                 </a>
                             </div>
@@ -122,7 +122,7 @@
                                                     <td><?= $user->created_at->format('d/m/Y H:i') ?></td>
                                                     <td>
                                                         <div class="admin-action-buttons">
-                                                            <a href="/admin/users/edit/<?= $user->id ?>" 
+                                                            <a href="<?php echo base_url('/admin/users/edit/' . $user->id); ?>" 
                                                                class="btn btn-sm btn-outline-primary" 
                                                                title="Editar">
                                                                 <i class="bi bi-pencil"></i>
@@ -131,7 +131,7 @@
                                                             <button type="button" 
                                                                     class="btn btn-sm btn-outline-danger" 
                                                                     title="Deletar"
-                                                                    onclick="confirmDelete('/admin/users/delete/<?= $user->id ?>', 'Deletar usuário?', 'O usuário <?= esc($user->username) ?> será permanentemente removido.')">
+                                                                    onclick="confirmDelete('<?php echo base_url('/admin/users/delete/' . $user->id); ?>', 'Deletar usuário?', 'O usuário <?= esc($user->username) ?> será permanentemente removido.')">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                             <?php endif; ?>
@@ -148,7 +148,7 @@
                                         <i class="bi bi-people display-1 text-muted"></i>
                                         <h3 class="text-muted mt-3">Nenhum usuário encontrado</h3>
                                         <p class="text-muted">Comece criando o primeiro usuário do sistema.</p>
-                                        <a href="/admin/users/create" class="btn btn-primary">
+                                        <a href="<?php echo base_url('/admin/users/create'); ?>" class="btn btn-primary">
                                             <i class="bi bi-person-plus"></i> Criar Primeiro Usuário
                                         </a>
                                     </div>
