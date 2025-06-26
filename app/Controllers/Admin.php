@@ -163,8 +163,8 @@ class Admin extends BaseController
 
         $userModel->save($user);
 
-        // Atualizar grupos
-        $user->syncGroups([$this->request->getPost('group')]);
+        // Atualizar grupos - syncGroups espera string, não array
+        $user->syncGroups($this->request->getPost('group'));
 
         return redirect()->to('/admin/users')->with('message', 'Usuário atualizado com sucesso!');
     }
