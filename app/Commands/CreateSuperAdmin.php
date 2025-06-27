@@ -68,8 +68,8 @@ class CreateSuperAdmin extends BaseCommand
 
         // Get parameters from CLI options or use defaults
         $username = CLI::getOption('username') ?? 'admin';
-        $email = CLI::getOption('email') ?? 'admin@prontoatendimento.com';
-        $password = CLI::getOption('password') ?? 'admin123';
+        $email = CLI::getOption('email') ?? 'tecnologia@pmdonaines.pb.gov.br';
+        $password = CLI::getOption('password') ?? 'admin';
 
         CLI::write("Using the following credentials:", 'cyan');
         CLI::write("Username: {$username}", 'white');
