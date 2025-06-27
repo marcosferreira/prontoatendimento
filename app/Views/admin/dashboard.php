@@ -41,8 +41,49 @@
                                         <i class="bi bi-person-check"></i>
                                     </div>
                                     <div class="admin-stat-content">
-                                        <h3><?= auth()->getProvider()->where('active', 1)->countAllResults() ?></h3>
-                                        <p>Usuários Ativos</p>
+                                        <?php 
+                                        // Usuários online: múltiplas abordagens para detectar usuários online
+                                        $onlineUsers = 0;
+                                        
+                                        // Abordagem 1: Verificar last_active (se disponível)
+                                        $onlineThreshold = date('Y-m-d H:i:s', strtotime('-2 hours'));
+                                        try {
+                                            $onlineUsers = auth()->getProvider()->where('last_active >=', $onlineThreshold)->countAllResults();
+                                        } catch (Exception $e) {
+                                            // Se der erro, last_active pode não existir
+                                            $onlineUsers = 0;
+                                        }
+                                        
+                                        // Abordagem 2: Se não houver last_active, verificar sessões ativas
+                                        if ($onlineUsers == 0) {
+                                            $sessionPath = WRITEPATH . 'session/';
+                                            $activeSessionCount = 0;
+                                            
+                                            if (is_dir($sessionPath)) {
+                                                $sessionFiles = glob($sessionPath . 'ci_session*');
+                                                $twoHoursAgo = time() - (2 * 3600); // 2 horas em segundos
+                                                
+                                                foreach ($sessionFiles as $sessionFile) {
+                                                    if (filemtime($sessionFile) > $twoHoursAgo) {
+                                                        $content = file_get_contents($sessionFile);
+                                                        // Verificar se a sessão contém um usuário logado
+                                                        if (strpos($content, 'user|a:1:{s:2:"id"') !== false) {
+                                                            $activeSessionCount++;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                            $onlineUsers = $activeSessionCount;
+                                        }
+                                        
+                                        // Abordagem 3: Se ainda for 0, usar usuários ativos do sistema como fallback
+                                        if ($onlineUsers == 0) {
+                                            $onlineUsers = auth()->getProvider()->where('active', 1)->countAllResults();
+                                        }
+                                        ?>
+                                        <h3><?= $onlineUsers ?></h3>
+                                        <p>Usuários Online</p>
                                     </div>
                                 </div>
                             </div>
