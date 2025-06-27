@@ -15,8 +15,29 @@
             <div class="user-info">
                 <div class="user-avatar">DR</div>
                 <div class="user-details">
-                    <p class="user-name">Dr. Roberto Silva</p>
-                    <p class="user-role">Médico Responsável</p>
+                    <?php 
+                    $user = auth()->user();
+                    $userGroups = $user ? $user->getGroups() : [];
+                    $groupNames = [];
+                    
+                    if (!empty($userGroups)) {
+                        // Obter a configuração dos grupos
+                        $authGroups = config('AuthGroups');
+                        $availableGroups = $authGroups->groups ?? [];
+                        
+                        foreach ($userGroups as $group) {
+                            if (isset($availableGroups[$group]['title'])) {
+                                $groupNames[] = $availableGroups[$group]['title'];
+                            } else {
+                                $groupNames[] = ucfirst($group);
+                            }
+                        }
+                    }
+                    
+                    $displayRole = !empty($groupNames) ? implode(', ', $groupNames) : 'Usuário';
+                    ?>
+                    <p class="user-name"><?php echo $user->username ?? 'Usuário' ?></p>
+                    <p class="user-role"><?php echo $displayRole ?></p>
                 </div>
             </div>
         </div>

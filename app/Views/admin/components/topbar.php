@@ -22,8 +22,29 @@
                 <?= strtoupper(substr(auth()->user()->username ?? 'SA', 0, 2)) ?>
             </div>
             <div class="admin-user-details">
-                <p class="admin-user-name"><?= auth()->user()->username ?? 'Superadmin' ?></p>
-                <p class="admin-user-role">Superadministrador</p>
+                <?php 
+                    $user = auth()->user();
+                    $userGroups = $user ? $user->getGroups() : [];
+                    $groupNames = [];
+                    
+                    if (!empty($userGroups)) {
+                        // Obter a configuração dos grupos
+                        $authGroups = config('AuthGroups');
+                        $availableGroups = $authGroups->groups ?? [];
+                        
+                        foreach ($userGroups as $group) {
+                            if (isset($availableGroups[$group]['title'])) {
+                                $groupNames[] = $availableGroups[$group]['title'];
+                            } else {
+                                $groupNames[] = ucfirst($group);
+                            }
+                        }
+                    }
+                    
+                    $displayRole = !empty($groupNames) ? implode(', ', $groupNames) : 'Usuário';
+                    ?>
+                <p class="user-name"><?php echo $user->username ?? 'Usuário' ?></p>
+                <p class="user-role"><?php echo $displayRole ?></p>
             </div>
             <div class="admin-user-dropdown">
                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
