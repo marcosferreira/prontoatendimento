@@ -102,6 +102,7 @@
 
 /* Admin Main Wrapper */
 .admin-main-wrapper {
+    width: 100%;
     flex: 1;
     margin-left: 280px;
     display: flex;
@@ -206,6 +207,7 @@
 }
 
 .admin-main-container {
+    width: 100%;
     max-width: 1400px;
     margin: 0 auto;
 }
@@ -655,6 +657,7 @@
 
 @media (max-width: 576px) {
     .admin-main-content {
+        width: 100%;
         padding: 0.75rem;
     }
     
