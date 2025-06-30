@@ -1,0 +1,230 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class AtendimentoModel extends Model
+{
+    protected $table            = 'atendimentos';
+    protected $primaryKey       = 'id_atendimento';
+    protected $useAutoIncrement = true;
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
+    protected $allowedFields    = [
+        'id_paciente',
+        'id_medico',
+        'data_atendimento',
+        'classificacao_risco',
+        'consulta_enfermagem',
+        'hgt_glicemia',
+        'pressao_arterial',
+        'hipotese_diagnostico',
+        'observacao',
+        'encaminhamento',
+        'obito'
+    ];
+
+    protected bool $allowEmptyInserts = false;
+    protected bool $updateOnlyChanged = true;
+
+    protected array $casts = [
+        'id_paciente' => 'int',
+        'id_medico' => 'int',
+        'data_atendimento' => 'datetime',
+        'hgt_glicemia' => 'float',
+        'obito' => 'boolean'
+    ];
+    protected array $castHandlers = [];
+
+    // Dates
+    protected $useTimestamps = true;
+    protected $dateFormat    = 'datetime';
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+    protected $deletedField  = 'deleted_at';
+
+    // Validation
+    protected $validationRules = [
+        'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
+        'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
+        'data_atendimento' => 'required|valid_date',
+        'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
+        'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
+        'pressao_arterial' => 'max_length[20]',
+        'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
+        'obito' => 'in_list[0,1]'
+    ];
+    
+    protected $validationMessages = [
+        'id_paciente' => [
+            'required' => 'O paciente é obrigatório',
+            'integer' => 'ID do paciente deve ser um número',
+            'is_not_unique' => 'Paciente não encontrado'
+        ],
+        'id_medico' => [
+            'required' => 'O médico é obrigatório',
+            'integer' => 'ID do médico deve ser um número',
+            'is_not_unique' => 'Médico não encontrado'
+        ],
+        'data_atendimento' => [
+            'required' => 'A data do atendimento é obrigatória',
+            'valid_date' => 'Data de atendimento inválida'
+        ],
+        'classificacao_risco' => [
+            'required' => 'A classificação de risco é obrigatória',
+            'in_list' => 'Classificação deve ser: Verde, Amarelo, Vermelho ou Azul'
+        ],
+        'hgt_glicemia' => [
+            'decimal' => 'Glicemia deve ser um valor decimal',
+            'greater_than_equal_to' => 'Glicemia deve ser maior ou igual a 0',
+            'less_than_equal_to' => 'Glicemia deve ser menor ou igual a 999.99'
+        ],
+        'encaminhamento' => [
+            'in_list' => 'Encaminhamento inválido'
+        ]
+    ];
+    
+    protected $skipValidation       = false;
+    protected $cleanValidationRules = true;
+
+    // Callbacks
+    protected $allowCallbacks = true;
+    protected $beforeInsert   = ['validateObito'];
+    protected $afterInsert    = [];
+    protected $beforeUpdate   = ['validateObito'];
+    protected $afterUpdate    = [];
+    protected $beforeFind     = [];
+    protected $afterFind      = [];
+    protected $beforeDelete   = [];
+    protected $afterDelete    = [];
+
+    /**
+     * Valida se óbito está coerente com encaminhamento
+     */
+    protected function validateObito(array $data)
+    {
+        if (isset($data['data']['obito']) && $data['data']['obito'] == true) {
+            $data['data']['encaminhamento'] = 'Óbito';
+        }
+        
+        if (isset($data['data']['encaminhamento']) && $data['data']['encaminhamento'] == 'Óbito') {
+            $data['data']['obito'] = true;
+        }
+        
+        return $data;
+    }
+
+    /**
+     * Busca atendimentos por paciente
+     */
+    public function getAtendimentosByPaciente($idPaciente)
+    {
+        return $this->where('id_paciente', $idPaciente)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Busca atendimentos por médico
+     */
+    public function getAtendimentosByMedico($idMedico)
+    {
+        return $this->where('id_medico', $idMedico)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Busca atendimentos por classificação de risco
+     */
+    public function getAtendimentosByRisco($classificacao)
+    {
+        return $this->where('classificacao_risco', $classificacao)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Busca atendimentos completos com dados do paciente e médico
+     */
+    public function getAtendimentosCompletos()
+    {
+        return $this->select('atendimentos.*, pacientes.nome as nome_paciente, pacientes.cpf, medicos.nome as nome_medico, medicos.crm')
+                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                   ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
+                   ->orderBy('atendimentos.data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Busca atendimentos de hoje
+     */
+    public function getAtendimentosHoje()
+    {
+        $hoje = date('Y-m-d');
+        return $this->where('DATE(data_atendimento)', $hoje)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Busca atendimentos por período
+     */
+    public function getAtendimentosPorPeriodo($dataInicio, $dataFim)
+    {
+        return $this->where('DATE(data_atendimento) >=', $dataInicio)
+                   ->where('DATE(data_atendimento) <=', $dataFim)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Estatísticas por classificação de risco
+     */
+    public function getEstatisticasRisco()
+    {
+        return $this->select('classificacao_risco, COUNT(*) as total')
+                   ->groupBy('classificacao_risco')
+                   ->findAll();
+    }
+
+    /**
+     * Busca casos de óbito
+     */
+    public function getObitos()
+    {
+        return $this->where('obito', true)
+                   ->orderBy('data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Lista tipos de classificação de risco
+     */
+    public function getClassificacoesRisco()
+    {
+        return [
+            'Azul' => 'Azul - Não urgente',
+            'Verde' => 'Verde - Pouco urgente',
+            'Amarelo' => 'Amarelo - Urgente',
+            'Vermelho' => 'Vermelho - Muito urgente'
+        ];
+    }
+
+    /**
+     * Lista tipos de encaminhamento
+     */
+    public function getTiposEncaminhamento()
+    {
+        return [
+            'Alta' => 'Alta',
+            'Internação' => 'Internação',
+            'Transferência' => 'Transferência',
+            'Especialista' => 'Especialista',
+            'Retorno' => 'Retorno',
+            'Óbito' => 'Óbito'
+        ];
+    }
+}
