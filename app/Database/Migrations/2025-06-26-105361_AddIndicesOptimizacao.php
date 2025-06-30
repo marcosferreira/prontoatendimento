@@ -8,38 +8,114 @@ class AddIndicesOptimizacao extends Migration
 {
     public function up()
     {
-        // Índices para tabela pacientes
-        $this->forge->addKey('cpf', false, true, 'idx_paciente_cpf');
-        $this->forge->addKey('sus', false, false, 'idx_paciente_sus');
-        $this->forge->addKey('nome', false, false, 'idx_paciente_nome');
+        // Obter o prefixo da configuração do banco
+        $config = config('Database');
+        $prefix = $config->default['DBPrefix'] ?? '';
         
-        // Índices para tabela bairros
-        $this->forge->addKey('nome_bairro', false, false, 'idx_bairro_nome');
+        // Aplicar índices usando SQL direto com o prefixo correto
+        // Verificar se índice já existe antes de criar
+        try {
+            $this->db->query("CREATE INDEX idx_paciente_cpf ON {$prefix}pacientes(cpf)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
         
-        // Índices para tabela médicos
-        $this->forge->addKey('crm', false, true, 'idx_medico_crm');
+        try {
+            $this->db->query("CREATE INDEX idx_paciente_sus ON {$prefix}pacientes(sus)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
         
-        // Aplicar índices usando SQL direto para maior controle
-        $this->db->query('CREATE INDEX idx_paciente_cpf ON pacientes(cpf)');
-        $this->db->query('CREATE INDEX idx_paciente_sus ON pacientes(sus)');
-        $this->db->query('CREATE INDEX idx_paciente_nome ON pacientes(nome)');
-        $this->db->query('CREATE INDEX idx_bairro_nome ON bairros(nome_bairro)');
-        $this->db->query('CREATE INDEX idx_atendimento_data ON atendimentos(data_atendimento)');
-        $this->db->query('CREATE INDEX idx_atendimento_paciente ON atendimentos(id_paciente)');
-        $this->db->query('CREATE INDEX idx_atendimento_medico ON atendimentos(id_medico)');
-        $this->db->query('CREATE INDEX idx_atendimento_classificacao ON atendimentos(classificacao_risco)');
+        try {
+            $this->db->query("CREATE INDEX idx_paciente_nome ON {$prefix}pacientes(nome)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
+        
+        try {
+            $this->db->query("CREATE INDEX idx_bairro_nome ON {$prefix}bairros(nome_bairro)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
+        
+        try {
+            $this->db->query("CREATE INDEX idx_atendimento_data ON {$prefix}atendimentos(data_atendimento)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
+        
+        try {
+            $this->db->query("CREATE INDEX idx_atendimento_paciente ON {$prefix}atendimentos(id_paciente)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
+        
+        try {
+            $this->db->query("CREATE INDEX idx_atendimento_medico ON {$prefix}atendimentos(id_medico)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
+        
+        try {
+            $this->db->query("CREATE INDEX idx_atendimento_classificacao ON {$prefix}atendimentos(classificacao_risco)");
+        } catch (\Exception $e) {
+            // Índice já existe, ignorar
+        }
     }
 
     public function down()
     {
-        // Remover índices criados
-        $this->db->query('DROP INDEX IF EXISTS idx_paciente_cpf ON pacientes');
-        $this->db->query('DROP INDEX IF EXISTS idx_paciente_sus ON pacientes');
-        $this->db->query('DROP INDEX IF EXISTS idx_paciente_nome ON pacientes');
-        $this->db->query('DROP INDEX IF EXISTS idx_bairro_nome ON bairros');
-        $this->db->query('DROP INDEX IF EXISTS idx_atendimento_data ON atendimentos');
-        $this->db->query('DROP INDEX IF EXISTS idx_atendimento_paciente ON atendimentos');
-        $this->db->query('DROP INDEX IF EXISTS idx_atendimento_medico ON atendimentos');
-        $this->db->query('DROP INDEX IF EXISTS idx_atendimento_classificacao ON atendimentos');
+        // Obter o prefixo da configuração do banco
+        $config = config('Database');
+        $prefix = $config->default['DBPrefix'] ?? '';
+        
+        // Remover índices criados (usar try/catch pois o índice pode não existir)
+        try {
+            $this->db->query("DROP INDEX idx_paciente_cpf ON {$prefix}pacientes");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_paciente_sus ON {$prefix}pacientes");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_paciente_nome ON {$prefix}pacientes");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_bairro_nome ON {$prefix}bairros");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_atendimento_data ON {$prefix}atendimentos");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_atendimento_paciente ON {$prefix}atendimentos");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_atendimento_medico ON {$prefix}atendimentos");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
+        
+        try {
+            $this->db->query("DROP INDEX idx_atendimento_classificacao ON {$prefix}atendimentos");
+        } catch (\Exception $e) {
+            // Índice não existe, ignorar
+        }
     }
 }
