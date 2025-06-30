@@ -36,6 +36,8 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'noregistration' => \App\Filters\NoRegistrationIfUsersExist::class,
         'admin'         => \App\Filters\AdminFilter::class,
+        'activeuser'    => \App\Filters\ActiveUserFilter::class,
+        'loginfilter'   => \App\Filters\LoginFilter::class,
     ];
 
     /**
@@ -74,8 +76,10 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
-            'session' => ['except' => ['login*', 'register', 'auth/a/*', 'logout']],
-            // 'session' => ['except' => ['login', 'auth/a/*', 'logout']],
+            // 'session' => ['except' => ['login*', 'register', 'auth/a/*', 'logout']],
+            'session' => ['except' => ['login', 'auth/a/*', 'logout']],
+            'activeuser' => ['except' => ['login*', 'register', 'auth/a/*', 'logout']],
+            'loginfilter',
         ],
         'after' => [
             // 'honeypot',
