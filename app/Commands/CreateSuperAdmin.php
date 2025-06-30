@@ -118,6 +118,7 @@ class CreateSuperAdmin extends BaseCommand
             // Set email and password
             $userEntity->email = $email;
             $userEntity->password = $password;
+            $userEntity->active = 1;
 
             $userProvider->save($userEntity);
 
