@@ -135,6 +135,36 @@
                                             </div>
                                         </div>
                                         
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="active" class="form-label">
+                                                        <i class="bi bi-toggle-on"></i> Status do Usuário
+                                                    </label>
+                                                    <select class="form-select" id="active" name="active">
+                                                        <option value="1" <?= old('active', $user->active) == 1 ? 'selected' : '' ?>>
+                                                            <i class="bi bi-check-circle"></i> Ativo
+                                                        </option>
+                                                        <option value="0" <?= old('active', $user->active) == 0 ? 'selected' : '' ?>>
+                                                            <i class="bi bi-x-circle"></i> Inativo
+                                                        </option>
+                                                    </select>
+                                                    <div class="form-text">
+                                                        Usuários inativos não podem fazer login
+                                                    </div>
+                                                    <?php if($user->id === auth()->id()): ?>
+                                                        <div class="alert alert-warning mt-2" role="alert">
+                                                            <small><i class="bi bi-exclamation-triangle"></i> Cuidado: Desativar sua própria conta impedirá seu acesso ao sistema!</small>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <!-- Espaço reservado para futuros campos -->
+                                            </div>
+                                        </div>
+                                        
                                         <div class="mb-4">
                                             <div class="row">
                                                 <div class="col-md-6">

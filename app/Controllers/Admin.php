@@ -84,6 +84,10 @@ class Admin extends BaseController
         // Set the email identity
         $userEntity->email = $this->request->getPost('email');
         $userEntity->password = $this->request->getPost('password');
+        
+        // Set active status (default to active if not provided)
+        $activeValue = $this->request->getPost('active');
+        $userEntity->active = $activeValue !== null ? (int) $activeValue : 1;
 
         $userProvider->save($userEntity);
         
@@ -156,6 +160,14 @@ class Admin extends BaseController
 
         $user->username = $this->request->getPost('username');
         $user->email = $this->request->getPost('email');
+        
+        // Update active status - prevent user from deactivating themselves
+        $activeValue = $this->request->getPost('active');
+        $requestedActive = $activeValue !== null ? (int) $activeValue : 1;
+        if ($user->id === auth()->id() && $requestedActive === 0) {
+            return redirect()->back()->withInput()->with('errors', ['active' => 'Você não pode desativar sua própria conta!']);
+        }
+        $user->active = $requestedActive;
         
         if ($this->request->getPost('password')) {
             $user->password = $this->request->getPost('password');

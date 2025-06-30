@@ -133,6 +133,31 @@
                                             </div>
                                         </div>
                                         
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="active" class="form-label">
+                                                        <i class="bi bi-toggle-on"></i> Status do Usuário
+                                                    </label>
+                                                    <select class="form-select" id="active" name="active">
+                                                        <option value="1" <?= old('active', '1') === '1' ? 'selected' : '' ?>>
+                                                            <i class="bi bi-check-circle"></i> Ativo
+                                                        </option>
+                                                        <option value="0" <?= old('active') === '0' ? 'selected' : '' ?>>
+                                                            <i class="bi bi-x-circle"></i> Inativo
+                                                        </option>
+                                                    </select>
+                                                    <div class="form-text">
+                                                        Usuários inativos não podem fazer login
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <!-- Espaço reservado para futuros campos -->
+                                            </div>
+                                        </div>
+                                        
                                         <div class="mb-4">
                                             <div class="admin-permissions-preview" id="permissionsPreview" style="display: none;">
                                                 <h6><i class="bi bi-key"></i> Permissões do Grupo:</h6>
