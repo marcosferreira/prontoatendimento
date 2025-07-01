@@ -4,7 +4,6 @@
 <div class="app-container">
     <?= $this->include('components/sidebar') ?>
     
-    <div class="main-wrapper">
         <?= $this->include('components/topbar') ?>
         
         <main class="main-content">
@@ -346,7 +345,6 @@
                 </div>
             </div>
         </main>
-    </div>
 </div>
 
 <script>

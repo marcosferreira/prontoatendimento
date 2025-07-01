@@ -163,7 +163,7 @@
 
 <!-- Modal Novo Paciente -->
 <div class="modal fade" id="novoPacienteModal" tabindex="-1" aria-labelledby="novoPacienteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="novoPacienteModalLabel">
@@ -174,54 +174,207 @@
             <form id="novoPacienteForm" action="<?= base_url('pacientes/store') ?>" method="POST">
                 <?= csrf_field() ?>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="nome" class="form-label">Nome Completo *</label>
-                                <input type="text" class="form-control" id="nome" name="nome" required>
+                    <!-- Dados Pessoais -->
+                    <div class="form-section mb-4">
+                        <h6 class="form-section-title">
+                            <i class="bi bi-person"></i> Dados Pessoais
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="modal_nome" class="form-label">
+                                        Nome Completo <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="modal_nome" name="nome" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_data_nascimento" class="form-label">
+                                        Data de Nascimento <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control" id="modal_data_nascimento" name="data_nascimento" required>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="data_nascimento" class="form-label">Data de Nascimento *</label>
-                                <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_cpf" class="form-label">
+                                        CPF <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="modal_cpf" name="cpf" 
+                                           placeholder="000.000.000-00" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_rg" class="form-label">RG</label>
+                                    <input type="text" class="form-control" id="modal_rg" name="rg" 
+                                           placeholder="Digite o RG">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_sexo" class="form-label">
+                                        Sexo <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="modal_sexo" name="sexo" required>
+                                        <option value="">Selecione</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Feminino</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_telefone" class="form-label">Telefone</label>
+                                    <input type="text" class="form-control" id="modal_telefone" name="telefone" 
+                                           placeholder="(00) 0000-0000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_celular" class="form-label">Celular</label>
+                                    <input type="text" class="form-control" id="modal_celular" name="celular" 
+                                           placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="modal_email" class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" id="modal_email" name="email" 
+                                           placeholder="exemplo@email.com">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_numero_sus" class="form-label">Número do SUS</label>
+                                    <input type="text" class="form-control" id="modal_numero_sus" name="numero_sus" 
+                                           placeholder="000000000000000" maxlength="15">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="cpf" class="form-label">CPF *</label>
-                                <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                    <!-- Endereço -->
+                    <div class="form-section mb-4">
+                        <h6 class="form-section-title">
+                            <i class="bi bi-geo-alt"></i> Endereço
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="modal_cep" class="form-label">CEP</label>
+                                    <input type="text" class="form-control" id="modal_cep" name="cep" 
+                                           placeholder="00000-000">
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <label for="modal_endereco" class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" id="modal_endereco" name="endereco" 
+                                           placeholder="Digite o endereço">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="modal_numero" class="form-label">Número</label>
+                                    <input type="text" class="form-control" id="modal_numero" name="numero" 
+                                           placeholder="123">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="sus" class="form-label">Cartão SUS</label>
-                                <input type="text" class="form-control" id="sus" name="sus" placeholder="Número do cartão SUS">
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_complemento" class="form-label">Complemento</label>
+                                    <input type="text" class="form-control" id="modal_complemento" name="complemento" 
+                                           placeholder="Apto, Bloco, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_id_bairro" class="form-label">Bairro</label>
+                                    <select class="form-select" id="modal_id_bairro" name="id_bairro">
+                                        <option value="">Selecione o bairro</option>
+                                        <?php if (isset($bairros)): ?>
+                                            <?php foreach ($bairros as $bairro): ?>
+                                                <option value="<?= $bairro['id_bairro'] ?>"><?= esc($bairro['nome_bairro']) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_cidade" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="modal_cidade" name="cidade" 
+                                           placeholder="Digite a cidade">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="mb-3">
-                                <label for="endereco" class="form-label">Endereço</label>
-                                <input type="text" class="form-control" id="endereco" name="endereco" placeholder="Rua, número, complemento">
+                    <!-- Informações Médicas -->
+                    <div class="form-section mb-4">
+                        <h6 class="form-section-title">
+                            <i class="bi bi-heart-pulse"></i> Informações Médicas
+                        </h6>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                    <select class="form-select" id="modal_tipo_sanguineo" name="tipo_sanguineo">
+                                        <option value="">Selecione</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="modal_nome_responsavel" class="form-label">Nome do Responsável</label>
+                                    <input type="text" class="form-control" id="modal_nome_responsavel" name="nome_responsavel" 
+                                           placeholder="Nome do responsável (para menores de idade)">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="id_bairro" class="form-label">Bairro</label>
-                                <select class="form-select" id="id_bairro" name="id_bairro">
-                                    <option value="">Selecione o bairro</option>
-                                    <?php if (isset($bairros)): ?>
-                                        <?php foreach ($bairros as $bairro): ?>
-                                            <option value="<?= $bairro['id_bairro'] ?>"><?= esc($bairro['nome_bairro']) ?></option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="modal_alergias" class="form-label">Alergias</label>
+                                    <textarea class="form-control" id="modal_alergias" name="alergias" rows="2"
+                                              placeholder="Descreva as alergias conhecidas do paciente"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="modal_observacoes" class="form-label">Observações</label>
+                                    <textarea class="form-control" id="modal_observacoes" name="observacoes" rows="2"
+                                              placeholder="Observações gerais sobre o paciente"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -277,16 +430,68 @@
         }
     });
 
-    // Máscara para CPF
-    document.getElementById('cpf').addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-        this.value = value;
+    // Configurar máscaras e validações quando o modal for aberto
+    document.getElementById('novoPacienteModal').addEventListener('shown.bs.modal', function() {
+        // Máscaras de entrada
+        applyMask('modal_cpf', '000.000.000-00');
+        applyMask('modal_cep', '00000-000');
+        applyMask('modal_telefone', '(00) 0000-0000');
+        applyMask('modal_celular', '(00) 00000-0000');
+
+        // Buscar CEP
+        document.getElementById('modal_cep').addEventListener('blur', function() {
+            const cep = this.value.replace(/\D/g, '');
+            
+            if (cep.length === 8) {
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.erro) {
+                            document.getElementById('modal_endereco').value = data.logradouro || '';
+                            document.getElementById('modal_cidade').value = data.localidade || '';
+                            
+                            // Buscar bairro no select
+                            const bairroNome = data.bairro.toLowerCase();
+                            const selectBairro = document.getElementById('modal_id_bairro');
+                            for (let option of selectBairro.options) {
+                                if (option.text.toLowerCase().indexOf(bairroNome) !== -1) {
+                                    option.selected = true;
+                                    break;
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Erro ao buscar CEP:', error));
+            }
+        });
+
+        // Calcular idade e validar responsável
+        document.getElementById('modal_data_nascimento').addEventListener('change', function() {
+            const nascimento = new Date(this.value);
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nascimento.getFullYear();
+            const mes = hoje.getMonth() - nascimento.getMonth();
+            
+            if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                idade--;
+            }
+            
+            const responsavelField = document.getElementById('modal_nome_responsavel');
+            const responsavelLabel = document.querySelector('label[for="modal_nome_responsavel"]');
+            
+            if (idade < 18) {
+                responsavelField.required = true;
+                responsavelLabel.innerHTML = 'Nome do Responsável <span class="text-danger">*</span>';
+            } else {
+                responsavelField.required = false;
+                responsavelLabel.innerHTML = 'Nome do Responsável';
+            }
+        });
     });
 
-    // Validação do formulário
+    // Validação do formulário do modal
     document.getElementById('novoPacienteForm').addEventListener('submit', function(e) {
-        const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+        const cpf = document.getElementById('modal_cpf').value.replace(/\D/g, '');
 
         if (cpf.length !== 11) {
             e.preventDefault();
@@ -301,6 +506,29 @@
             return;
         }
     });
+
+    // Função para aplicar máscara
+    function applyMask(elementId, mask) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+
+        element.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            let maskedValue = '';
+            let valueIndex = 0;
+
+            for (let i = 0; i < mask.length && valueIndex < value.length; i++) {
+                if (mask[i] === '0') {
+                    maskedValue += value[valueIndex];
+                    valueIndex++;
+                } else {
+                    maskedValue += mask[i];
+                }
+            }
+
+            this.value = maskedValue;
+        });
+    }
 
     // Função para validar CPF
     function validarCPF(cpf) {
@@ -357,5 +585,34 @@
         window.location.href = '<?= base_url('pacientes') ?>?filter=recent';
     }
 </script>
+
+<!-- Estilos para o modal -->
+<style>
+.form-section {
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+}
+
+.form-section-title {
+    color: #0d6efd;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #0d6efd;
+    font-size: 0.9rem;
+}
+
+.form-section-title i {
+    margin-right: 0.5rem;
+}
+
+.modal-xl .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+</style>
 
 <?= $this->endSection() ?>

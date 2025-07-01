@@ -4,25 +4,12 @@
 <div class="app-container">
     <?= $this->include('components/sidebar') ?>
     
-    <div class="main-wrapper">
         <?= $this->include('components/topbar') ?>
         
         <main class="main-content">
             <div class="main-container">
                 <!-- Header -->
                 <div class="header">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="<?= base_url('pacientes') ?>">
-                                    <i class="bi bi-person-badge"></i> Pacientes
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                Editar Paciente
-                            </li>
-                        </ol>
-                    </nav>
                     <h1><i class="bi bi-pencil-square"></i> Editar Paciente</h1>
                     <p class="subtitle">Atualizar dados do paciente: <strong><?= esc($paciente['nome']) ?></strong></p>
                 </div>
@@ -59,65 +46,284 @@
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="_method" value="PUT">
                                     
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label for="nome" class="form-label">Nome Completo *</label>
-                                                <input type="text" class="form-control" id="nome" name="nome" 
-                                                       value="<?= esc($paciente['nome']) ?>" required>
+                                    <!-- Dados Pessoais -->
+                                    <div class="form-section mb-4">
+                                        <h5 class="form-section-title">
+                                            <i class="bi bi-person"></i> Dados Pessoais
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="mb-3">
+                                                    <label for="nome" class="form-label">
+                                                        Nome Completo <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="nome" 
+                                                           name="nome" 
+                                                           value="<?= esc($paciente['nome']) ?>"
+                                                           required
+                                                           placeholder="Digite o nome completo">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="data_nascimento" class="form-label">
+                                                        Data de Nascimento <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="date" 
+                                                           class="form-control" 
+                                                           id="data_nascimento" 
+                                                           name="data_nascimento" 
+                                                           value="<?= esc($paciente['data_nascimento']) ?>"
+                                                           required>
+                                                    <div class="form-text">
+                                                        Idade atual: <strong><?= esc($paciente['idade']) ?></strong> anos
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="data_nascimento" class="form-label">Data de Nascimento *</label>
-                                                <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" 
-                                                       value="<?= esc($paciente['data_nascimento']) ?>" required>
-                                                <div class="form-text">
-                                                    Idade atual: <strong><?= esc($paciente['idade']) ?></strong> anos
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="cpf" class="form-label">
+                                                        CPF <span class="text-danger">*</span>
+                                                    </label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="cpf" 
+                                                           name="cpf" 
+                                                           value="<?= esc($paciente['cpf']) ?>"
+                                                           required
+                                                           placeholder="000.000.000-00"
+                                                           data-mask="000.000.000-00">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="rg" class="form-label">RG</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="rg" 
+                                                           name="rg" 
+                                                           value="<?= esc($paciente['rg'] ?? '') ?>"
+                                                           placeholder="Digite o RG">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="sexo" class="form-label">
+                                                        Sexo <span class="text-danger">*</span>
+                                                    </label>
+                                                    <select class="form-select" id="sexo" name="sexo" required>
+                                                        <option value="">Selecione</option>
+                                                        <option value="M" <?= ($paciente['sexo'] ?? '') == 'M' ? 'selected' : '' ?>>Masculino</option>
+                                                        <option value="F" <?= ($paciente['sexo'] ?? '') == 'F' ? 'selected' : '' ?>>Feminino</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="telefone" class="form-label">Telefone</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="telefone" 
+                                                           name="telefone" 
+                                                           value="<?= esc($paciente['telefone'] ?? '') ?>"
+                                                           placeholder="(00) 0000-0000"
+                                                           data-mask="(00) 0000-0000">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="celular" class="form-label">Celular</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="celular" 
+                                                           name="celular" 
+                                                           value="<?= esc($paciente['celular'] ?? '') ?>"
+                                                           placeholder="(00) 00000-0000"
+                                                           data-mask="(00) 00000-0000">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">E-mail</label>
+                                                    <input type="email" 
+                                                           class="form-control" 
+                                                           id="email" 
+                                                           name="email" 
+                                                           value="<?= esc($paciente['email'] ?? '') ?>"
+                                                           placeholder="exemplo@email.com">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="numero_sus" class="form-label">Número do SUS</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="numero_sus" 
+                                                           name="numero_sus" 
+                                                           value="<?= esc($paciente['numero_sus'] ?? '') ?>"
+                                                           placeholder="000000000000000"
+                                                           maxlength="15">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="cpf" class="form-label">CPF *</label>
-                                                <input type="text" class="form-control" id="cpf" name="cpf" 
-                                                       value="<?= esc($paciente['cpf']) ?>" placeholder="000.000.000-00" required>
+
+                                    <!-- Endereço -->
+                                    <div class="form-section mb-4">
+                                        <h5 class="form-section-title">
+                                            <i class="bi bi-geo-alt"></i> Endereço
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="cep" class="form-label">CEP</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="cep" 
+                                                           name="cep" 
+                                                           value="<?= esc($paciente['cep'] ?? '') ?>"
+                                                           placeholder="00000-000"
+                                                           data-mask="00000-000">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="mb-3">
+                                                    <label for="endereco" class="form-label">Endereço</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="endereco" 
+                                                           name="endereco" 
+                                                           value="<?= esc($paciente['endereco'] ?? '') ?>"
+                                                           placeholder="Digite o endereço">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="mb-3">
+                                                    <label for="numero" class="form-label">Número</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="numero" 
+                                                           name="numero" 
+                                                           value="<?= esc($paciente['numero'] ?? '') ?>"
+                                                           placeholder="123">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="sus" class="form-label">Cartão SUS</label>
-                                                <input type="text" class="form-control" id="sus" name="sus" 
-                                                       value="<?= esc($paciente['sus'] ?? '') ?>" placeholder="Número do cartão SUS">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="complemento" class="form-label">Complemento</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="complemento" 
+                                                           name="complemento" 
+                                                           value="<?= esc($paciente['complemento'] ?? '') ?>"
+                                                           placeholder="Apto, Bloco, etc.">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="id_bairro" class="form-label">Bairro</label>
+                                                    <select class="form-select" id="id_bairro" name="id_bairro">
+                                                        <option value="">Selecione o bairro</option>
+                                                        <?php if (isset($bairros) && !empty($bairros)): ?>
+                                                            <?php foreach ($bairros as $bairro): ?>
+                                                                <option value="<?= $bairro['id_bairro'] ?>" 
+                                                                        <?= ($paciente['id_bairro'] == $bairro['id_bairro']) ? 'selected' : '' ?>>
+                                                                    <?= esc($bairro['nome_bairro']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="cidade" class="form-label">Cidade</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="cidade" 
+                                                           name="cidade" 
+                                                           value="<?= esc($paciente['cidade'] ?? '') ?>"
+                                                           placeholder="Digite a cidade">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label for="endereco" class="form-label">Endereço</label>
-                                                <input type="text" class="form-control" id="endereco" name="endereco" 
-                                                       value="<?= esc($paciente['endereco'] ?? '') ?>" placeholder="Rua, número, complemento">
+
+                                    <!-- Informações Médicas -->
+                                    <div class="form-section mb-4">
+                                        <h5 class="form-section-title">
+                                            <i class="bi bi-heart-pulse"></i> Informações Médicas
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                                    <select class="form-select" id="tipo_sanguineo" name="tipo_sanguineo">
+                                                        <option value="">Selecione</option>
+                                                        <option value="A+" <?= ($paciente['tipo_sanguineo'] ?? '') == 'A+' ? 'selected' : '' ?>>A+</option>
+                                                        <option value="A-" <?= ($paciente['tipo_sanguineo'] ?? '') == 'A-' ? 'selected' : '' ?>>A-</option>
+                                                        <option value="B+" <?= ($paciente['tipo_sanguineo'] ?? '') == 'B+' ? 'selected' : '' ?>>B+</option>
+                                                        <option value="B-" <?= ($paciente['tipo_sanguineo'] ?? '') == 'B-' ? 'selected' : '' ?>>B-</option>
+                                                        <option value="AB+" <?= ($paciente['tipo_sanguineo'] ?? '') == 'AB+' ? 'selected' : '' ?>>AB+</option>
+                                                        <option value="AB-" <?= ($paciente['tipo_sanguineo'] ?? '') == 'AB-' ? 'selected' : '' ?>>AB-</option>
+                                                        <option value="O+" <?= ($paciente['tipo_sanguineo'] ?? '') == 'O+' ? 'selected' : '' ?>>O+</option>
+                                                        <option value="O-" <?= ($paciente['tipo_sanguineo'] ?? '') == 'O-' ? 'selected' : '' ?>>O-</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="mb-3">
+                                                    <label for="nome_responsavel" class="form-label">Nome do Responsável</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="nome_responsavel" 
+                                                           name="nome_responsavel" 
+                                                           value="<?= esc($paciente['nome_responsavel'] ?? '') ?>"
+                                                           placeholder="Nome do responsável (para menores de idade)">
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="id_bairro" class="form-label">Bairro</label>
-                                                <select class="form-select" id="id_bairro" name="id_bairro">
-                                                    <option value="">Selecione o bairro</option>
-                                                    <?php if (isset($bairros)): ?>
-                                                        <?php foreach ($bairros as $bairro): ?>
-                                                            <option value="<?= $bairro['id_bairro'] ?>" 
-                                                                    <?= ($paciente['id_bairro'] == $bairro['id_bairro']) ? 'selected' : '' ?>>
-                                                                <?= esc($bairro['nome_bairro']) ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="alergias" class="form-label">Alergias</label>
+                                                    <textarea class="form-control" 
+                                                              id="alergias" 
+                                                              name="alergias" 
+                                                              rows="2"
+                                                              placeholder="Descreva as alergias conhecidas do paciente"><?= esc($paciente['alergias'] ?? '') ?></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="observacoes" class="form-label">Observações</label>
+                                                    <textarea class="form-control" 
+                                                              id="observacoes" 
+                                                              name="observacoes" 
+                                                              rows="3"
+                                                              placeholder="Observações gerais sobre o paciente"><?= esc($paciente['observacoes'] ?? '') ?></textarea>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -230,7 +436,6 @@
                 </div>
             </div>
         </main>
-    </div>
 </div>
 
 <!-- Modal de Confirmação de Exclusão -->
@@ -265,12 +470,69 @@
 </div>
 
 <script>
-// Máscara para CPF
-document.getElementById('cpf').addEventListener('input', function() {
-    let value = this.value.replace(/\D/g, '');
-    value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    this.value = value;
-});
+// Carregar jQuery Mask Plugin
+if (typeof $ !== 'undefined') {
+    // Máscaras de entrada
+    $('#cpf').mask('000.000.000-00');
+    $('#cep').mask('00000-000');
+    $('#telefone').mask('(00) 0000-0000');
+    $('#celular').mask('(00) 00000-0000');
+    
+    // Buscar CEP
+    $('#cep').blur(function() {
+        var cep = $(this).val().replace(/\D/g, '');
+        
+        if (cep.length == 8) {
+            $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function(data) {
+                if (!data.erro) {
+                    $('#endereco').val(data.logradouro);
+                    $('#cidade').val(data.localidade);
+                    
+                    // Buscar bairro no select
+                    var bairroNome = data.bairro.toLowerCase();
+                    $('#id_bairro option').each(function() {
+                        if ($(this).text().toLowerCase().indexOf(bairroNome) !== -1) {
+                            $(this).prop('selected', true);
+                            return false;
+                        }
+                    });
+                }
+            });
+        }
+    });
+    
+    // Calcular idade automaticamente
+    $('#data_nascimento').change(function() {
+        var nascimento = new Date($(this).val());
+        var hoje = new Date();
+        var idade = hoje.getFullYear() - nascimento.getFullYear();
+        var mes = hoje.getMonth() - nascimento.getMonth();
+        
+        if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        
+        // Atualizar exibição da idade
+        $('.form-text strong').text(idade);
+        
+        // Se menor de 18, mostrar campo responsável como obrigatório
+        if (idade < 18) {
+            $('#nome_responsavel').prop('required', true);
+            $('#nome_responsavel').closest('.mb-3').find('label').html('Nome do Responsável <span class="text-danger">*</span>');
+        } else {
+            $('#nome_responsavel').prop('required', false);
+            $('#nome_responsavel').closest('.mb-3').find('label').html('Nome do Responsável');
+        }
+    });
+} else {
+    // Fallback para quando jQuery não estiver disponível
+    // Máscara para CPF
+    document.getElementById('cpf').addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        this.value = value;
+    });
+}
 
 // Validação do formulário
 document.getElementById('editPacienteForm').addEventListener('submit', function(e) {
@@ -329,6 +591,41 @@ function printPacienteCard() {
     window.open('<?= base_url('pacientes/' . $paciente['id_paciente'] . '/print') ?>', '_blank');
 }
 </script>
+
+<!-- Carregar jQuery e jQuery Mask se não estiverem carregados -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<style>
+.form-section {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+}
+
+.form-section-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.form-section-title i {
+    margin-right: 0.5rem;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.form-actions .btn {
+    margin-right: 0.5rem;
+}
+</style>
 
 <?= $this->endSection() ?>
 
