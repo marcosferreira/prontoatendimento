@@ -16,7 +16,7 @@
                 <i class="bi bi-speedometer2"></i>
                 Dashboard
             </a>
-            <a href="<?php echo base_url('pages/pacientes/lista.html'); ?>" class="nav-item">
+            <a href="<?php echo base_url('pacientes'); ?>" class="nav-item">
                 <i class="bi bi-person-badge"></i>
                 Pacientes
             </a>

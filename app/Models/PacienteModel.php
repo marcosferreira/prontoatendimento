@@ -16,10 +16,24 @@ class PacienteModel extends Model
         'nome',
         'sus',
         'cpf',
+        'rg',
         'endereco',
+        'numero',
+        'complemento',
+        'cep',
+        'cidade',
         'id_bairro',
         'data_nascimento',
-        'idade'
+        'idade',
+        'sexo',
+        'telefone',
+        'celular',
+        'email',
+        'numero_sus',
+        'tipo_sanguineo',
+        'nome_responsavel',
+        'alergias',
+        'observacoes'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -44,9 +58,22 @@ class PacienteModel extends Model
         'nome' => 'required|max_length[255]',
         'cpf' => 'required|is_unique[pacientes.cpf]|max_length[14]',
         'data_nascimento' => 'required|valid_date',
-        'sus' => 'max_length[15]',
-        'endereco' => 'max_length[65535]',
-        'idade' => 'integer|greater_than_equal_to[0]|less_than[200]'
+        'sexo' => 'required|in_list[M,F]',
+        'email' => 'permit_empty|valid_email|max_length[255]',
+        'telefone' => 'permit_empty|max_length[15]',
+        'celular' => 'permit_empty|max_length[16]',
+        'numero_sus' => 'permit_empty|max_length[15]',
+        'endereco' => 'permit_empty|max_length[500]',
+        'numero' => 'permit_empty|max_length[10]',
+        'complemento' => 'permit_empty|max_length[100]',
+        'cep' => 'permit_empty|max_length[9]',
+        'cidade' => 'permit_empty|max_length[100]',
+        'rg' => 'permit_empty|max_length[20]',
+        'nome_responsavel' => 'permit_empty|max_length[255]',
+        'alergias' => 'permit_empty|max_length[1000]',
+        'observacoes' => 'permit_empty|max_length[1000]',
+        'sus' => 'permit_empty|max_length[15]',
+        'idade' => 'permit_empty|integer|greater_than_equal_to[0]|less_than[200]'
     ];
     
     protected $validationMessages = [

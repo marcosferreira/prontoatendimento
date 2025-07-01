@@ -8,6 +8,26 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Home::index');
 $routes->get('/test-email', 'Home::testEmail');
 
+// Rotas de Pacientes
+$routes->group('pacientes', static function ($routes) {
+    $routes->get('/', 'Pacientes::index');
+    $routes->get('create', 'Pacientes::create');
+    $routes->post('store', 'Pacientes::store');
+    $routes->get('show/(:num)', 'Pacientes::show/$1');
+    $routes->get('edit/(:num)', 'Pacientes::edit/$1');
+    $routes->post('update/(:num)', 'Pacientes::update/$1');
+    $routes->get('delete/(:num)', 'Pacientes::delete/$1');
+    
+    // AJAX routes
+    $routes->get('search', 'Pacientes::search');
+    $routes->get('modal/(:num)', 'Pacientes::modal/$1');
+    $routes->post('validate-cpf', 'Pacientes::validateCpf');
+    
+    // Print and export
+    $routes->get('print/(:num)', 'Pacientes::print/$1');
+    $routes->get('export', 'Pacientes::export');
+});
+
 // Admin routes (protected by superadmin middleware)
 $routes->group('admin', static function ($routes) {
     $routes->get('/', 'Admin::index');

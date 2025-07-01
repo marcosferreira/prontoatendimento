@@ -1,0 +1,361 @@
+<?= $this->extend('layout/base') ?>
+
+<?= $this->section('content') ?>
+<div class="app-container">
+    <?= $this->include('components/sidebar') ?>
+
+    <?= $this->include('components/topbar') ?>
+
+    <main class="main-content">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="bi bi-person-badge"></i> Pacientes</h1>
+                <p class="subtitle">Gerenciamento de Pacientes Cadastrados</p>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <div class="action-left m-4">
+                    <div class="search-container position-relative">
+                        <input type="text" id="searchPaciente" class="form-control search-input pe-5"
+                        placeholder="Buscar por nome, CPF ou SUS...">
+                        <i class="bi bi-search search-icon position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                    </div>
+                </div>
+                <div class="action-right m-4">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#novoPacienteModal">
+                        <i class="bi bi-plus-circle"></i> Novo Paciente
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row m-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['total']) ? $stats['total'] : '0' ?></div>
+                        <div class="stat-label">Total de Pacientes</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['hoje']) ? $stats['hoje'] : '0' ?></div>
+                        <div class="stat-label">Cadastrados Hoje</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['mes']) ? $stats['mes'] : '0' ?></div>
+                        <div class="stat-label">Este Mês</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['idade_media']) ? $stats['idade_media'] : '0' ?></div>
+                        <div class="stat-label">Idade Média</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content-wrapper">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3 class="section-title">
+                            <i class="bi bi-list-ul"></i>
+                            Lista de Pacientes
+                        </h3>
+                        <div class="section-actions">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm active" onclick="showAll()">
+                                    Todos
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="showRecent()">
+                                    Recentes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table modern-table" id="pacientesTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">CPF</th>
+                                    <th scope="col">SUS</th>
+                                    <th scope="col">Idade</th>
+                                    <th scope="col">Bairro</th>
+                                    <th scope="col">Cadastro</th>
+                                    <th scope="col">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (isset($pacientes) && !empty($pacientes)): ?>
+                                    <?php foreach ($pacientes as $paciente): ?>
+                                        <tr>
+                                            <td>
+                                                <div class="user-info">
+                                                    <div class="user-avatar-small">
+                                                        <?= substr($paciente['nome'], 0, 2) ?>
+                                                    </div>
+                                                    <div>
+                                                        <strong><?= esc($paciente['nome']) ?></strong>
+                                                        <?php if (!empty($paciente['endereco'])): ?>
+                                                            <br><small class="text-muted"><?= esc(substr($paciente['endereco'], 0, 30)) ?>...</small>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><?= esc($paciente['cpf']) ?></td>
+                                            <td><?= esc($paciente['sus'] ?? '-') ?></td>
+                                            <td><?= esc($paciente['idade'] ?? '-') ?> anos</td>
+                                            <td><?= esc($paciente['nome_bairro'] ?? '-') ?></td>
+                                            <td><?= date('d/m/Y', strtotime($paciente['created_at'])) ?></td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                                        onclick="viewPaciente(<?= $paciente['id_paciente'] ?>)"
+                                                        title="Visualizar">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning btn-sm"
+                                                        onclick="editPaciente(<?= $paciente['id_paciente'] ?>)"
+                                                        title="Editar">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-success btn-sm"
+                                                        onclick="newAtendimento(<?= $paciente['id_paciente'] ?>)"
+                                                        title="Novo Atendimento">
+                                                        <i class="bi bi-plus-circle"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <div class="empty-state">
+                                                <i class="bi bi-person-x text-muted" style="font-size: 3rem;"></i>
+                                                <h5 class="text-muted mt-2">Nenhum paciente encontrado</h5>
+                                                <p class="text-muted">Clique em "Novo Paciente" para adicionar o primeiro paciente.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <?php if (isset($pager)): ?>
+                        <div class="d-flex justify-content-center mt-4">
+                            <?= $pager->links() ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal Novo Paciente -->
+<div class="modal fade" id="novoPacienteModal" tabindex="-1" aria-labelledby="novoPacienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="novoPacienteModalLabel">
+                    <i class="bi bi-person-plus"></i> Cadastrar Novo Paciente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="novoPacienteForm" action="<?= base_url('pacientes/store') ?>" method="POST">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome Completo *</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="data_nascimento" class="form-label">Data de Nascimento *</label>
+                                <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="cpf" class="form-label">CPF *</label>
+                                <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sus" class="form-label">Cartão SUS</label>
+                                <input type="text" class="form-control" id="sus" name="sus" placeholder="Número do cartão SUS">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label for="endereco" class="form-label">Endereço</label>
+                                <input type="text" class="form-control" id="endereco" name="endereco" placeholder="Rua, número, complemento">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="id_bairro" class="form-label">Bairro</label>
+                                <select class="form-select" id="id_bairro" name="id_bairro">
+                                    <option value="">Selecione o bairro</option>
+                                    <?php if (isset($bairros)): ?>
+                                        <?php foreach ($bairros as $bairro): ?>
+                                            <option value="<?= $bairro['id_bairro'] ?>"><?= esc($bairro['nome_bairro']) ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Salvar Paciente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Visualizar Paciente -->
+<div class="modal fade" id="viewPacienteModal" tabindex="-1" aria-labelledby="viewPacienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewPacienteModalLabel">
+                    <i class="bi bi-person-circle"></i> Dados do Paciente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="viewPacienteContent">
+                <!-- Conteúdo será carregado via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Busca de pacientes
+    document.getElementById('searchPaciente').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const table = document.getElementById('pacientesTable');
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+
+            for (let j = 0; j < cells.length - 1; j++) { // Exclui a coluna de ações
+                if (cells[j].textContent.toLowerCase().includes(filter)) {
+                    found = true;
+                    break;
+                }
+            }
+
+            row.style.display = found ? '' : 'none';
+        }
+    });
+
+    // Máscara para CPF
+    document.getElementById('cpf').addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        this.value = value;
+    });
+
+    // Validação do formulário
+    document.getElementById('novoPacienteForm').addEventListener('submit', function(e) {
+        const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+
+        if (cpf.length !== 11) {
+            e.preventDefault();
+            alert('CPF deve ter 11 dígitos');
+            return;
+        }
+
+        // Validação básica de CPF
+        if (!validarCPF(cpf)) {
+            e.preventDefault();
+            alert('CPF inválido');
+            return;
+        }
+    });
+
+    // Função para validar CPF
+    function validarCPF(cpf) {
+        if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+        let soma = 0;
+        for (let i = 0; i < 9; i++) {
+            soma += parseInt(cpf.charAt(i)) * (10 - i);
+        }
+
+        let resto = 11 - (soma % 11);
+        let digito1 = resto === 10 || resto === 11 ? 0 : resto;
+
+        if (digito1 !== parseInt(cpf.charAt(9))) return false;
+
+        soma = 0;
+        for (let i = 0; i < 10; i++) {
+            soma += parseInt(cpf.charAt(i)) * (11 - i);
+        }
+
+        resto = 11 - (soma % 11);
+        let digito2 = resto === 10 || resto === 11 ? 0 : resto;
+
+        return digito2 === parseInt(cpf.charAt(10));
+    }
+
+    // Funções para ações da tabela
+    function viewPaciente(id) {
+        fetch(`<?= base_url('pacientes') ?>/${id}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('viewPacienteContent').innerHTML = html;
+                new bootstrap.Modal(document.getElementById('viewPacienteModal')).show();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dados do paciente');
+            });
+    }
+
+    function editPaciente(id) {
+        window.location.href = `<?= base_url('pacientes') ?>/${id}/edit`;
+    }
+
+    function newAtendimento(id) {
+        window.location.href = `<?= base_url('atendimentos/create') ?>?paciente=${id}`;
+    }
+
+    function showAll() {
+        window.location.href = '<?= base_url('pacientes') ?>';
+    }
+
+    function showRecent() {
+        window.location.href = '<?= base_url('pacientes') ?>?filter=recent';
+    }
+</script>
+
+<?= $this->endSection() ?>
