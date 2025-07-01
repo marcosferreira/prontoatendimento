@@ -40,12 +40,17 @@ class Bairros extends BaseController
             'ano' => $this->bairroModel->where('YEAR(created_at)', date('Y'))->countAllResults()
         ];
 
+        $bairros = array_map(function($bairro) {
+            $bairro['total_pacientes'] = $this->bairroModel->getTotalPacientesByBairro($bairro['id_bairro']);
+            return $bairro;
+        }, $bairros);
+
         $data = [
             'title' => 'Bairros',
             'description' => 'Gerenciar Bairros',
             'bairros' => $bairros,
             'stats' => $stats,
-            'search' => $search
+            'search' => $search,
         ];
 
         return view('bairros/index', $data);

@@ -121,7 +121,7 @@ class Pacientes extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $id_bairro = $this->request->getPost('id_bairro');
+        $id_bairro = $this->request->getPost('id_bairro') ?? $this->request->getGet('bairro');
         $id_bairro = ($id_bairro && $id_bairro !== '') ? $id_bairro : null;
 
         $data = [
@@ -212,12 +212,20 @@ class Pacientes extends BaseController
             'cpf' => "required|exact_length[14]|is_unique[pacientes.cpf,id_paciente,{$id}]",
             'data_nascimento' => 'required|valid_date',
             'sexo' => 'required|in_list[M,F]',
-            'email' => 'permit_empty|valid_email',
+            'email' => 'permit_empty|valid_email|max_length[255]',
             'numero_sus' => 'permit_empty|max_length[15]',
             'telefone' => 'permit_empty|max_length[15]',
             'celular' => 'permit_empty|max_length[16]',
             'endereco' => 'permit_empty|max_length[500]',
+            'numero' => 'permit_empty|max_length[10]',
+            'complemento' => 'permit_empty|max_length[100]',
+            'cep' => 'permit_empty|max_length[9]',
+            'cidade' => 'permit_empty|max_length[100]',
+            'rg' => 'permit_empty|max_length[20]',
             'id_bairro' => 'permit_empty|is_natural_no_zero',
+            'tipo_sanguineo' => 'permit_empty|max_length[5]',
+            'nome_responsavel' => 'permit_empty|max_length[255]',
+            'alergias' => 'permit_empty|max_length[1000]',
             'observacoes' => 'permit_empty|max_length[1000]'
         ];
 
@@ -264,7 +272,7 @@ class Pacientes extends BaseController
             'complemento' => $this->request->getPost('complemento'),
             'cep' => $this->request->getPost('cep'),
             'cidade' => $this->request->getPost('cidade'),
-            'id_bairro' => $this->request->getPost('id_bairro') ?: null,
+            'id_bairro' => $this->request->getPost('id_bairro') ?? null,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
             'alergias' => $this->request->getPost('alergias'),
@@ -274,7 +282,11 @@ class Pacientes extends BaseController
         if ($this->pacienteModel->update($id, $data)) {
             return redirect()->to('pacientes')->with('success', 'Paciente atualizado com sucesso!');
         } else {
-            return redirect()->back()->withInput()->with('error', 'Erro ao atualizar paciente.');
+            // Capturar erros detalhados do modelo
+            $errors = $this->pacienteModel->errors();
+            $errorMessage = !empty($errors) ? implode(', ', $errors) : 'Erro desconhecido ao atualizar paciente.';
+            
+            return redirect()->back()->withInput()->with('error', 'Erro ao atualizar paciente: ' . $errorMessage);
         }
     }
 

@@ -54,7 +54,7 @@ class PacienteModel extends Model
     // Validation
     protected $validationRules = [
         'nome' => 'required|max_length[255]',
-        'cpf' => 'required|is_unique[pacientes.cpf]|max_length[14]',
+        'cpf' => 'required|max_length[14]',
         'data_nascimento' => 'required|valid_date',
         'sexo' => 'required|in_list[M,F]',
         'email' => 'permit_empty|valid_email|max_length[255]',
@@ -90,7 +90,7 @@ class PacienteModel extends Model
         ]
     ];
     
-    protected $skipValidation       = false;
+    protected $skipValidation       = true;
     protected $cleanValidationRules = true;
 
     // Callbacks
@@ -173,5 +173,25 @@ class PacienteModel extends Model
         }
 
         return $paciente;
+    }
+
+    /**
+     * Regras de validação específicas para inserção (incluindo is_unique para CPF)
+     */
+    public function getInsertValidationRules()
+    {
+        return array_merge($this->validationRules, [
+            'cpf' => 'required|is_unique[pacientes.cpf]|max_length[14]'
+        ]);
+    }
+
+    /**
+     * Regras de validação específicas para atualização (excluindo o próprio registro do is_unique)
+     */
+    public function getUpdateValidationRules($id)
+    {
+        return array_merge($this->validationRules, [
+            'cpf' => "required|is_unique[pacientes.cpf,id_paciente,{$id}]|max_length[14]"
+        ]);
     }
 }

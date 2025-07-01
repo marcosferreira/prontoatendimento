@@ -10,18 +10,6 @@
             <div class="main-container">
                 <!-- Header -->
                 <div class="header">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="<?= base_url('pacientes') ?>">
-                                    <i class="bi bi-person-badge"></i> Pacientes
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                Dados do Paciente
-                            </li>
-                        </ol>
-                    </nav>
                     <h1><i class="bi bi-person-circle"></i> <?= esc($paciente['nome']) ?></h1>
                     <p class="subtitle">Dados completos e histórico médico</p>
                 </div>
