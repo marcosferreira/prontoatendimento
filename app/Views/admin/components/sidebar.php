@@ -12,45 +12,45 @@
     <nav class="admin-sidebar-nav">
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Painel Principal</div>
-            <a href="<?php echo base_url('/admin'); ?>" class="admin-nav-item <?= (current_url() == site_url('admin')) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin'); ?>" class="admin-nav-item <?= (current_url() == site_url('admin')) ? 'active' : '' ?>" data-tooltip="Dashboard">
                 <i class="bi bi-speedometer2"></i>
-                Dashboard
+                <span>Dashboard</span>
             </a>
-            <a href="<?php echo base_url('/'); ?>" class="admin-nav-item" target="_blank">
+            <a href="<?php echo base_url('/'); ?>" class="admin-nav-item" target="_blank" data-tooltip="Ver Site">
                 <i class="bi bi-arrow-up-right-square"></i>
-                Ver Site
+                <span>Ver Site</span>
             </a>
         </div>
         
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Gerenciamento</div>
-            <a href="<?php echo base_url('/admin/users'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/users') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/users'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/users') !== false) ? 'active' : '' ?>" data-tooltip="Usuários">
                 <i class="bi bi-people"></i>
-                Usuários
+                <span>Usuários</span>
             </a>
-            <a href="<?php echo base_url('/admin/settings'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/settings') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/settings'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/settings') !== false) ? 'active' : '' ?>" data-tooltip="Configurações">
                 <i class="bi bi-gear"></i>
-                Configurações
+                <span>Configurações</span>
             </a>
         </div>
         
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Monitoramento</div>
-            <a href="<?php echo base_url('/admin/logs'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/logs') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/logs'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/logs') !== false) ? 'active' : '' ?>" data-tooltip="Logs do Sistema">
                 <i class="bi bi-file-text"></i>
-                Logs do Sistema
+                <span>Logs do Sistema</span>
             </a>
-            <a href="<?php echo base_url('/admin/reports'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/reports') !== false) ? 'active' : '' ?>">
+            <a href="<?php echo base_url('/admin/reports'); ?>" class="admin-nav-item <?= (strpos(current_url(), 'admin/reports') !== false) ? 'active' : '' ?>" data-tooltip="Relatórios">
                 <i class="bi bi-bar-chart"></i>
-                Relatórios
+                <span>Relatórios</span>
             </a>
         </div>
         
         <div class="admin-nav-section">
             <div class="admin-nav-section-title">Sistema</div>
-            <a href="#" class="admin-nav-item" onclick="confirmLogout()">
+            <a href="#" class="admin-nav-item" onclick="confirmLogout()" data-tooltip="Sair">
                 <i class="bi bi-box-arrow-right"></i>
-                Sair
+                <span>Sair</span>
             </a>
         </div>
     </nav>

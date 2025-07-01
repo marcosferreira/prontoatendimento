@@ -34,9 +34,57 @@
     
     <!-- Custom JavaScript -->
     <script>
-        // Mobile menu toggle
+        // Sidebar toggle functionality for all screen sizes
         document.querySelector('.mobile-menu-toggle')?.addEventListener('click', function() {
-            document.querySelector('.admin-sidebar').classList.toggle('mobile-open');
+            const sidebar = document.querySelector('.admin-sidebar');
+            const body = document.body;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior: toggle mobile-open class
+                sidebar.classList.toggle('mobile-open');
+            } else {
+                // Desktop behavior: toggle collapsed state
+                sidebar.classList.toggle('admin-sidebar-mini');
+                body.classList.toggle('admin-sidebar-collapsed');
+                
+                // Save collapsed state in localStorage
+                if (body.classList.contains('admin-sidebar-collapsed')) {
+                    localStorage.setItem('admin-sidebar-collapsed', 'true');
+                } else {
+                    localStorage.removeItem('admin-sidebar-collapsed');
+                }
+            }
+        });
+        
+        // Restore sidebar state on page load for desktop
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.innerWidth > 768) {
+                const isCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
+                if (isCollapsed) {
+                    document.querySelector('.admin-sidebar').classList.add('admin-sidebar-mini');
+                    document.body.classList.add('admin-sidebar-collapsed');
+                }
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.querySelector('.admin-sidebar');
+            const body = document.body;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile: remove desktop classes and ensure mobile behavior
+                sidebar.classList.remove('admin-sidebar-mini');
+                body.classList.remove('admin-sidebar-collapsed');
+            } else {
+                // Desktop: remove mobile classes and restore saved state
+                sidebar.classList.remove('mobile-open');
+                const isCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('admin-sidebar-mini');
+                    body.classList.add('admin-sidebar-collapsed');
+                }
+            }
         });
         
         // Close sidebar when clicking outside on mobile

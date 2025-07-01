@@ -29,9 +29,57 @@
     
     <!-- Custom JavaScript -->
     <script>
-        // Mobile menu toggle
+        // Sidebar toggle functionality for all screen sizes
         document.querySelector('.mobile-menu-toggle').addEventListener('click', function() {
-            document.querySelector('.sidebar').classList.toggle('mobile-open');
+            const sidebar = document.querySelector('.sidebar');
+            const body = document.body;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile behavior: toggle mobile-open class
+                sidebar.classList.toggle('mobile-open');
+            } else {
+                // Desktop behavior: toggle collapsed state
+                sidebar.classList.toggle('sidebar-mini');
+                body.classList.toggle('sidebar-collapsed');
+                
+                // Save collapsed state in localStorage
+                if (body.classList.contains('sidebar-collapsed')) {
+                    localStorage.setItem('sidebar-collapsed', 'true');
+                } else {
+                    localStorage.removeItem('sidebar-collapsed');
+                }
+            }
+        });
+        
+        // Restore sidebar state on page load for desktop
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.innerWidth > 768) {
+                const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                if (isCollapsed) {
+                    document.querySelector('.sidebar').classList.add('sidebar-mini');
+                    document.body.classList.add('sidebar-collapsed');
+                }
+            }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.querySelector('.sidebar');
+            const body = document.body;
+            
+            if (window.innerWidth <= 768) {
+                // Mobile: remove desktop classes and ensure mobile behavior
+                sidebar.classList.remove('sidebar-mini');
+                body.classList.remove('sidebar-collapsed');
+            } else {
+                // Desktop: remove mobile classes and restore saved state
+                sidebar.classList.remove('mobile-open');
+                const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                if (isCollapsed) {
+                    sidebar.classList.add('sidebar-mini');
+                    body.classList.add('sidebar-collapsed');
+                }
+            }
         });
         
         // Close sidebar when clicking outside on mobile

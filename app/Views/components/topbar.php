@@ -1,6 +1,6 @@
     <header class="topbar">
         <div class="topbar-left">
-            <button class="mobile-menu-toggle">
+            <button class="mobile-menu-toggle" title="Alternar Sidebar">
                 <i class="bi bi-list"></i>
             </button>
             <h1 class="topbar-title">Dashboard Principal</h1>

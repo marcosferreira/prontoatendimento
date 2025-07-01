@@ -1,6 +1,6 @@
 <header class="admin-topbar">
     <div class="admin-topbar-left">
-        <button class="mobile-menu-toggle">
+        <button class="mobile-menu-toggle" title="Alternar Sidebar">
             <i class="bi bi-list"></i>
         </button>
         <h1 class="admin-topbar-title"><?= $title ?? 'Administração' ?></h1>
