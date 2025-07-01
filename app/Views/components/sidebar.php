@@ -12,7 +12,7 @@
     <nav class="sidebar-nav">
         <div class="nav-section">
             <div class="nav-section-title">Principal</div>
-            <a href="<?php echo base_url('#'); ?>" class="nav-item <?= (current_url() == site_url('admin')) ? 'active' : '' ?>">
+            <a href="<?php echo base_url(''); ?>" class="nav-item <?= (current_url() == site_url('')) ? 'active' : '' ?>">
                 <i class="bi bi-speedometer2"></i>
                 Dashboard
             </a>
