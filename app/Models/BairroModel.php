@@ -96,7 +96,7 @@ class BairroModel extends Model
      */
     public function getBairrosWithPacientesCount()
     {
-        return $this->select('bairros.*, COUNT(pacientes.id_paciente) as total_pacientes')
+        return $this->select('bairros.*, COUNT(pam_pacientes.id_paciente) as total_pacientes')
                    ->join('pacientes', 'pacientes.id_bairro = bairros.id_bairro', 'left')
                    ->groupBy('bairros.id_bairro')
                    ->findAll();

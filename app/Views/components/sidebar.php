@@ -20,6 +20,10 @@
                 <i class="bi bi-person-badge"></i>
                 Pacientes
             </a>
+            <a href="<?php echo base_url('bairros'); ?>" class="nav-item">
+                <i class="bi bi-geo-alt"></i>
+                Bairros
+            </a>
             <a href="<?php echo base_url('pages/agendamentos/lista.html'); ?>" class="nav-item">
                 <i class="bi bi-calendar-check"></i>
                 Agendamentos

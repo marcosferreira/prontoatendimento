@@ -4,7 +4,6 @@
 <div class="app-container">
     <?= $this->include('components/sidebar') ?>
     
-    <div class="main-wrapper">
         <?= $this->include('components/topbar') ?>
         
         <main class="main-content">
@@ -240,13 +239,21 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <div class="mb-3">
-                                                    <label for="bairro_id" class="form-label">Bairro</label>
-                                                    <select class="form-select" id="bairro_id" name="bairro_id">
+                                                    <label for="id_bairro" class="form-label">Bairro</label>
+                                                    <select class="form-select" id="id_bairro" name="id_bairro">
                                                         <option value="">Selecione o bairro</option>
                                                         <?php if (isset($bairros) && !empty($bairros)): ?>
                                                             <?php foreach ($bairros as $bairro): ?>
-                                                                <option value="<?= $bairro['id'] ?>" <?= old('bairro_id') == $bairro['id'] ? 'selected' : '' ?>>
-                                                                    <?= esc($bairro['nome']) ?>
+                                                                <?php 
+                                                                $selected = '';
+                                                                if (old('id_bairro') == $bairro['id_bairro']) {
+                                                                    $selected = 'selected';
+                                                                } elseif (!old('id_bairro') && isset($bairro_selecionado) && $bairro_selecionado == $bairro['id_bairro']) {
+                                                                    $selected = 'selected';
+                                                                }
+                                                                ?>
+                                                                <option value="<?= $bairro['id_bairro'] ?>" <?= $selected ?>>
+                                                                    <?= esc($bairro['nome_bairro']) ?>
                                                                 </option>
                                                             <?php endforeach; ?>
                                                         <?php endif; ?>
@@ -362,7 +369,6 @@
                 </div>
             </div>
         </main>
-    </div>
 </div>
 
 <!-- JavaScript -->
@@ -389,7 +395,7 @@ $(document).ready(function() {
                     
                     // Buscar bairro no select
                     var bairroNome = data.bairro.toLowerCase();
-                    $('#bairro_id option').each(function() {
+                    $('#id_bairro option').each(function() {
                         if ($(this).text().toLowerCase().indexOf(bairroNome) !== -1) {
                             $(this).prop('selected', true);
                             return false;

@@ -10,33 +10,33 @@ class CreateExameTable extends Migration
     {
         $this->forge->addField([
             'id_exame' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'nome' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 255,
                 'null'       => false,
             ],
             'codigo' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 50,
                 'null'       => true,
             ],
             'tipo' => [
-                'type'       => 'ENUM',
+                'type'       => 'enum',
                 'constraint' => ['laboratorial', 'imagem', 'funcional', 'outros'],
                 'null'       => false,
                 'default'    => 'laboratorial',
             ],
             'descricao' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

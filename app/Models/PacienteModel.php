@@ -40,9 +40,7 @@ class PacienteModel extends Model
     protected bool $updateOnlyChanged = true;
 
     protected array $casts = [
-        'data_nascimento' => 'date',
-        'idade' => 'int',
-        'id_bairro' => 'int'
+        'idade' => 'int'
     ];
     protected array $castHandlers = [];
 

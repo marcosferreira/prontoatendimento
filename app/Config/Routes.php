@@ -28,6 +28,25 @@ $routes->group('pacientes', static function ($routes) {
     $routes->get('export', 'Pacientes::export');
 });
 
+// Rotas de Bairros
+$routes->group('bairros', static function ($routes) {
+    $routes->get('/', 'Bairros::index');
+    $routes->get('create', 'Bairros::create');
+    $routes->post('/', 'Bairros::store');
+    $routes->get('(:num)', 'Bairros::show/$1');
+    $routes->get('(:num)/edit', 'Bairros::edit/$1');
+    $routes->put('(:num)', 'Bairros::update/$1');
+    $routes->delete('(:num)', 'Bairros::delete/$1');
+    
+    // AJAX routes
+    $routes->get('search', 'Bairros::search');
+    $routes->get('(:num)/modal', 'Bairros::modal/$1');
+    $routes->post('validateNome', 'Bairros::validateNome');
+    
+    // Export
+    $routes->get('export', 'Bairros::export');
+});
+
 // Admin routes (protected by superadmin middleware)
 $routes->group('admin', static function ($routes) {
     $routes->get('/', 'Admin::index');

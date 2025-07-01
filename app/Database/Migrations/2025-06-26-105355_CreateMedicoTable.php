@@ -10,39 +10,39 @@ class CreateMedicoTable extends Migration
     {
         $this->forge->addField([
             'id_medico' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'nome' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 255,
                 'null'       => false,
             ],
             'crm' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 20,
                 'unique'     => true,
                 'null'       => false,
             ],
             'especialidade' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 100,
                 'null'       => true,
             ],
             'status' => [
-                'type'       => 'ENUM',
+                'type'       => 'enum',
                 'constraint' => ['Ativo', 'Inativo'],
                 'default'    => 'Ativo',
                 'null'       => false,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

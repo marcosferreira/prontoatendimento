@@ -10,72 +10,72 @@ class CreateAtendimentoTable extends Migration
     {
         $this->forge->addField([
             'id_atendimento' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'id_paciente' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'id_medico' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'data_atendimento' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => false,
             ],
             'classificacao_risco' => [
-                'type'       => 'ENUM',
+                'type'       => 'enum',
                 'constraint' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
                 'null'       => false,
             ],
             'consulta_enfermagem' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'hgt_glicemia' => [
-                'type'       => 'DECIMAL',
+                'type'       => 'decimal',
                 'constraint' => '5,2',
                 'null'       => true,
                 'comment'    => 'Valor da glicemia em mg/dL',
             ],
             'pressao_arterial' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 20,
                 'null'       => true,
                 'comment'    => 'Formato: 120x80 mmHg',
             ],
             'hipotese_diagnostico' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'observacao' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'encaminhamento' => [
-                'type'       => 'ENUM',
+                'type'       => 'enum',
                 'constraint' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
                 'null'       => true,
             ],
             'obito' => [
-                'type'    => 'BOOLEAN',
+                'type'    => 'boolean',
                 'default' => false,
                 'null'    => false,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

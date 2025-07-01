@@ -10,53 +10,53 @@ class CreatePacienteTable extends Migration
     {
         $this->forge->addField([
             'id_paciente' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'nome' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => '255',
                 'null'       => false,
             ],
             'sus' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => '15',
                 'null'       => true,
             ],
             'cpf' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => '14',
                 'unique'     => true,
                 'null'       => false,
             ],
             'endereco' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'id_bairro' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
             ],
             'data_nascimento' => [
-                'type' => 'DATE',
+                'type' => 'date',
                 'null' => false,
             ],
             'idade' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 3,
                 'unsigned'   => true,
                 'null'       => true,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

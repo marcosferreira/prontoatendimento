@@ -10,47 +10,47 @@ class CreateAtendimentoExameTable extends Migration
     {
         $this->forge->addField([
             'id_atendimento_exame' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'id_atendimento' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'id_exame' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'resultado' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'status' => [
-                'type'       => 'ENUM',
+                'type'       => 'enum',
                 'constraint' => ['Solicitado', 'Realizado', 'Cancelado'],
                 'default'    => 'Solicitado',
                 'null'       => false,
             ],
             'data_solicitacao' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => false,
             ],
             'data_realizacao' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
             'observacao' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

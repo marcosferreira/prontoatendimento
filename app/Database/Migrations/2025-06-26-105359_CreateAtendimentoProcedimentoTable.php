@@ -10,36 +10,36 @@ class CreateAtendimentoProcedimentoTable extends Migration
     {
         $this->forge->addField([
             'id_atendimento_procedimento' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'id_atendimento' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'id_procedimento' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
             ],
             'quantidade' => [
-                'type'       => 'INT',
+                'type'       => 'int',
                 'constraint' => 5,
                 'unsigned'   => true,
                 'default'    => 1,
                 'null'       => false,
             ],
             'observacao' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

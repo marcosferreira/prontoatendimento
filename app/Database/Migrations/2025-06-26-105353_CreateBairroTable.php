@@ -10,27 +10,27 @@ class CreateBairroTable extends Migration
     {
         $this->forge->addField([
             'id_bairro' => [
-                'type'           => 'INT',
+                'type'           => 'int',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
             'nome_bairro' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 100,
                 'null'       => false,
             ],
             'area' => [
-                'type'       => 'VARCHAR',
+                'type'       => 'varchar',
                 'constraint' => 100,
                 'null'       => true,
             ],
             'created_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
             'updated_at' => [
-                'type' => 'DATETIME',
+                'type' => 'datetime',
                 'null' => true,
             ],
         ]);

@@ -60,11 +60,15 @@ class Pacientes extends BaseController
     public function create()
     {
         $bairros = $this->bairroModel->orderBy('nome_bairro', 'ASC')->findAll();
+        
+        // Capturar bairro pré-selecionado da URL
+        $bairroSelecionado = $this->request->getGet('bairro');
 
         $data = [
             'title' => 'Novo Paciente',
             'description' => 'Cadastrar Novo Paciente',
-            'bairros' => $bairros
+            'bairros' => $bairros,
+            'bairro_selecionado' => $bairroSelecionado
         ];
 
         return view('pacientes/create', $data);
@@ -117,6 +121,9 @@ class Pacientes extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $id_bairro = $this->request->getPost('id_bairro');
+        $id_bairro = ($id_bairro && $id_bairro !== '') ? $id_bairro : null;
+
         $data = [
             'nome' => $this->request->getPost('nome'),
             'cpf' => $this->request->getPost('cpf'),
@@ -132,7 +139,7 @@ class Pacientes extends BaseController
             'complemento' => $this->request->getPost('complemento'),
             'cep' => $this->request->getPost('cep'),
             'cidade' => $this->request->getPost('cidade'),
-            'id_bairro' => $this->request->getPost('id_bairro') ?: null,
+            'id_bairro' => $id_bairro,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
             'alergias' => $this->request->getPost('alergias'),

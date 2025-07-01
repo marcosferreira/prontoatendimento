@@ -11,84 +11,84 @@ class AddCamposPacientes extends Migration
         // Adicionar novos campos à tabela pacientes
         $fields = [
             'rg' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '20',
                 'null' => true,
                 'after' => 'cpf'
             ],
             'sexo' => [
-                'type' => 'ENUM',
+                'type' => 'enum',
                 'constraint' => ['M', 'F'],
                 'null' => false,
                 'after' => 'data_nascimento'
             ],
             'telefone' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '15',
                 'null' => true,
                 'after' => 'sexo'
             ],
             'celular' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '16',
                 'null' => true,
                 'after' => 'telefone'
             ],
             'email' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '255',
                 'null' => true,
                 'after' => 'celular'
             ],
             'numero_sus' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '15',
                 'null' => true,
                 'after' => 'email'
             ],
             'numero' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '10',
                 'null' => true,
                 'after' => 'endereco'
             ],
             'complemento' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '100',
                 'null' => true,
                 'after' => 'numero'
             ],
             'cep' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '9',
                 'null' => true,
                 'after' => 'complemento'
             ],
             'cidade' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '100',
                 'null' => true,
                 'after' => 'cep'
             ],
             'tipo_sanguineo' => [
-                'type' => 'ENUM',
+                'type' => 'enum',
                 'constraint' => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
                 'null' => true,
                 'after' => 'idade'
             ],
             'nome_responsavel' => [
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '255',
                 'null' => true,
                 'after' => 'tipo_sanguineo'
             ],
             'alergias' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
                 'after' => 'nome_responsavel'
             ],
             'observacoes' => [
-                'type' => 'TEXT',
+                'type' => 'text',
                 'null' => true,
                 'after' => 'alergias'
             ]
@@ -101,7 +101,7 @@ class AddCamposPacientes extends Migration
         $this->forge->modifyColumn('pacientes', [
             'sus' => [
                 'name' => 'sus_old',
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '15',
                 'null' => true
             ]
@@ -132,7 +132,7 @@ class AddCamposPacientes extends Migration
         $this->forge->modifyColumn('pacientes', [
             'sus_old' => [
                 'name' => 'sus',
-                'type' => 'VARCHAR',
+                'type' => 'varchar',
                 'constraint' => '15',
                 'null' => true
             ]
