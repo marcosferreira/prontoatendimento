@@ -1,8 +1,6 @@
 <?= $this->extend('layout/base') ?>
 
 <?= $this->section('content') ?>
-<!-- CSS específico para bairros -->
-<link rel="stylesheet" href="<?= base_url('assets/css/bairros.css') ?>">
 
 <div class="app-container">
     <?= $this->include('components/sidebar') ?>

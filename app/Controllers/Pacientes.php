@@ -343,8 +343,18 @@ class Pacientes extends BaseController
             return $this->response->setStatusCode(404, 'Paciente não encontrado');
         }
 
+        // Buscar atendimentos recentes do paciente (últimos 5)
+        $atendimentoModel = new \App\Models\AtendimentoModel();
+        $atendimentos_recentes = $atendimentoModel->select('atendimentos.*, medicos.nome as nome_medico')
+                                                 ->join('medicos', 'medicos.id_medico = atendimentos.id_medico', 'left')
+                                                 ->where('atendimentos.id_paciente', $id)
+                                                 ->orderBy('atendimentos.data_atendimento', 'DESC')
+                                                 ->limit(5)
+                                                 ->findAll();
+
         $data = [
-            'paciente' => $paciente
+            'paciente' => $paciente,
+            'atendimentos_recentes' => $atendimentos_recentes
         ];
 
         return view('pacientes/modal_view', $data);

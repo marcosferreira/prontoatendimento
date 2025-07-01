@@ -7,7 +7,7 @@ class Home extends BaseController
     public function index(): string
     {
         $data = [
-            'title' => 'Home',
+            'title' => 'Início',
             'description' => 'Bem vindo ao SisPAM',
             'keywords' => 'home, bem vindo, application, SisPAM'
         ];

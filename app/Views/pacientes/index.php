@@ -329,7 +329,7 @@
 
     // Funções para ações da tabela
     function viewPaciente(id) {
-        fetch(`<?= base_url('pacientes') ?>/${id}`)
+        fetch(`<?= base_url('pacientes/modal') ?>/${id}`)
             .then(response => response.text())
             .then(html => {
                 document.getElementById('viewPacienteContent').innerHTML = html;

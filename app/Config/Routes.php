@@ -14,8 +14,12 @@ $routes->group('pacientes', static function ($routes) {
     $routes->get('create', 'Pacientes::create');
     $routes->post('store', 'Pacientes::store');
     $routes->get('show/(:num)', 'Pacientes::show/$1');
+    $routes->get('(:num)', 'Pacientes::show/$1'); // Rota alternativa para show
+    $routes->post('(:num)', 'Pacientes::update/$1'); // Rota para update via POST
     $routes->get('edit/(:num)', 'Pacientes::edit/$1');
+    $routes->get('(:num)/edit', 'Pacientes::edit/$1'); // Rota alternativa para edit
     $routes->post('update/(:num)', 'Pacientes::update/$1');
+    $routes->post('(:num)/update', 'Pacientes::update/$1'); // Rota alternativa para update
     $routes->get('delete/(:num)', 'Pacientes::delete/$1');
     
     // AJAX routes

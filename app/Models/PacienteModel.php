@@ -139,8 +139,39 @@ class PacienteModel extends Model
      */
     public function getPacientesWithBairro()
     {
-        return $this->select('pacientes.*, bairros.nome_bairro, bairros.area')
-                   ->join('bairros', 'bairros.id_bairro = pacientes.id_bairro', 'left')
-                   ->findAll();
+        $pacientes = $this->select('pacientes.*, bairros.nome_bairro, bairros.area')
+                         ->join('bairros', 'bairros.id_bairro = pacientes.id_bairro', 'left')
+                         ->findAll();
+
+        // Calcular idade para cada paciente se necessário
+        foreach ($pacientes as &$paciente) {
+            if (isset($paciente['data_nascimento'])) {
+                $dataNascimento = new \DateTime($paciente['data_nascimento']);
+                $hoje = new \DateTime();
+                $paciente['idade'] = $hoje->diff($dataNascimento)->y;
+            }
+        }
+
+        return $pacientes;
+    }
+
+    /**
+     * Busca um paciente específico com seu bairro
+     */
+    public function getPacienteWithBairro($id)
+    {
+        $paciente = $this->select('pacientes.*, bairros.nome_bairro, bairros.area')
+                        ->join('bairros', 'bairros.id_bairro = pacientes.id_bairro', 'left')
+                        ->where('pacientes.id_paciente', $id)
+                        ->first();
+
+        // Calcular idade se não estiver definida ou se a data de nascimento existir
+        if ($paciente && isset($paciente['data_nascimento'])) {
+            $dataNascimento = new \DateTime($paciente['data_nascimento']);
+            $hoje = new \DateTime();
+            $paciente['idade'] = $hoje->diff($dataNascimento)->y;
+        }
+
+        return $paciente;
     }
 }

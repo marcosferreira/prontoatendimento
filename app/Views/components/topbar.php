@@ -7,7 +7,7 @@
             <nav class="breadcrumb">
                 <span>Sistema</span>
                 <i class="bi bi-chevron-right"></i>
-                <span>Dashboard</span>
+                <span><?= $title ?? 'Dashboard' ?></span>
             </nav>
         </div>
 
