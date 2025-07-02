@@ -36,7 +36,7 @@ class LogradouroModel extends Model
     // Validation
     protected $validationRules      = [
         'nome_logradouro' => 'required|max_length[150]',
-        'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Rodovia,Via,Beco,Largo]',
+        'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Sítio,Rodovia,Via,Beco,Largo]',
         'cep'             => 'permit_empty|max_length[10]',
         'id_bairro'       => 'required|is_natural_no_zero',
         'observacoes'     => 'permit_empty'

@@ -132,7 +132,51 @@ Esta documentação descreve a implementação da funcionalidade de **Gerenciame
 - Link: `/logradouros`
 - Ativação automática quando URL contém "logradouros"
 
-### 7. Dados de Teste (Seeder)
+### 7. Dados de Teste Atualizados (Seeders)
+
+#### Arquivo: `app/Database/Seeds/LogradouroSeeder.php`
+
+**Implementação completa dos dados:**
+- **Logradouros Urbanos** (109 logradouros):
+  - **Centro** (18 logradouros): Avenidas Major Augusto Bezerra e Manoel Pedro, ruas históricas
+  - **Glória** (5 logradouros): Ruas residenciais do bairro
+  - **Governador José Maranhão** (8 logradouros): Ruas com nomes de personalidades locais
+  - **Jardim Primavera** (13 logradouros): Inclui Avenida Major Augusto Bezerra
+  - **Nova Cidade** (12 logradouros): Logradouros de expansão urbana
+  - **Nova Conquista** (21 logradouros): Maior concentração, inclui Praça Nivaldo Cândido
+  - **São Pedro** (12 logradouros): Ruas tradicionais do bairro
+  - **Tapuio** (4 logradouros): Área residencial menor
+  - **Terra Prometida** (11 logradouros): Inclui Avenida Major Augusto Bezerra
+
+- **Logradouros Rurais** (61 estradas):
+  - **Comunidade Cruz da Menina** (1 estrada)
+  - **Área Rural 01** (10 sítios): Balanço, Capivara, Cobra Maga, Estrela, Itabaiana, Miguel, Riacho de Areia, São Luiz, Simão
+  - **Área Rural 02** (11 sítios): Bogi, Caiçara, Cozinha, Marias Pretas, Panelas, Pinhões, Raposa, Salgado de Manoel Moreira, Várzea Grande, Zé Paz de Baixo, Zé Paz de Cima
+  - **Área Rural 03** (11 sítios): Barbatão, Caboclo de Palhares, Chã de Palhares, Glória, Massaranduba, Mata, Tanque do Veado, Umari, Vaca Morta, Zé de Fogo, Zé Paz da Serra
+  - **Área Rural 04** (12 sítios): Brejinho, Caco, Canafistula, Cruz, Lagoa do Braz, Pedra Lisa, Pimenta, Pitomba, Raimundo, Seró, Tapuio, Umarizinho
+  - **Área Rural 05** (12 sítios): Barroção, Cafundó, Caiana, Cajazeiras, Lajedo Preto, Marcação, Mulungu, Pedra Lavrada, Queimadas, Salgadinho, Seixos, Tanques
+  - **Área Rural 06** (10 sítios): Boa Vista, Carnaúba, Carnaúbeira de Cima, Estreito, Lagoa da Serra, Mela Bode, Oiticica, Olho D'Água do Gregório, Serra do Sítio, Volta
+
+**Características dos dados:**
+- CEP padrão unificado: 58228-000 para todos os logradouros
+- Tipos variados: Rua, Avenida, Praça, Estrada
+- Nomes autênticos baseados em personalidades e referências locais
+- Observações específicas para logradouros rurais
+- Relacionamento correto com bairros através de chaves estrangeiras
+- Cobertura completa: 100% dos bairros/sítios do BairroSeeder têm logradouros
+
+**Total de registros**: 170 logradouros cadastrados para 75 bairros/localidades
+
+**Distribuição por tipo:**
+- Ruas: 95 logradouros (áreas urbanas)
+- Avenidas: 3 logradouros (principais vias urbanas)
+- Praças: 1 logradouro (espaço público)
+- Estradas: 61 logradouros (acessos rurais)
+
+**Cobertura territorial:**
+- 9 bairros urbanos com 109 logradouros
+- 1 comunidade rural com 1 estrada
+- 65 sítios rurais com 60 estradas de acesso
 
 #### Arquivo: `app/Database/Seeds/BairroSeeder.php`
 
@@ -146,6 +190,8 @@ Esta documentação descreve a implementação da funcionalidade de **Gerenciame
   - Organizados por áreas rurais (Área 01 a 06)
   - Inclui sítios tradicionais da região
   - Nomes autênticos das localidades rurais
+  - 1 comunidade (Cruz da Menina)
+  - 55 sítios distribuídos em 6 áreas rurais
 
 **Total**: 65 bairros/localidades cadastradas
 

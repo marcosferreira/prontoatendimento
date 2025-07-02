@@ -22,7 +22,7 @@ class CreateLogradouroTable extends Migration
             ],
             'tipo_logradouro' => [
                 'type'       => 'enum',
-                'constraint' => ['Rua', 'Avenida', 'Travessa', 'Alameda', 'Praça', 'Estrada', 'Rodovia', 'Via', 'Beco', 'Largo'],
+                'constraint' => ['Rua', 'Avenida', 'Travessa', 'Alameda', 'Praça', 'Estrada', 'Sítio', 'Rodovia', 'Via', 'Beco', 'Largo'],
                 'default'    => 'Rua',
                 'null'       => false,
             ],
