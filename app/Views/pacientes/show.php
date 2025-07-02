@@ -16,12 +16,12 @@
 
                 <!-- Action Bar -->
                 <div class="action-bar">
-                    <div class="action-left">
+                    <div class="action-left m-4">
                         <a href="<?= base_url('pacientes') ?>" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left"></i> Voltar
                         </a>
                     </div>
-                    <div class="action-right">
+                    <div class="action-right m-4">
                         <a href="<?= base_url('atendimentos/create?paciente=' . $paciente['id_paciente']) ?>" 
                            class="btn btn-success me-2">
                             <i class="bi bi-plus-circle"></i> Novo Atendimento

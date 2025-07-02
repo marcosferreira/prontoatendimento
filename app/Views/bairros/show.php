@@ -32,12 +32,12 @@
 
             <!-- Action Bar -->
             <div class="action-bar">
-                <div class="action-left">
+                <div class="action-left m-4">
                     <a href="<?= base_url('bairros') ?>" class="btn btn-secondary">
                         <i class="bi bi-arrow-left"></i> Voltar
                     </a>
                 </div>
-                <div class="action-right">
+                <div class="action-right m-4">
                     <a href="<?= base_url('bairros/' . $bairro['id_bairro'] . '/edit') ?>" class="btn btn-warning">
                         <i class="bi bi-pencil"></i> Editar
                     </a>
