@@ -24,6 +24,10 @@
                 <i class="bi bi-geo-alt"></i>
                 <span>Bairros</span>
             </a>
+            <a href="<?php echo base_url('logradouros'); ?>" class="nav-item <?= (strpos(current_url(), 'logradouros') !== false) ? 'active' : '' ?>" data-tooltip="Logradouros">
+                <i class="bi bi-signpost"></i>
+                <span>Logradouros</span>
+            </a>
             <a href="<?php echo base_url('pages/agendamentos/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'agendamentos') !== false) ? 'active' : '' ?>" data-tooltip="Agendamentos">
                 <i class="bi bi-calendar-check"></i>
                 <span>Agendamentos</span>

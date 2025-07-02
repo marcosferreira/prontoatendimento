@@ -52,6 +52,27 @@ $routes->group('bairros', static function ($routes) {
     $routes->get('export', 'Bairros::export');
 });
 
+// Rotas de Logradouros
+$routes->group('logradouros', static function ($routes) {
+    $routes->get('/', 'Logradouros::index');
+    $routes->get('create', 'Logradouros::create');
+    $routes->post('/', 'Logradouros::store');
+    $routes->get('(:num)', 'Logradouros::show/$1');
+    $routes->get('(:num)/edit', 'Logradouros::edit/$1');
+    $routes->put('(:num)', 'Logradouros::update/$1');
+    $routes->post('(:num)/update', 'Logradouros::update/$1');
+    $routes->delete('(:num)', 'Logradouros::delete/$1');
+    $routes->get('delete/(:num)', 'Logradouros::delete/$1');
+    
+    // API routes
+    $routes->get('api/bairro/(:num)', 'Logradouros::getByBairro/$1');
+    $routes->get('api/cep/(:segment)', 'Logradouros::getByCep/$1');
+    $routes->get('api/search', 'Logradouros::search');
+    
+    // Export
+    $routes->get('export', 'Logradouros::export');
+});
+
 // Admin routes (protected by superadmin middleware)
 $routes->group('admin', static function ($routes) {
     $routes->get('/', 'Admin::index');

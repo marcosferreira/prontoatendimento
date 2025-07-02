@@ -109,4 +109,45 @@ class BairroModel extends Model
                     ->where('bairros.id_bairro', $idBairro)
                     ->first()['total_pacientes'] ?? 0;
     }
+
+    /**
+     * Busca logradouros de um bairro
+     */
+    public function getLogradouros($idBairro)
+    {
+        $logradouroModel = new \App\Models\LogradouroModel();
+        return $logradouroModel->getLogradourosByBairro($idBairro);
+    }
+
+    /**
+     * Conta logradouros de um bairro
+     */
+    public function getTotalLogradourosByBairro($idBairro)
+    {
+        $logradouroModel = new \App\Models\LogradouroModel();
+        return $logradouroModel->countLogradourosByBairro($idBairro);
+    }
+
+    /**
+     * Lista bairros com contagem de logradouros
+     */
+    public function getBairrosWithLogradourosCount()
+    {
+        return $this->select('bairros.*, COUNT(logradouros.id_logradouro) as total_logradouros')
+                   ->join('logradouros', 'logradouros.id_bairro = bairros.id_bairro', 'left')
+                   ->groupBy('bairros.id_bairro')
+                   ->orderBy('bairros.nome_bairro')
+                   ->findAll();
+    }
+
+    /**
+     * Verifica se o bairro pode ser excluído (não tem logradouros vinculados)
+     */
+    public function canDelete($idBairro)
+    {
+        $logradourosVinculados = $this->getTotalLogradourosByBairro($idBairro);
+        $pacientesVinculados = $this->getTotalPacientesByBairro($idBairro);
+        
+        return $logradourosVinculados === 0 && $pacientesVinculados === 0;
+    }
 }
