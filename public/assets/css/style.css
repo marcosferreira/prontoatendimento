@@ -4,3 +4,7 @@
 /* Import Bairros specific styles */
 @import url('bairros.css');
 
+/* Import Logradouros specific styles */
+@import url('logradouros.css');
+
+
