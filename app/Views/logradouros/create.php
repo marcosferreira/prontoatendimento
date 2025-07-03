@@ -148,7 +148,7 @@
                                                     <option value="">Selecione o bairro...</option>
                                                     <?php foreach ($bairros as $bairro): ?>
                                                         <option value="<?= $bairro['id_bairro'] ?>" 
-                                                                <?= old('id_bairro') == $bairro['id_bairro'] ? 'selected' : '' ?>
+                                                                <?= (old('id_bairro', $bairro_selecionado ?? '') == $bairro['id_bairro']) ? 'selected' : '' ?>
                                                                 data-area="<?= esc($bairro['area']) ?>">
                                                             <?= esc($bairro['nome_bairro']) ?>
                                                             <?php if ($bairro['area']): ?>

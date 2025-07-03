@@ -85,12 +85,14 @@ class Logradouros extends BaseController
     {
         $bairros = $this->bairroModel->orderBy('nome_bairro')->findAll();
         $tipos = $this->logradouroModel->getTiposLogradouro();
+        $bairroSelecionado = $this->request->getGet('bairro'); // Bairro pré-selecionado
 
         $data = [
             'title' => 'Novo Logradouro',
             'description' => 'Cadastrar Novo Logradouro',
             'bairros' => $bairros,
-            'tipos' => $tipos
+            'tipos' => $tipos,
+            'bairro_selecionado' => $bairroSelecionado
         ];
 
         return view('logradouros/create', $data);

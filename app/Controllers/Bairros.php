@@ -121,11 +121,15 @@ class Bairros extends BaseController
         $pacienteModel = new \App\Models\PacienteModel();
         $pacientes = $pacienteModel->getPacientesByBairro($id);
 
+        // Buscar logradouros do bairro
+        $logradouros = $this->bairroModel->getLogradouros($id);
+
         $data = [
             'title' => 'Detalhes do Bairro',
             'description' => 'Visualizar Bairro',
             'bairro' => $bairro,
-            'pacientes' => $pacientes
+            'pacientes' => $pacientes,
+            'logradouros' => $logradouros
         ];
 
         return view('bairros/show', $data);

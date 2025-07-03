@@ -74,6 +74,10 @@
                                 <span class="badge bg-info"><?= count($pacientes) ?> pacientes</span>
                             </div>
                             <div class="info-item">
+                                <strong>Total de Logradouros:</strong>
+                                <span class="badge bg-success"><?= count($logradouros) ?> logradouros</span>
+                            </div>
+                            <div class="info-item">
                                 <strong>Cadastrado em:</strong>
                                 <span><?= date('d/m/Y \à\s H:i', strtotime($bairro['created_at'])) ?></span>
                             </div>
@@ -103,6 +107,16 @@
                                     <p>Pacientes Cadastrados</p>
                                 </div>
                             </div>
+
+                            <div class="stat-item">
+                                <div class="stat-icon bg-success">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4><?= count($logradouros) ?></h4>
+                                    <p>Logradouros</p>
+                                </div>
+                            </div>
                             
                             <?php if (!empty($pacientes)): ?>
                                 <?php 
@@ -124,6 +138,86 @@
                 </div>
 
                 <div class="col-lg-8">
+                    <!-- Logradouros do Bairro -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-geo-alt"></i> Logradouros do Bairro
+                            </h5>
+                            <?php if (!empty($logradouros)): ?>
+                                <a href="<?= base_url('logradouros?bairro=' . $bairro['id_bairro']) ?>" class="btn btn-sm btn-outline-success">
+                                    Ver Todos
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-body">
+                            <?php if (!empty($logradouros)): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo</th>
+                                                <th>Nome do Logradouro</th>
+                                                <th>CEP</th>
+                                                <th>Cadastrado em</th>
+                                                <th width="100">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach (array_slice($logradouros, 0, 10) as $logradouro): ?>
+                                                <tr>
+                                                    <td>
+                                                        <span class="badge bg-primary"><?= esc($logradouro['tipo_logradouro']) ?></span>
+                                                    </td>
+                                                    <td>
+                                                        <strong><?= esc($logradouro['nome_logradouro']) ?></strong>
+                                                    </td>
+                                                    <td>
+                                                        <?php if (!empty($logradouro['cep'])): ?>
+                                                            <code><?= esc($logradouro['cep']) ?></code>
+                                                        <?php else: ?>
+                                                            <span class="text-muted">-</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td>
+                                                        <small class="text-muted">
+                                                            <?= date('d/m/Y', strtotime($logradouro['created_at'])) ?>
+                                                        </small>
+                                                    </td>
+                                                    <td>
+                                                        <a href="<?= base_url('logradouros/' . $logradouro['id_logradouro']) ?>" 
+                                                           class="btn btn-sm btn-outline-info"
+                                                           title="Ver detalhes">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                    <?php if (count($logradouros) > 10): ?>
+                                        <div class="text-center mt-3">
+                                            <p class="text-muted">
+                                                Mostrando 10 de <?= count($logradouros) ?> logradouros.
+                                                <a href="<?= base_url('logradouros?bairro=' . $bairro['id_bairro']) ?>">Ver todos</a>
+                                            </p>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="empty-state">
+                                    <i class="bi bi-geo-alt text-muted" style="font-size: 3rem;"></i>
+                                    <h5 class="text-muted mt-2">Nenhum logradouro cadastrado</h5>
+                                    <p class="text-muted">Este bairro ainda não possui logradouros cadastrados.</p>
+                                    <a href="<?= base_url('logradouros/create?bairro=' . $bairro['id_bairro']) ?>" class="btn btn-success">
+                                        <i class="bi bi-plus-circle"></i> Cadastrar Primeiro Logradouro
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                     <!-- Pacientes do Bairro -->
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
@@ -218,11 +312,19 @@
             <div class="modal-body">
                 <p>Tem certeza que deseja excluir o bairro <strong><?= esc($bairro['nome_bairro']) ?></strong>?</p>
                 
-                <?php if (!empty($pacientes)): ?>
+                <?php if (!empty($pacientes) || !empty($logradouros)): ?>
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle"></i>
-                        <strong>Atenção:</strong> Este bairro possui <?= count($pacientes) ?> paciente(s) cadastrado(s). 
-                        Não será possível excluí-lo até que todos os pacientes sejam transferidos para outro bairro ou removidos.
+                        <strong>Atenção:</strong> Este bairro possui:
+                        <ul class="mb-0 mt-1">
+                            <?php if (!empty($pacientes)): ?>
+                                <li><?= count($pacientes) ?> paciente(s) cadastrado(s)</li>
+                            <?php endif; ?>
+                            <?php if (!empty($logradouros)): ?>
+                                <li><?= count($logradouros) ?> logradouro(s) cadastrado(s)</li>
+                            <?php endif; ?>
+                        </ul>
+                        <small>Não será possível excluí-lo até que todos os registros sejam transferidos ou removidos.</small>
                     </div>
                 <?php else: ?>
                     <div class="alert alert-warning">
@@ -233,7 +335,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <?php if (empty($pacientes)): ?>
+                <?php if (empty($pacientes) && empty($logradouros)): ?>
                     <form action="<?= base_url('bairros/' . $bairro['id_bairro']) ?>" method="POST" class="d-inline">
                         <?= csrf_field() ?>
                         <input type="hidden" name="_method" value="DELETE">
