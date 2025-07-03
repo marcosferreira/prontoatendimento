@@ -27,6 +27,7 @@ $routes->group('pacientes', static function ($routes) {
     $routes->get('search', 'Pacientes::search');
     $routes->get('modal/(:num)', 'Pacientes::modal/$1');
     $routes->post('validate-cpf', 'Pacientes::validateCpf');
+    $routes->get('logradouros-por-bairro', 'Pacientes::getLogradourosByBairro');
     
     // Print and export
     $routes->get('print/(:num)', 'Pacientes::print/$1');

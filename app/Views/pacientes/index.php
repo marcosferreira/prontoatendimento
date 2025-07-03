@@ -86,6 +86,7 @@
                                     <th scope="col">CPF</th>
                                     <th scope="col">SUS</th>
                                     <th scope="col">Idade</th>
+                                    <th scope="col">Logradouro</th>
                                     <th scope="col">Bairro</th>
                                     <th scope="col">Cadastro</th>
                                     <th scope="col">Ações</th>
@@ -111,6 +112,7 @@
                                             <td><?= esc($paciente['cpf']) ?></td>
                                             <td><?= esc($paciente['sus'] ?? '-') ?></td>
                                             <td><?= esc($paciente['idade'] ?? '-') ?> anos</td>
+                                            <td><?= esc($paciente['nome_logradouro'] ?? '-') ?></td>
                                             <td><?= esc($paciente['nome_bairro'] ?? '-') ?></td>
                                             <td><?= date('d/m/Y', strtotime($paciente['created_at'])) ?></td>
                                             <td>

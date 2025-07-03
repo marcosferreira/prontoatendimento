@@ -35,7 +35,7 @@ class CreatePacienteTable extends Migration
                 'type' => 'text',
                 'null' => true,
             ],
-            'id_bairro' => [
+            'id_logradouro' => [
                 'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -62,7 +62,7 @@ class CreatePacienteTable extends Migration
         ]);
 
         $this->forge->addKey('id_paciente', true); // Primary key
-        $this->forge->addForeignKey('id_bairro', 'bairros', 'id_bairro', 'SET NULL', 'CASCADE');
+        $this->forge->addForeignKey('id_logradouro', 'logradouros', 'id_logradouro', 'SET NULL', 'CASCADE');
         $this->forge->createTable('pacientes');
     }
 

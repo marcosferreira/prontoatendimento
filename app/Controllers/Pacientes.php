@@ -4,17 +4,20 @@ namespace App\Controllers;
 
 use App\Models\PacienteModel;
 use App\Models\BairroModel;
+use App\Models\LogradouroModel;
 use CodeIgniter\Controller;
 
 class Pacientes extends BaseController
 {
     protected $pacienteModel;
     protected $bairroModel;
+    protected $logradouroModel;
 
     public function __construct()
     {
         $this->pacienteModel = new PacienteModel();
         $this->bairroModel = new BairroModel();
+        $this->logradouroModel = new LogradouroModel();
     }
 
     /**
@@ -27,7 +30,7 @@ class Pacientes extends BaseController
         if ($search) {
             $pacientes = $this->pacienteModel->buscarPacientes($search);
         } else {
-            $pacientes = $this->pacienteModel->getPacientesWithBairro();
+            $pacientes = $this->pacienteModel->getPacientesWithLogradouro();
         }
 
         // Estatísticas
@@ -41,6 +44,11 @@ class Pacientes extends BaseController
         ];
 
         $bairros = $this->bairroModel->findAll();
+        $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro')
+                                            ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                            ->orderBy('bairros.nome_bairro', 'ASC')
+                                            ->orderBy('logradouros.nome_logradouro', 'ASC')
+                                            ->findAll();
 
         $data = [
             'title' => 'Pacientes',
@@ -48,6 +56,7 @@ class Pacientes extends BaseController
             'pacientes' => $pacientes,
             'stats' => $stats,
             'bairros' => $bairros,
+            'logradouros' => $logradouros,
             'search' => $search
         ];
 
@@ -60,15 +69,23 @@ class Pacientes extends BaseController
     public function create()
     {
         $bairros = $this->bairroModel->orderBy('nome_bairro', 'ASC')->findAll();
+        $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro')
+                                            ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                            ->orderBy('bairros.nome_bairro', 'ASC')
+                                            ->orderBy('logradouros.nome_logradouro', 'ASC')
+                                            ->findAll();
         
         // Capturar bairro pré-selecionado da URL
         $bairroSelecionado = $this->request->getGet('bairro');
+        $logradouroSelecionado = $this->request->getGet('logradouro');
 
         $data = [
             'title' => 'Novo Paciente',
             'description' => 'Cadastrar Novo Paciente',
             'bairros' => $bairros,
-            'bairro_selecionado' => $bairroSelecionado
+            'logradouros' => $logradouros,
+            'bairro_selecionado' => $bairroSelecionado,
+            'logradouro_selecionado' => $logradouroSelecionado
         ];
 
         return view('pacientes/create', $data);
@@ -89,7 +106,7 @@ class Pacientes extends BaseController
             'telefone' => 'permit_empty|max_length[15]',
             'celular' => 'permit_empty|max_length[16]',
             'endereco' => 'permit_empty|max_length[500]',
-            'id_bairro' => 'permit_empty|is_natural_no_zero',
+            'id_logradouro' => 'permit_empty|is_natural_no_zero',
             'observacoes' => 'permit_empty|max_length[1000]'
         ];
 
@@ -124,6 +141,9 @@ class Pacientes extends BaseController
         $id_bairro = $this->request->getPost('id_bairro') ?? $this->request->getGet('bairro');
         $id_bairro = ($id_bairro && $id_bairro !== '') ? $id_bairro : null;
 
+        $id_logradouro = $this->request->getPost('id_logradouro') ?? $this->request->getGet('logradouro');
+        $id_logradouro = ($id_logradouro && $id_logradouro !== '') ? $id_logradouro : null;
+
         $data = [
             'nome' => $this->request->getPost('nome'),
             'cpf' => $this->request->getPost('cpf'),
@@ -139,7 +159,7 @@ class Pacientes extends BaseController
             'complemento' => $this->request->getPost('complemento'),
             'cep' => $this->request->getPost('cep'),
             'cidade' => $this->request->getPost('cidade'),
-            'id_bairro' => $id_bairro,
+            'id_logradouro' => $id_logradouro,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
             'alergias' => $this->request->getPost('alergias'),
@@ -158,7 +178,7 @@ class Pacientes extends BaseController
      */
     public function show($id)
     {
-        $paciente = $this->pacienteModel->getPacienteWithBairro($id);
+        $paciente = $this->pacienteModel->getPacienteWithLogradouro($id);
 
         if (!$paciente) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Paciente não encontrado');
@@ -185,12 +205,18 @@ class Pacientes extends BaseController
         }
 
         $bairros = $this->bairroModel->orderBy('nome_bairro', 'ASC')->findAll();
+        $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro')
+                                            ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                            ->orderBy('bairros.nome_bairro', 'ASC')
+                                            ->orderBy('logradouros.nome_logradouro', 'ASC')
+                                            ->findAll();
 
         $data = [
             'title' => 'Editar Paciente',
             'description' => 'Editar Dados do Paciente',
             'paciente' => $paciente,
-            'bairros' => $bairros
+            'bairros' => $bairros,
+            'logradouros' => $logradouros
         ];
 
         return view('pacientes/edit', $data);
@@ -222,7 +248,7 @@ class Pacientes extends BaseController
             'cep' => 'permit_empty|max_length[9]',
             'cidade' => 'permit_empty|max_length[100]',
             'rg' => 'permit_empty|max_length[20]',
-            'id_bairro' => 'permit_empty|is_natural_no_zero',
+            'id_logradouro' => 'permit_empty|is_natural_no_zero',
             'tipo_sanguineo' => 'permit_empty|max_length[5]',
             'nome_responsavel' => 'permit_empty|max_length[255]',
             'alergias' => 'permit_empty|max_length[1000]',
@@ -272,7 +298,7 @@ class Pacientes extends BaseController
             'complemento' => $this->request->getPost('complemento'),
             'cep' => $this->request->getPost('cep'),
             'cidade' => $this->request->getPost('cidade'),
-            'id_bairro' => $this->request->getPost('id_bairro') ?? null,
+            'id_logradouro' => $this->request->getPost('id_logradouro') ?? null,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
             'alergias' => $this->request->getPost('alergias'),
@@ -349,7 +375,7 @@ class Pacientes extends BaseController
      */
     public function modal($id)
     {
-        $paciente = $this->pacienteModel->getPacienteWithBairro($id);
+        $paciente = $this->pacienteModel->getPacienteWithLogradouro($id);
 
         if (!$paciente) {
             return $this->response->setStatusCode(404, 'Paciente não encontrado');
@@ -377,7 +403,7 @@ class Pacientes extends BaseController
      */
     public function print($id)
     {
-        $paciente = $this->pacienteModel->getPacienteWithBairro($id);
+        $paciente = $this->pacienteModel->getPacienteWithLogradouro($id);
 
         if (!$paciente) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Paciente não encontrado');
@@ -426,7 +452,7 @@ class Pacientes extends BaseController
      */
     public function export()
     {
-        $pacientes = $this->pacienteModel->getPacientesWithBairro();
+        $pacientes = $this->pacienteModel->getPacientesWithLogradouro();
 
         // Headers para download
         header('Content-Type: application/vnd.ms-excel');
@@ -446,6 +472,7 @@ class Pacientes extends BaseController
         echo '<th>Celular</th>';
         echo '<th>Email</th>';
         echo '<th>Endereço</th>';
+        echo '<th>Logradouro</th>';
         echo '<th>Bairro</th>';
         echo '<th>Cadastrado em</th>';
         echo '</tr>';
@@ -463,6 +490,7 @@ class Pacientes extends BaseController
             echo '<td>' . $paciente['celular'] . '</td>';
             echo '<td>' . $paciente['email'] . '</td>';
             echo '<td>' . $paciente['endereco'] . '</td>';
+            echo '<td>' . ($paciente['nome_logradouro'] ?? '') . '</td>';
             echo '<td>' . ($paciente['nome_bairro'] ?? '') . '</td>';
             echo '<td>' . date('d/m/Y H:i', strtotime($paciente['created_at'])) . '</td>';
             echo '</tr>';
@@ -470,5 +498,23 @@ class Pacientes extends BaseController
 
         echo '</table>';
         exit;
+    }
+
+    /**
+     * Busca logradouros por bairro via AJAX
+     */
+    public function getLogradourosByBairro()
+    {
+        $idBairro = $this->request->getGet('id_bairro');
+        
+        if (!$idBairro) {
+            return $this->response->setJSON([]);
+        }
+
+        $logradouros = $this->logradouroModel->where('id_bairro', $idBairro)
+                                            ->orderBy('nome_logradouro', 'ASC')
+                                            ->findAll();
+
+        return $this->response->setJSON($logradouros);
     }
 }

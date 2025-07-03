@@ -22,7 +22,7 @@ class PacienteModel extends Model
         'complemento',
         'cep',
         'cidade',
-        'id_bairro',
+        'id_logradouro',
         'data_nascimento',
         'idade',
         'sexo',
@@ -119,11 +119,11 @@ class PacienteModel extends Model
     }
 
     /**
-     * Busca pacientes por bairro
+     * Busca pacientes por logradouro
      */
-    public function getPacientesByBairro($idBairro)
+    public function getPacientesByLogradouro($idLogradouro)
     {
-        return $this->where('id_bairro', $idBairro)->findAll();
+        return $this->where('id_logradouro', $idLogradouro)->findAll();
     }
 
     /**
@@ -135,12 +135,13 @@ class PacienteModel extends Model
     }
 
     /**
-     * Busca pacientes com seus bairros
+     * Busca pacientes com seus logradouros
      */
-    public function getPacientesWithBairro()
+    public function getPacientesWithLogradouro()
     {
-        $pacientes = $this->select('pacientes.*, bairros.nome_bairro, bairros.area')
-                         ->join('bairros', 'bairros.id_bairro = pacientes.id_bairro', 'left')
+        $pacientes = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.cep, bairros.nome_bairro, bairros.area')
+                         ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                         ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
                          ->findAll();
 
         // Calcular idade para cada paciente se necessário
@@ -156,12 +157,13 @@ class PacienteModel extends Model
     }
 
     /**
-     * Busca um paciente específico com seu bairro
+     * Busca um paciente específico com seu logradouro
      */
-    public function getPacienteWithBairro($id)
+    public function getPacienteWithLogradouro($id)
     {
-        $paciente = $this->select('pacientes.*, bairros.nome_bairro, bairros.area')
-                        ->join('bairros', 'bairros.id_bairro = pacientes.id_bairro', 'left')
+        $paciente = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.cep, bairros.nome_bairro, bairros.area')
+                        ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                        ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
                         ->where('pacientes.id_paciente', $id)
                         ->first();
 
@@ -193,5 +195,47 @@ class PacienteModel extends Model
         return array_merge($this->validationRules, [
             'cpf' => "required|is_unique[pacientes.cpf,id_paciente,{$id}]|max_length[14]"
         ]);
+    }
+
+    /**
+     * Busca pacientes por bairro (através do logradouro)
+     */
+    public function getPacientesByBairro($idBairro)
+    {
+        return $this->select('pacientes.*')
+                    ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'inner')
+                    ->where('logradouros.id_bairro', $idBairro)
+                    ->findAll();
+    }
+
+    /**
+     * Busca pacientes por nome ou CPF
+     */
+    public function buscarPacientes($termo, $limit = null)
+    {
+        $query = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.cep, bairros.nome_bairro, bairros.area')
+                      ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                      ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
+                      ->groupStart()
+                          ->like('pacientes.nome', $termo)
+                          ->orLike('pacientes.cpf', $termo)
+                      ->groupEnd();
+
+        if ($limit) {
+            $query = $query->limit($limit);
+        }
+
+        $pacientes = $query->findAll();
+
+        // Calcular idade para cada paciente se necessário
+        foreach ($pacientes as &$paciente) {
+            if (isset($paciente['data_nascimento'])) {
+                $dataNascimento = new \DateTime($paciente['data_nascimento']);
+                $hoje = new \DateTime();
+                $paciente['idade'] = $hoje->diff($dataNascimento)->y;
+            }
+        }
+
+        return $pacientes;
     }
 }

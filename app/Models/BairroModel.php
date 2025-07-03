@@ -65,11 +65,12 @@ class BairroModel extends Model
      */
     protected function checkPacientesVinculados(array $data)
     {
-        $pacienteModel = new PacienteModel();
-        $pacientesVinculados = $pacienteModel->where('id_bairro', $data['id'])->countAllResults();
+        // Verificar se há logradouros vinculados ao bairro
+        $logradouroModel = new \App\Models\LogradouroModel();
+        $logradourosVinculados = $logradouroModel->where('id_bairro', $data['id'])->countAllResults();
         
-        if ($pacientesVinculados > 0) {
-            throw new \RuntimeException('Não é possível excluir o bairro. Existem pacientes vinculados a ele.');
+        if ($logradourosVinculados > 0) {
+            throw new \RuntimeException('Não é possível excluir o bairro. Existem logradouros vinculados a ele.');
         }
         
         return $data;
@@ -96,17 +97,19 @@ class BairroModel extends Model
      */
     public function getBairrosWithPacientesCount()
     {
-        return $this->select('bairros.*, COUNT(pam_pacientes.id_paciente) as total_pacientes')
-                   ->join('pacientes', 'pacientes.id_bairro = bairros.id_bairro', 'left')
-                   ->groupBy('bairros.id_bairro')
+        return $this->select('pam_bairros.*, COUNT(pam_pacientes.id_logradouro) as total_pacientes')
+                   ->join('pam_logradouros', 'pam_logradouros.id_bairro = pam_bairros.id_bairro', 'left')
+                   ->join('pam_pacientes', 'pam_pacientes.id_logradouro = pam_logradouros.id_logradouro', 'left')
+                   ->groupBy('pam_bairros.id_bairro')
                    ->findAll();
     }
 
     public function getTotalPacientesByBairro($idBairro)
     {
-        return $this->select('COUNT(pam_pacientes.id_paciente) as total_pacientes')
-                    ->join('pacientes', 'pacientes.id_bairro = bairros.id_bairro', 'left')
-                    ->where('bairros.id_bairro', $idBairro)
+        return $this->select('COUNT(pam_pacientes.id_logradouro) as total_pacientes')
+                    ->join('pam_logradouros', 'pam_logradouros.id_bairro = pam_bairros.id_bairro', 'left')
+                    ->join('pam_pacientes', 'pam_pacientes.id_logradouro = pam_logradouros.id_logradouro', 'left')
+                    ->where('pam_bairros.id_bairro', $idBairro)
                     ->first()['total_pacientes'] ?? 0;
     }
 
@@ -133,10 +136,10 @@ class BairroModel extends Model
      */
     public function getBairrosWithLogradourosCount()
     {
-        return $this->select('bairros.*, COUNT(logradouros.id_logradouro) as total_logradouros')
-                   ->join('logradouros', 'logradouros.id_bairro = bairros.id_bairro', 'left')
-                   ->groupBy('bairros.id_bairro')
-                   ->orderBy('bairros.nome_bairro')
+        return $this->select('pam_bairros.*, COUNT(pam_logradouros.id_logradouro) as total_logradouros')
+                   ->join('pam_logradouros', 'pam_logradouros.id_bairro = pam_bairros.id_bairro', 'left')
+                   ->groupBy('pam_bairros.id_bairro')
+                   ->orderBy('pam_bairros.nome_bairro')
                    ->findAll();
     }
 

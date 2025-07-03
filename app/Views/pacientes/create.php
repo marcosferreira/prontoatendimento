@@ -225,7 +225,7 @@
                                                            placeholder="Apto, Bloco, etc.">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-3">
                                                 <div class="mb-3">
                                                     <label for="id_bairro" class="form-label">Bairro</label>
                                                     <select class="form-select" id="id_bairro" name="id_bairro">
@@ -242,6 +242,31 @@
                                                                 ?>
                                                                 <option value="<?= $bairro['id_bairro'] ?>" <?= $selected ?>>
                                                                     <?= esc($bairro['nome_bairro']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-3">
+                                                    <label for="id_logradouro" class="form-label">Logradouro</label>
+                                                    <select class="form-select" id="id_logradouro" name="id_logradouro">
+                                                        <option value="">Selecione o logradouro</option>
+                                                        <?php if (isset($logradouros) && !empty($logradouros)): ?>
+                                                            <?php foreach ($logradouros as $logradouro): ?>
+                                                                <?php 
+                                                                $selected = '';
+                                                                if (old('id_logradouro') == $logradouro['id_logradouro']) {
+                                                                    $selected = 'selected';
+                                                                } elseif (!old('id_logradouro') && isset($logradouro_selecionado) && $logradouro_selecionado == $logradouro['id_logradouro']) {
+                                                                    $selected = 'selected';
+                                                                }
+                                                                ?>
+                                                                <option value="<?= $logradouro['id_logradouro'] ?>" 
+                                                                        data-bairro="<?= $logradouro['id_bairro'] ?>" 
+                                                                        <?= $selected ?>>
+                                                                    <?= esc($logradouro['tipo_logradouro']) ?> <?= esc($logradouro['nome_logradouro']) ?>
                                                                 </option>
                                                             <?php endforeach; ?>
                                                         <?php endif; ?>
@@ -386,6 +411,7 @@ $(document).ready(function() {
                     $('#id_bairro option').each(function() {
                         if ($(this).text().toLowerCase().indexOf(bairroNome) !== -1) {
                             $(this).prop('selected', true);
+                            $('#id_bairro').trigger('change');
                             return false;
                         }
                     });
@@ -393,6 +419,35 @@ $(document).ready(function() {
             });
         }
     });
+    
+    // Filtrar logradouros por bairro
+    $('#id_bairro').change(function() {
+        var bairroId = $(this).val();
+        var logradouroSelect = $('#id_logradouro');
+        
+        // Limpar seleção atual
+        logradouroSelect.val('');
+        
+        if (bairroId) {
+            // Mostrar apenas logradouros do bairro selecionado
+            logradouroSelect.find('option').each(function() {
+                var option = $(this);
+                if (option.val() === '' || option.data('bairro') == bairroId) {
+                    option.show();
+                } else {
+                    option.hide();
+                }
+            });
+        } else {
+            // Mostrar todos os logradouros
+            logradouroSelect.find('option').show();
+        }
+    });
+    
+    // Trigger inicial para filtrar logradouros se bairro já estiver selecionado
+    if ($('#id_bairro').val()) {
+        $('#id_bairro').trigger('change');
+    }
     
     // Validação de CPF
     $('#cpf').blur(function() {

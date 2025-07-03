@@ -95,6 +95,11 @@
                                     </div>
                                     
                                     <div class="info-group">
+                                        <label>Logradouro:</label>
+                                        <p><?= esc($paciente['nome_logradouro'] ?? 'Não informado') ?></p>
+                                    </div>
+                                    
+                                    <div class="info-group">
                                         <label>Bairro:</label>
                                         <p><?= esc($paciente['nome_bairro'] ?? 'Não informado') ?></p>
                                     </div>

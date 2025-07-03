@@ -195,6 +195,10 @@
                     <span class="info-value"><?= esc($paciente['endereco'] ?? 'Não informado') ?></span>
                 </div>
                 <div class="info-item">
+                    <span class="info-label">Logradouro:</span>
+                    <span class="info-value"><?= esc($paciente['nome_logradouro'] ?? 'Não informado') ?></span>
+                </div>
+                <div class="info-item">
                     <span class="info-label">Bairro:</span>
                     <span class="info-value"><?= esc($paciente['nome_bairro'] ?? 'Não informado') ?></span>
                 </div>
