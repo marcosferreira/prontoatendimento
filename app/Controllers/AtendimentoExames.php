@@ -79,6 +79,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Exames em Atendimentos',
+            'description' => 'Lista de exames solicitados e realizados em atendimentos',
             'atendimentoExames' => $atendimentoExames,
             'pager' => $pager,
             'stats' => $stats,
@@ -119,6 +120,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Solicitar Exame para Atendimento',
+            'description' => 'Selecione um exame para solicitar no atendimento',
             'atendimento' => $atendimento,
             'exames' => $exames,
             'examesJaSolicitados' => $examesJaSolicitados ?: []
@@ -176,6 +178,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Detalhes do Exame',
+            'description' => 'Detalhes do exame solicitado no atendimento',
             'atendimentoExame' => $atendimentoExame
         ];
 
@@ -198,6 +201,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Editar Exame do Atendimento',
+            'description' => 'Edite os detalhes do exame solicitado no atendimento',
             'atendimentoExame' => $atendimentoExame,
             'atendimento' => $atendimento,
             'exames' => $exames,
@@ -385,6 +389,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Relatório de Exames',
+            'description' => 'Relatório dos exames mais solicitados no período selecionado',
             'examesMaisSolicitados' => $examesMaisSolicitados,
             'estatisticasTipo' => $estatisticasTipo,
             'periodo' => $periodo,
@@ -425,6 +430,7 @@ class AtendimentoExames extends BaseController
 
         $data = [
             'title' => 'Solicitação de Exame',
+            'description' => 'Impressão da solicitação de exame realizada no atendimento',
             'atendimentoExame' => $atendimentoExame
         ];
 

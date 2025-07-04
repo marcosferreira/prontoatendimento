@@ -74,6 +74,7 @@ class AtendimentoProcedimentos extends BaseController
 
         $data = [
             'title' => 'Procedimentos em Atendimentos',
+            'description' => 'Lista de procedimentos realizados em atendimentos',
             'atendimentoProcedimentos' => $atendimentoProcedimentos,
             'pager' => $pager,
             'stats' => $stats,
@@ -112,6 +113,7 @@ class AtendimentoProcedimentos extends BaseController
 
         $data = [
             'title' => 'Adicionar Procedimento ao Atendimento',
+            'description' => 'Selecione um procedimento para adicionar ao atendimento',
             'atendimento' => $atendimento,
             'procedimentos' => $procedimentos,
             'procedimentosJaAdicionados' => $procedimentosJaAdicionados ?: []
@@ -167,6 +169,7 @@ class AtendimentoProcedimentos extends BaseController
 
         $data = [
             'title' => 'Detalhes do Procedimento',
+            'description' => 'Detalhes do procedimento realizado no atendimento',
             'atendimentoProcedimento' => $atendimentoProcedimento
         ];
 
@@ -305,6 +308,7 @@ class AtendimentoProcedimentos extends BaseController
 
         $data = [
             'title' => 'Relatório de Procedimentos',
+            'description' => 'Relatório dos procedimentos mais utilizados no período selecionado',
             'procedimentosMaisUtilizados' => $procedimentosMaisUtilizados,
             'periodo' => $periodo
         ];
