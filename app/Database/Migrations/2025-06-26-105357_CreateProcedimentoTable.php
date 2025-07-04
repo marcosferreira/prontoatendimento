@@ -34,6 +34,10 @@ class CreateProcedimentoTable extends Migration
                 'type' => 'datetime',
                 'null' => true,
             ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null' => true,
+            ],
         ]);
 
         $this->forge->addKey('id_procedimento', true);
