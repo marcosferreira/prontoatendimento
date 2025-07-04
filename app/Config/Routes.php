@@ -124,6 +124,7 @@ $routes->group('exames', static function ($routes) {
     $routes->delete('delete/(:num)', 'Exames::delete/$1');
     
     // AJAX routes
+    $routes->get('modal/(:num)', 'Exames::modal/$1');
     $routes->post('search', 'Exames::search');
     $routes->get('tipo/(:segment)', 'Exames::getByTipo/$1');
     $routes->get('all', 'Exames::getAll');

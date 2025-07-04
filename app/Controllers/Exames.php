@@ -309,4 +309,22 @@ class Exames extends BaseController
         $exames = $this->exameModel->orderBy('nome', 'ASC')->findAll();
         return $this->response->setJSON($exames);
     }
+
+    /**
+     * Retorna view modal para um exame específico
+     */
+    public function modal($id = null)
+    {
+        $exame = $this->exameModel->find($id);
+        
+        if (!$exame) {
+            return $this->response->setJSON(['error' => 'Exame não encontrado'])->setStatusCode(404);
+        }
+
+        $data = [
+            'exame' => $exame
+        ];
+
+        return view('exames/modal_view', $data);
+    }
 }
