@@ -220,4 +220,12 @@ $routes->group('admin', static function ($routes) {
     $routes->get('reports', 'Admin::reports');
 });
 
+// Rotas de Ajuda
+$routes->group('ajuda', static function ($routes) {
+    $routes->get('/', 'Ajuda::index');
+    $routes->get('search', 'Ajuda::search');
+    $routes->get('categoria/(:segment)', 'Ajuda::categoria/$1');
+    $routes->get('artigo/(:segment)', 'Ajuda::artigo/$1');
+});
+
 service('auth')->routes($routes);

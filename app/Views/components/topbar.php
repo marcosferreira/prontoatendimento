@@ -12,33 +12,6 @@
         </div>
 
         <div class="topbar-right">
-            <div class="user-info">
-                <div class="user-avatar">DR</div>
-                <div class="user-details">
-                    <?php 
-                    $user = auth()->user();
-                    $userGroups = $user ? $user->getGroups() : [];
-                    $groupNames = [];
-                    
-                    if (!empty($userGroups)) {
-                        // Obter a configuração dos grupos
-                        $authGroups = config('AuthGroups');
-                        $availableGroups = $authGroups->groups ?? [];
-                        
-                        foreach ($userGroups as $group) {
-                            if (isset($availableGroups[$group]['title'])) {
-                                $groupNames[] = $availableGroups[$group]['title'];
-                            } else {
-                                $groupNames[] = ucfirst($group);
-                            }
-                        }
-                    }
-                    
-                    $displayRole = !empty($groupNames) ? implode(', ', $groupNames) : 'Usuário';
-                    ?>
-                    <p class="user-name"><?php echo $user->username ?? 'Usuário' ?></p>
-                    <p class="user-role"><?php echo $displayRole ?></p>
-                </div>
-            </div>
+            <?php echo view('components/user_info'); ?>
         </div>
     </header>

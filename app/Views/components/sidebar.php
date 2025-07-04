@@ -86,6 +86,10 @@
                 <i class="bi bi-gear"></i>
                 <span>Configurações</span>
             </a>
+            <a href="<?php echo base_url('ajuda') ?>" class="nav-item <?= (strpos(current_url(), 'ajuda') !== false) ? 'active' : '' ?>" data-tooltip="Ajuda">
+                <i class="bi bi-question-circle"></i>
+                <span>Ajuda</span>
+            </a>
             <a href="<?php echo base_url('/logout'); ?>" class="nav-item" data-tooltip="Sair">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sair</span>
