@@ -28,37 +28,49 @@
                 <i class="bi bi-signpost"></i>
                 <span>Logradouros</span>
             </a>
-            <a href="<?php echo base_url('pages/agendamentos/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'agendamentos') !== false) ? 'active' : '' ?>" data-tooltip="Agendamentos">
-                <i class="bi bi-calendar-check"></i>
-                <span>Agendamentos</span>
+            <a href="<?php echo base_url('medicos'); ?>" class="nav-item <?= (strpos(current_url(), 'medicos') !== false) ? 'active' : '' ?>" data-tooltip="Médicos">
+                <i class="bi bi-person-vcard"></i>
+                <span>Médicos</span>
             </a>
         </div>
         
         <div class="nav-section">
             <div class="nav-section-title">Atendimento</div>
-            <a href="<?php echo base_url('pages/consultas/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'consultas') !== false) ? 'active' : '' ?>" data-tooltip="Consultas">
+            <a href="<?php echo base_url('atendimentos'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimentos') !== false) ? 'active' : '' ?>" data-tooltip="Atendimentos">
                 <i class="bi bi-clipboard-check"></i>
-                <span>Consultas</span>
+                <span>Atendimentos</span>
             </a>
-            <a href="<?php echo base_url('pages/prontuarios/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'prontuarios') !== false) ? 'active' : '' ?>" data-tooltip="Prontuários">
+            <a href="<?php echo base_url('procedimentos'); ?>" class="nav-item <?= (strpos(current_url(), 'procedimentos') !== false) ? 'active' : '' ?>" data-tooltip="Procedimentos">
+                <i class="bi bi-list-check"></i>
+                <span>Procedimentos</span>
+            </a>
+            <a href="<?php echo base_url('exames'); ?>" class="nav-item <?= (strpos(current_url(), 'exames') !== false) ? 'active' : '' ?>" data-tooltip="Exames">
+                <i class="bi bi-clipboard2-data"></i>
+                <span>Exames</span>
+            </a>
+            <a href="<?php echo base_url('atendimento_procedimentos'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_procedimentos') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Procedimentos">
+                <i class="bi bi-clipboard2-check"></i>
+                <span>Atend. Procedimentos</span>
+            </a>
+            <a href="<?php echo base_url('atendimento_exames'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_exames') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Exames">
                 <i class="bi bi-file-medical"></i>
-                <span>Prontuários</span>
-            </a>
-            <a href="<?php echo base_url('pages/medicamentos/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'medicamentos') !== false) ? 'active' : '' ?>" data-tooltip="Medicamentos">
-                <i class="bi bi-capsule"></i>
-                <span>Medicamentos</span>
+                <span>Atend. Exames</span>
             </a>
         </div>
         
         <div class="nav-section">
             <div class="nav-section-title">Relatórios</div>
-            <a href="<?php echo base_url('pages/relatorios/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'relatorios') !== false) ? 'active' : '' ?>" data-tooltip="Estatísticas">
+            <a href="<?php echo base_url('atendimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Atendimentos">
                 <i class="bi bi-bar-chart"></i>
-                <span>Estatísticas</span>
+                <span>Rel. Atendimentos</span>
             </a>
-            <a href="<?php echo base_url('pages/relatorios/lista.html'); ?>" class="nav-item <?= (strpos(current_url(), 'relatorios') !== false) ? 'active' : '' ?>" data-tooltip="Relatórios">
+            <a href="<?php echo base_url('atendimento_procedimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_procedimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Procedimentos">
                 <i class="bi bi-file-earmark-text"></i>
-                <span>Relatórios</span>
+                <span>Rel. Procedimentos</span>
+            </a>
+            <a href="<?php echo base_url('atendimento_exames/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_exames/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Exames">
+                <i class="bi bi-graph-up"></i>
+                <span>Rel. Exames</span>
             </a>
         </div>
         
@@ -70,14 +82,6 @@
                 <span>Administração</span>
             </a>
             <?php endif; ?>
-            <a href="<?php echo base_url('pages/configuracoes/geral.html'); ?>" class="nav-item <?= (strpos(current_url(), 'configuracoes') !== false) ? 'active' : '' ?>" data-tooltip="Configurações">
-                <i class="bi bi-gear"></i>
-                <span>Configurações</span>
-            </a>
-            <a href="<?php echo base_url('pages/ajuda/index.html'); ?>" class="nav-item <?= (strpos(current_url(), 'ajuda') !== false) ? 'active' : '' ?>" data-tooltip="Ajuda">
-                <i class="bi bi-question-circle"></i>
-                <span>Ajuda</span>
-            </a>
         </div>
     </nav>
 </aside>

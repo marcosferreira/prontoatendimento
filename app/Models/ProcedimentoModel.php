@@ -96,9 +96,9 @@ class ProcedimentoModel extends Model
      */
     public function getProcedimentosMaisUtilizados($limit = 10)
     {
-        return $this->select('procedimentos.*, COUNT(atendimento_procedimentos.id_procedimento) as total_usos')
-                   ->join('atendimento_procedimentos', 'atendimento_procedimentos.id_procedimento = procedimentos.id_procedimento', 'left')
-                   ->groupBy('procedimentos.id_procedimento')
+        return $this->select('pam_procedimentos.*, COUNT(pam_atendimento_procedimentos.id_procedimento) as total_usos')
+                   ->join('pam_atendimento_procedimentos', 'pam_atendimento_procedimentos.id_procedimento = pam_procedimentos.id_procedimento', 'left')
+                   ->groupBy('pam_procedimentos.id_procedimento')
                    ->orderBy('total_usos', 'DESC')
                    ->limit($limit)
                    ->findAll();
@@ -109,9 +109,9 @@ class ProcedimentoModel extends Model
      */
     public function getProcedimentosWithUsageCount()
     {
-        return $this->select('procedimentos.*, COUNT(atendimento_procedimentos.id_procedimento) as total_usos')
-                   ->join('atendimento_procedimentos', 'atendimento_procedimentos.id_procedimento = procedimentos.id_procedimento', 'left')
-                   ->groupBy('procedimentos.id_procedimento')
+        return $this->select('pam_procedimentos.*, COUNT(pam_atendimento_procedimentos.id_procedimento) as total_usos')
+                   ->join('pam_atendimento_procedimentos', 'pam_atendimento_procedimentos.id_procedimento = pam_procedimentos.id_procedimento', 'left')
+                   ->groupBy('pam_procedimentos.id_procedimento')
                    ->findAll();
     }
 

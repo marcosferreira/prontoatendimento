@@ -1,0 +1,257 @@
+<?= $this->extend('layout/base') ?>
+
+<?= $this->section('content') ?>
+<div class="app-container">
+    <?= $this->include('components/sidebar') ?>
+
+    <?= $this->include('components/topbar') ?>
+
+    <main class="main-content">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="bi bi-plus-circle"></i> Novo Atendimento</h1>
+                <p class="subtitle">Cadastrar novo atendimento médico</p>
+            </div>
+
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="m-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="<?= base_url('') ?>">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos') ?>">Atendimentos</a></li>
+                    <li class="breadcrumb-item active">Novo Atendimento</li>
+                </ol>
+            </nav>
+
+            <!-- Form -->
+            <div class="card m-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Dados do Atendimento</h5>
+                </div>
+                <div class="card-body">
+                    <?= form_open('atendimentos/store', ['id' => 'formAtendimento', 'class' => 'needs-validation', 'novalidate' => '']) ?>
+                    
+                    <div class="row">
+                        <!-- Paciente -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_paciente" class="form-label">
+                                <i class="bi bi-person"></i> Paciente *
+                            </label>
+                            <select class="form-select" id="id_paciente" name="id_paciente" required>
+                                <option value="">Selecione um paciente</option>
+                                <?php if (isset($pacientes)): ?>
+                                    <?php foreach ($pacientes as $paciente): ?>
+                                        <option value="<?= $paciente->id_paciente ?>" <?= old('id_paciente') == $paciente->id_paciente ? 'selected' : '' ?>>
+                                            <?= esc($paciente->nome) ?> - CPF: <?= $paciente->cpf ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor, selecione um paciente.
+                            </div>
+                        </div>
+
+                        <!-- Médico -->
+                        <div class="col-md-6 mb-3">
+                            <label for="id_medico" class="form-label">
+                                <i class="bi bi-person-badge"></i> Médico *
+                            </label>
+                            <select class="form-select" id="id_medico" name="id_medico" required>
+                                <option value="">Selecione um médico</option>
+                                <?php if (isset($medicos)): ?>
+                                    <?php foreach ($medicos as $medico): ?>
+                                        <option value="<?= $medico->id_medico ?>" <?= old('id_medico') == $medico->id_medico ? 'selected' : '' ?>>
+                                            <?= esc($medico->nome) ?> - CRM: <?= $medico->crm ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor, selecione um médico.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Data/Hora do Atendimento -->
+                        <div class="col-md-6 mb-3">
+                            <label for="data_atendimento" class="form-label">
+                                <i class="bi bi-calendar"></i> Data/Hora do Atendimento *
+                            </label>
+                            <input type="datetime-local" class="form-control" id="data_atendimento" name="data_atendimento" 
+                                   value="<?= old('data_atendimento', date('Y-m-d\TH:i')) ?>" required>
+                            <div class="invalid-feedback">
+                                Por favor, informe a data e hora do atendimento.
+                            </div>
+                        </div>
+
+                        <!-- Classificação de Risco -->
+                        <div class="col-md-6 mb-3">
+                            <label for="classificacao_risco" class="form-label">
+                                <i class="bi bi-exclamation-triangle"></i> Classificação de Risco *
+                            </label>
+                            <select class="form-select" id="classificacao_risco" name="classificacao_risco" required>
+                                <option value="">Selecione a classificação</option>
+                                <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
+                                <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - Urgente</option>
+                                <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
+                                <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Por favor, selecione a classificação de risco.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dados Vitais -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="hgt_glicemia" class="form-label">
+                                <i class="bi bi-droplet"></i> HGT/Glicemia (mg/dL)
+                            </label>
+                            <input type="number" class="form-control" id="hgt_glicemia" name="hgt_glicemia" 
+                                   step="0.01" min="0" max="999.99" value="<?= old('hgt_glicemia') ?>">
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="pressao_arterial" class="form-label">
+                                <i class="bi bi-heart-pulse"></i> Pressão Arterial
+                            </label>
+                            <input type="text" class="form-control" id="pressao_arterial" name="pressao_arterial" 
+                                   placeholder="Ex: 120x80" value="<?= old('pressao_arterial') ?>">
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="temperatura" class="form-label">
+                                <i class="bi bi-thermometer"></i> Temperatura (°C)
+                            </label>
+                            <input type="number" class="form-control" id="temperatura" name="temperatura" 
+                                   step="0.1" min="30" max="45" value="<?= old('temperatura') ?>">
+                        </div>
+                    </div>
+
+                    <!-- Consulta de Enfermagem -->
+                    <div class="mb-3">
+                        <label for="consulta_enfermagem" class="form-label">
+                            <i class="bi bi-clipboard-pulse"></i> Consulta de Enfermagem
+                        </label>
+                        <textarea class="form-control" id="consulta_enfermagem" name="consulta_enfermagem" 
+                                  rows="3" placeholder="Observações da consulta de enfermagem..."><?= old('consulta_enfermagem') ?></textarea>
+                    </div>
+
+                    <!-- Hipótese Diagnóstica -->
+                    <div class="mb-3">
+                        <label for="hipotese_diagnostico" class="form-label">
+                            <i class="bi bi-clipboard-check"></i> Hipótese Diagnóstica
+                        </label>
+                        <textarea class="form-control" id="hipotese_diagnostico" name="hipotese_diagnostico" 
+                                  rows="3" placeholder="Hipótese diagnóstica..."><?= old('hipotese_diagnostico') ?></textarea>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label">
+                            <i class="bi bi-chat-text"></i> Observações
+                        </label>
+                        <textarea class="form-control" id="observacao" name="observacao" 
+                                  rows="3" placeholder="Observações gerais..."><?= old('observacao') ?></textarea>
+                    </div>
+
+                    <!-- Encaminhamento -->
+                    <div class="mb-3">
+                        <label for="encaminhamento" class="form-label">
+                            <i class="bi bi-arrow-right-circle"></i> Encaminhamento
+                        </label>
+                        <select class="form-select" id="encaminhamento" name="encaminhamento">
+                            <option value="">Selecione o encaminhamento</option>
+                            <option value="Alta" <?= old('encaminhamento') == 'Alta' ? 'selected' : '' ?>>Alta</option>
+                            <option value="Internação" <?= old('encaminhamento') == 'Internação' ? 'selected' : '' ?>>Internação</option>
+                            <option value="Transferência" <?= old('encaminhamento') == 'Transferência' ? 'selected' : '' ?>>Transferência</option>
+                            <option value="Especialista" <?= old('encaminhamento') == 'Especialista' ? 'selected' : '' ?>>Especialista</option>
+                            <option value="Retorno" <?= old('encaminhamento') == 'Retorno' ? 'selected' : '' ?>>Retorno</option>
+                            <option value="Óbito" <?= old('encaminhamento') == 'Óbito' ? 'selected' : '' ?>>Óbito</option>
+                        </select>
+                    </div>
+
+                    <!-- Checkbox Óbito -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="obito" name="obito" value="1" 
+                                   <?= old('obito') ? 'checked' : '' ?>>
+                            <label class="form-check-label text-danger" for="obito">
+                                <i class="bi bi-exclamation-triangle"></i> Marcar como óbito
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="<?= base_url('atendimentos') ?>" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Salvar Atendimento
+                        </button>
+                    </div>
+
+                    <?= form_close() ?>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+$(document).ready(function() {
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+
+    // Auto-check óbito when encaminhamento is Óbito
+    $('#encaminhamento').on('change', function() {
+        if ($(this).val() === 'Óbito') {
+            $('#obito').prop('checked', true);
+        } else {
+            $('#obito').prop('checked', false);
+        }
+    });
+
+    // Auto-set encaminhamento when óbito is checked
+    $('#obito').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#encaminhamento').val('Óbito');
+        } else if ($('#encaminhamento').val() === 'Óbito') {
+            $('#encaminhamento').val('');
+        }
+    });
+
+    // Select2 for better dropdowns
+    if (typeof $.fn.select2 !== 'undefined') {
+        $('#id_paciente, #id_medico').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: function() {
+                return $(this).data('placeholder');
+            }
+        });
+    }
+});
+</script>
+<?= $this->endSection() ?>
