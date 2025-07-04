@@ -191,16 +191,29 @@
             </div>
             <div>
                 <div class="info-item">
-                    <span class="info-label">Endereço:</span>
-                    <span class="info-value"><?= esc($paciente['endereco'] ?? 'Não informado') ?></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Logradouro:</span>
-                    <span class="info-value"><?= esc($paciente['nome_logradouro'] ?? 'Não informado') ?></span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Bairro:</span>
-                    <span class="info-value"><?= esc($paciente['nome_bairro'] ?? 'Não informado') ?></span>
+                    <span class="info-label">Endereço Completo:</span>
+                    <span class="info-value">
+                        <?php if (!empty($paciente['nome_logradouro'])): ?>
+                            <?= esc($paciente['tipo_logradouro'] ?? '') ?> <?= esc($paciente['nome_logradouro']) ?>
+                            <?php if (!empty($paciente['numero'])): ?>
+                                , <?= esc($paciente['numero']) ?>
+                            <?php endif; ?>
+                            <?php if (!empty($paciente['complemento'])): ?>
+                                - <?= esc($paciente['complemento']) ?>
+                            <?php endif; ?>
+                            <?php if (!empty($paciente['nome_bairro'])): ?>
+                                - <?= esc($paciente['nome_bairro']) ?>
+                            <?php endif; ?>
+                            <?php if (!empty($paciente['cidade'])): ?>
+                                - <?= esc($paciente['cidade']) ?>
+                            <?php endif; ?>
+                            <?php if (!empty($paciente['cep'])): ?>
+                                - CEP: <?= esc($paciente['cep']) ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            Não informado
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Cadastrado em:</span>

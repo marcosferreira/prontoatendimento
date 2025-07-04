@@ -10,7 +10,7 @@ class ExameModel extends Model
     protected $primaryKey       = 'id_exame';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome',
@@ -140,5 +140,29 @@ class ExameModel extends Model
         return $this->select('tipo, COUNT(*) as total')
                    ->groupBy('tipo')
                    ->findAll();
+    }
+
+    /**
+     * Busca exames excluídos (soft deleted)
+     */
+    public function getExamesExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um exame excluído
+     */
+    public function restaurarExame($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca exame por código incluindo excluídos
+     */
+    public function getExameByCodigoComExcluidos($codigo)
+    {
+        return $this->withDeleted()->where('codigo', $codigo)->first();
     }
 }

@@ -85,6 +85,7 @@ class Logradouros extends BaseController
     {
         $bairros = $this->bairroModel->orderBy('nome_bairro')->findAll();
         $tipos = $this->logradouroModel->getTiposLogradouro();
+        $estados = $this->logradouroModel->getEstados();
         $bairroSelecionado = $this->request->getGet('bairro'); // Bairro pré-selecionado
 
         $data = [
@@ -92,6 +93,7 @@ class Logradouros extends BaseController
             'description' => 'Cadastrar Novo Logradouro',
             'bairros' => $bairros,
             'tipos' => $tipos,
+            'estados' => $estados,
             'bairro_selecionado' => $bairroSelecionado
         ];
 
@@ -105,8 +107,10 @@ class Logradouros extends BaseController
     {
         $rules = [
             'nome_logradouro' => 'required|min_length[3]|max_length[150]',
-            'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Rodovia,Via,Beco,Largo]',
-            'cep' => 'permit_empty|max_length[10]',
+            'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Sítio,Rodovia,Via,Beco,Largo]',
+            'cep' => 'permit_empty|max_length[9]',
+            'cidade' => 'permit_empty|max_length[100]',
+            'estado' => 'required|in_list[AC,AL,AP,AM,BA,CE,DF,ES,GO,MA,MT,MS,MG,PA,PB,PR,PE,PI,RJ,RN,RS,RO,RR,SC,SP,SE,TO]',
             'id_bairro' => 'required|is_natural_no_zero',
             'observacoes' => 'permit_empty'
         ];
@@ -122,7 +126,14 @@ class Logradouros extends BaseController
                 'in_list' => 'Tipo de logradouro inválido'
             ],
             'cep' => [
-                'max_length' => 'O CEP deve ter no máximo 10 caracteres'
+                'max_length' => 'O CEP deve ter no máximo 9 caracteres'
+            ],
+            'cidade' => [
+                'max_length' => 'O nome da cidade deve ter no máximo 100 caracteres'
+            ],
+            'estado' => [
+                'required' => 'O estado é obrigatório',
+                'in_list' => 'Estado inválido. Deve ser uma sigla válida (AC, AL, AM, etc.)'
             ],
             'id_bairro' => [
                 'required' => 'O bairro é obrigatório',
@@ -144,6 +155,8 @@ class Logradouros extends BaseController
             'nome_logradouro' => $this->request->getPost('nome_logradouro'),
             'tipo_logradouro' => $this->request->getPost('tipo_logradouro'),
             'cep' => $this->request->getPost('cep'),
+            'cidade' => $this->request->getPost('cidade'),
+            'estado' => $this->request->getPost('estado'),
             'id_bairro' => $this->request->getPost('id_bairro'),
             'observacoes' => $this->request->getPost('observacoes')
         ];
@@ -188,13 +201,15 @@ class Logradouros extends BaseController
 
         $bairros = $this->bairroModel->orderBy('nome_bairro')->findAll();
         $tipos = $this->logradouroModel->getTiposLogradouro();
+        $estados = $this->logradouroModel->getEstados();
 
         $data = [
             'title' => 'Editar Logradouro',
             'description' => 'Editar Dados do Logradouro',
             'logradouro' => $logradouro,
             'bairros' => $bairros,
-            'tipos' => $tipos
+            'tipos' => $tipos,
+            'estados' => $estados
         ];
 
         return view('logradouros/edit', $data);
@@ -213,8 +228,10 @@ class Logradouros extends BaseController
 
         $rules = [
             'nome_logradouro' => 'required|min_length[3]|max_length[150]',
-            'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Rodovia,Via,Beco,Largo]',
-            'cep' => 'permit_empty|max_length[10]',
+            'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Sítio,Rodovia,Via,Beco,Largo]',
+            'cep' => 'permit_empty|max_length[9]',
+            'cidade' => 'permit_empty|max_length[100]',
+            'estado' => 'required|in_list[AC,AL,AP,AM,BA,CE,DF,ES,GO,MA,MT,MS,MG,PA,PB,PR,PE,PI,RJ,RN,RS,RO,RR,SC,SP,SE,TO]',
             'id_bairro' => 'required|is_natural_no_zero',
             'observacoes' => 'permit_empty'
         ];
@@ -230,7 +247,14 @@ class Logradouros extends BaseController
                 'in_list' => 'Tipo de logradouro inválido'
             ],
             'cep' => [
-                'max_length' => 'O CEP deve ter no máximo 10 caracteres'
+                'max_length' => 'O CEP deve ter no máximo 9 caracteres'
+            ],
+            'cidade' => [
+                'max_length' => 'O nome da cidade deve ter no máximo 100 caracteres'
+            ],
+            'estado' => [
+                'required' => 'O estado é obrigatório',
+                'in_list' => 'Estado inválido. Deve ser uma sigla válida (AC, AL, AM, etc.)'
             ],
             'id_bairro' => [
                 'required' => 'O bairro é obrigatório',
@@ -252,6 +276,8 @@ class Logradouros extends BaseController
             'nome_logradouro' => $this->request->getPost('nome_logradouro'),
             'tipo_logradouro' => $this->request->getPost('tipo_logradouro'),
             'cep' => $this->request->getPost('cep'),
+            'cidade' => $this->request->getPost('cidade'),
+            'estado' => $this->request->getPost('estado'),
             'id_bairro' => $this->request->getPost('id_bairro'),
             'observacoes' => $this->request->getPost('observacoes')
         ];
@@ -349,6 +375,8 @@ class Logradouros extends BaseController
             'Tipo',
             'Nome do Logradouro',
             'CEP',
+            'Cidade',
+            'Estado',
             'Bairro',
             'Área',
             'Observações',
@@ -362,6 +390,8 @@ class Logradouros extends BaseController
                 $logradouro['tipo_logradouro'],
                 $logradouro['nome_logradouro'],
                 $logradouro['cep'] ?? '',
+                $logradouro['cidade'] ?? '',
+                $logradouro['estado'] ?? '',
                 $logradouro['nome_bairro'],
                 $logradouro['area'] ?? '',
                 $logradouro['observacoes'] ?? '',

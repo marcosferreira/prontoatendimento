@@ -23,15 +23,22 @@
             </div>
             <div class="info-item">
                 <strong>Endereço:</strong>
-                <span><?= esc($paciente['endereco'] ?? 'Não informado') ?></span>
-            </div>
-            <div class="info-item">
-                <strong>Logradouro:</strong>
-                <span><?= esc($paciente['nome_logradouro'] ?? 'Não informado') ?></span>
-            </div>
-            <div class="info-item">
-                <strong>Bairro:</strong>
-                <span><?= esc($paciente['nome_bairro'] ?? 'Não informado') ?></span>
+                <span>
+                    <?php if (!empty($paciente['nome_logradouro'])): ?>
+                        <?= esc($paciente['tipo_logradouro'] ?? '') ?> <?= esc($paciente['nome_logradouro']) ?>
+                        <?php if (!empty($paciente['numero'])): ?>
+                            , <?= esc($paciente['numero']) ?>
+                        <?php endif; ?>
+                        <?php if (!empty($paciente['complemento'])): ?>
+                            - <?= esc($paciente['complemento']) ?>
+                        <?php endif; ?>
+                        <?php if (!empty($paciente['nome_bairro'])): ?>
+                            - <?= esc($paciente['nome_bairro']) ?>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        Não informado
+                    <?php endif; ?>
+                </span>
             </div>
             <div class="info-item">
                 <strong>Cadastrado em:</strong>

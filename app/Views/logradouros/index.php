@@ -128,6 +128,8 @@
                                 <th>Tipo</th>
                                 <th>Nome do Logradouro</th>
                                 <th>CEP</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
                                 <th>Bairro</th>
                                 <th>Área</th>
                                 <th>Cadastrado em</th>
@@ -152,6 +154,16 @@
                                         </td>
                                         <td>
                                             <?= $logradouro['cep'] ? '<code>' . esc($logradouro['cep']) . '</code>' : '<span class="text-muted">Não informado</span>' ?>
+                                        </td>
+                                        <td>
+                                            <?= !empty($logradouro['cidade']) ? esc($logradouro['cidade']) : '<span class="text-muted">Não informado</span>' ?>
+                                        </td>
+                                        <td>
+                                            <?php if (!empty($logradouro['estado'])): ?>
+                                                <span class="badge bg-primary"><?= esc($logradouro['estado']) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted">--</span>
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <a href="<?= base_url('bairros/' . $logradouro['id_bairro']) ?>" class="text-decoration-none">
@@ -189,7 +201,7 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-4">
+                                    <td colspan="10" class="text-center py-4">
                                         <div class="empty-state">
                                             <i class="bi bi-signpost-2 text-muted" style="font-size: 3rem;"></i>
                                             <h5 class="text-muted mt-3">Nenhum logradouro encontrado</h5>

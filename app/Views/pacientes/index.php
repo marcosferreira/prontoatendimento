@@ -103,8 +103,8 @@
                                                     </div>
                                                     <div>
                                                         <strong><?= esc($paciente['nome']) ?></strong>
-                                                        <?php if (!empty($paciente['endereco'])): ?>
-                                                            <br><small class="text-muted"><?= esc(substr($paciente['endereco'], 0, 30)) ?>...</small>
+                                                        <?php if (!empty($paciente['nome_logradouro'])): ?>
+                                                            <br><small class="text-muted"><?= esc(substr($paciente['nome_logradouro'] . (isset($paciente['numero']) ? ', ' . $paciente['numero'] : ''), 0, 30)) ?>...</small>
                                                         <?php endif; ?>
                                                     </div>
                                                 </div>
@@ -274,41 +274,10 @@
                         </h6>
                         
                         <div class="row">
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label for="modal_cep" class="form-label">CEP</label>
-                                    <input type="text" class="form-control" id="modal_cep" name="cep" 
-                                           placeholder="00000-000">
-                                </div>
-                            </div>
-                            <div class="col-md-7">
-                                <div class="mb-3">
-                                    <label for="modal_endereco" class="form-label">Endereço</label>
-                                    <input type="text" class="form-control" id="modal_endereco" name="endereco" 
-                                           placeholder="Digite o endereço">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-3">
-                                    <label for="modal_numero" class="form-label">Número</label>
-                                    <input type="text" class="form-control" id="modal_numero" name="numero" 
-                                           placeholder="123">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="modal_complemento" class="form-label">Complemento</label>
-                                    <input type="text" class="form-control" id="modal_complemento" name="complemento" 
-                                           placeholder="Apto, Bloco, etc.">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="modal_id_bairro" class="form-label">Bairro</label>
-                                    <select class="form-select" id="modal_id_bairro" name="id_bairro">
+                                    <label for="modal_id_bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="modal_id_bairro" name="id_bairro" required>
                                         <option value="">Selecione o bairro</option>
                                         <?php if (isset($bairros)): ?>
                                             <?php foreach ($bairros as $bairro): ?>
@@ -318,11 +287,29 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-8">
                                 <div class="mb-3">
-                                    <label for="modal_cidade" class="form-label">Cidade</label>
-                                    <input type="text" class="form-control" id="modal_cidade" name="cidade" 
-                                           placeholder="Digite a cidade">
+                                    <label for="modal_id_logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
+                                    <select class="form-select" id="modal_id_logradouro" name="id_logradouro" required>
+                                        <option value="">Primeiro selecione o bairro</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="modal_numero" class="form-label">Número</label>
+                                    <input type="text" class="form-control" id="modal_numero" name="numero" 
+                                           placeholder="123">
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-3">
+                                    <label for="modal_complemento" class="form-label">Complemento</label>
+                                    <input type="text" class="form-control" id="modal_complemento" name="complemento" 
+                                           placeholder="Apartamento, Bloco, Casa, etc.">
                                 </div>
                             </div>
                         </div>
@@ -436,34 +423,30 @@
     document.getElementById('novoPacienteModal').addEventListener('shown.bs.modal', function() {
         // Máscaras de entrada
         applyMask('modal_cpf', '000.000.000-00');
-        applyMask('modal_cep', '00000-000');
         applyMask('modal_telefone', '(00) 0000-0000');
         applyMask('modal_celular', '(00) 00000-0000');
 
-        // Buscar CEP
-        document.getElementById('modal_cep').addEventListener('blur', function() {
-            const cep = this.value.replace(/\D/g, '');
+        // Filtrar logradouros por bairro
+        document.getElementById('modal_id_bairro').addEventListener('change', function() {
+            const bairroId = this.value;
+            const logradouroSelect = document.getElementById('modal_id_logradouro');
             
-            if (cep.length === 8) {
-                fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.erro) {
-                            document.getElementById('modal_endereco').value = data.logradouro || '';
-                            document.getElementById('modal_cidade').value = data.localidade || '';
-                            
-                            // Buscar bairro no select
-                            const bairroNome = data.bairro.toLowerCase();
-                            const selectBairro = document.getElementById('modal_id_bairro');
-                            for (let option of selectBairro.options) {
-                                if (option.text.toLowerCase().indexOf(bairroNome) !== -1) {
-                                    option.selected = true;
-                                    break;
-                                }
-                            }
-                        }
-                    })
-                    .catch(error => console.error('Erro ao buscar CEP:', error));
+            // Limpar options do logradouro
+            logradouroSelect.innerHTML = '<option value="">Selecione o logradouro</option>';
+            
+            if (bairroId) {
+                // Filtrar logradouros do bairro selecionado
+                <?php if (isset($logradouros)): ?>
+                const logradouros = <?= json_encode($logradouros) ?>;
+                const logradourosFiltrados = logradouros.filter(l => l.id_bairro == bairroId);
+                
+                logradourosFiltrados.forEach(function(logradouro) {
+                    const option = document.createElement('option');
+                    option.value = logradouro.id_logradouro;
+                    option.textContent = logradouro.tipo_logradouro + ' ' + logradouro.nome_logradouro;
+                    logradouroSelect.appendChild(option);
+                });
+                <?php endif; ?>
             }
         });
 

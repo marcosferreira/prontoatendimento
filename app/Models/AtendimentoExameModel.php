@@ -10,7 +10,7 @@ class AtendimentoExameModel extends Model
     protected $primaryKey       = 'id_atendimento_exame';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'id_atendimento',

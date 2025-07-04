@@ -24,6 +24,7 @@ class CreatePacienteTable extends Migration
                 'type'       => 'varchar',
                 'constraint' => '15',
                 'null'       => true,
+                'comment'    => 'Número SUS antigo (manter para compatibilidade)',
             ],
             'cpf' => [
                 'type'       => 'varchar',
@@ -31,25 +32,87 @@ class CreatePacienteTable extends Migration
                 'unique'     => true,
                 'null'       => false,
             ],
-            'endereco' => [
-                'type' => 'text',
-                'null' => true,
+            'rg' => [
+                'type'       => 'varchar',
+                'constraint' => '20',
+                'null'       => true,
             ],
             'id_logradouro' => [
                 'type'       => 'int',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
+                'comment'    => 'Referência ao logradouro (rua, avenida, etc)',
+            ],
+            'numero' => [
+                'type'       => 'varchar',
+                'constraint' => '10',
+                'null'       => true,
+                'comment'    => 'Número da residência no logradouro',
+            ],
+            'complemento' => [
+                'type'       => 'varchar',
+                'constraint' => '100',
+                'null'       => true,
+                'comment'    => 'Complemento do endereço (apto, bloco, etc)',
             ],
             'data_nascimento' => [
                 'type' => 'date',
                 'null' => false,
+            ],
+            'sexo' => [
+                'type'       => 'enum',
+                'constraint' => ['M', 'F'],
+                'null'       => false,
             ],
             'idade' => [
                 'type'       => 'int',
                 'constraint' => 3,
                 'unsigned'   => true,
                 'null'       => true,
+                'comment'    => 'Idade calculada automaticamente',
+            ],
+            'tipo_sanguineo' => [
+                'type'       => 'enum',
+                'constraint' => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+                'null'       => true,
+            ],
+            'telefone' => [
+                'type'       => 'varchar',
+                'constraint' => '15',
+                'null'       => true,
+            ],
+            'celular' => [
+                'type'       => 'varchar',
+                'constraint' => '16',
+                'null'       => true,
+            ],
+            'email' => [
+                'type'       => 'varchar',
+                'constraint' => '255',
+                'null'       => true,
+            ],
+            'numero_sus' => [
+                'type'       => 'varchar',
+                'constraint' => '15',
+                'null'       => true,
+                'comment'    => 'Número SUS principal',
+            ],
+            'nome_responsavel' => [
+                'type'       => 'varchar',
+                'constraint' => '255',
+                'null'       => true,
+                'comment'    => 'Nome do responsável (para menores de idade)',
+            ],
+            'alergias' => [
+                'type' => 'text',
+                'null' => true,
+                'comment' => 'Histórico de alergias do paciente',
+            ],
+            'observacoes' => [
+                'type' => 'text',
+                'null' => true,
+                'comment' => 'Observações gerais sobre o paciente',
             ],
             'created_at' => [
                 'type' => 'datetime',

@@ -10,7 +10,7 @@ class MedicoModel extends Model
     protected $primaryKey       = 'id_medico';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome',
@@ -73,17 +73,12 @@ class MedicoModel extends Model
     protected $afterDelete    = [];
 
     /**
-     * Verifica se há atendimentos vinculados antes de deletar
+     * Verifica se há atendimentos vinculados antes de deletar (soft delete)
      */
     protected function checkAtendimentosVinculados(array $data)
     {
-        $atendimentoModel = model('AtendimentoModel');
-        $atendimentosVinculados = $atendimentoModel->where('id_medico', $data['id'])->countAllResults();
-        
-        if ($atendimentosVinculados > 0) {
-            throw new \RuntimeException('Não é possível excluir o médico. Existem atendimentos vinculados a ele.');
-        }
-        
+        // Com soft delete, permitimos a exclusão mas mantemos os dados
+        // Os atendimentos vinculados não serão afetados
         return $data;
     }
 
@@ -120,6 +115,30 @@ class MedicoModel extends Model
                    ->join('atendimentos', 'atendimentos.id_medico = medicos.id_medico', 'left')
                    ->groupBy('medicos.id_medico')
                    ->findAll();
+    }
+
+    /**
+     * Busca médicos excluídos (soft deleted)
+     */
+    public function getMedicosExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um médico excluído
+     */
+    public function restaurarMedico($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca médico por CRM incluindo excluídos
+     */
+    public function getMedicoByCrmComExcluidos($crm)
+    {
+        return $this->withDeleted()->where('crm', $crm)->first();
     }
 
     /**

@@ -105,7 +105,8 @@ class Pacientes extends BaseController
             'numero_sus' => 'permit_empty|max_length[15]',
             'telefone' => 'permit_empty|max_length[15]',
             'celular' => 'permit_empty|max_length[16]',
-            'endereco' => 'permit_empty|max_length[500]',
+            'numero' => 'permit_empty|max_length[10]',
+            'complemento' => 'permit_empty|max_length[100]',
             'id_logradouro' => 'permit_empty|is_natural_no_zero',
             'observacoes' => 'permit_empty|max_length[1000]'
         ];
@@ -154,11 +155,8 @@ class Pacientes extends BaseController
             'celular' => $this->request->getPost('celular'),
             'email' => $this->request->getPost('email'),
             'numero_sus' => $this->request->getPost('numero_sus'),
-            'endereco' => $this->request->getPost('endereco'),
             'numero' => $this->request->getPost('numero'),
             'complemento' => $this->request->getPost('complemento'),
-            'cep' => $this->request->getPost('cep'),
-            'cidade' => $this->request->getPost('cidade'),
             'id_logradouro' => $id_logradouro,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
@@ -242,11 +240,8 @@ class Pacientes extends BaseController
             'numero_sus' => 'permit_empty|max_length[15]',
             'telefone' => 'permit_empty|max_length[15]',
             'celular' => 'permit_empty|max_length[16]',
-            'endereco' => 'permit_empty|max_length[500]',
             'numero' => 'permit_empty|max_length[10]',
             'complemento' => 'permit_empty|max_length[100]',
-            'cep' => 'permit_empty|max_length[9]',
-            'cidade' => 'permit_empty|max_length[100]',
             'rg' => 'permit_empty|max_length[20]',
             'id_logradouro' => 'permit_empty|is_natural_no_zero',
             'tipo_sanguineo' => 'permit_empty|max_length[5]',
@@ -293,11 +288,8 @@ class Pacientes extends BaseController
             'celular' => $this->request->getPost('celular'),
             'email' => $this->request->getPost('email'),
             'numero_sus' => $this->request->getPost('numero_sus'),
-            'endereco' => $this->request->getPost('endereco'),
             'numero' => $this->request->getPost('numero'),
             'complemento' => $this->request->getPost('complemento'),
-            'cep' => $this->request->getPost('cep'),
-            'cidade' => $this->request->getPost('cidade'),
             'id_logradouro' => $this->request->getPost('id_logradouro') ?? null,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
@@ -489,9 +481,22 @@ class Pacientes extends BaseController
             echo '<td>' . $paciente['telefone'] . '</td>';
             echo '<td>' . $paciente['celular'] . '</td>';
             echo '<td>' . $paciente['email'] . '</td>';
-            echo '<td>' . $paciente['endereco'] . '</td>';
-            echo '<td>' . ($paciente['nome_logradouro'] ?? '') . '</td>';
+            
+            // Montar endereço completo baseado no logradouro
+            $endereco_completo = '';
+            if (!empty($paciente['nome_logradouro'])) {
+                $endereco_completo = ($paciente['tipo_logradouro'] ?? '') . ' ' . $paciente['nome_logradouro'];
+                if (!empty($paciente['numero'])) {
+                    $endereco_completo .= ', ' . $paciente['numero'];
+                }
+                if (!empty($paciente['complemento'])) {
+                    $endereco_completo .= ' - ' . $paciente['complemento'];
+                }
+            }
+            echo '<td>' . $endereco_completo . '</td>';
+            
             echo '<td>' . ($paciente['nome_bairro'] ?? '') . '</td>';
+            echo '<td>' . ($paciente['cidade'] ?? '') . '</td>';
             echo '<td>' . date('d/m/Y H:i', strtotime($paciente['created_at'])) . '</td>';
             echo '</tr>';
         }

@@ -123,7 +123,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="cep" class="form-label">
                                                     CEP
@@ -134,7 +134,7 @@
                                                        name="cep" 
                                                        value="<?= old('cep', $logradouro['cep']) ?>"
                                                        placeholder="00000-000"
-                                                       maxlength="10">
+                                                       maxlength="9">
                                                 <div class="invalid-feedback">
                                                     <?= session()->getFlashdata('validation') ? session()->getFlashdata('validation')->getError('cep') : '' ?>
                                                 </div>
@@ -143,7 +143,48 @@
                                                 </small>
                                             </div>
                                         </div>
-                                        <div class="col-md-8">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label for="cidade" class="form-label">
+                                                    Cidade
+                                                </label>
+                                                <input type="text" 
+                                                       class="form-control <?= session()->getFlashdata('validation') && session()->getFlashdata('validation')->hasError('cidade') ? 'is-invalid' : '' ?>"
+                                                       id="cidade" 
+                                                       name="cidade" 
+                                                       value="<?= old('cidade', $logradouro['cidade'] ?? 'Dona Inês') ?>"
+                                                       placeholder="Nome da cidade"
+                                                       maxlength="100">
+                                                <div class="invalid-feedback">
+                                                    <?= session()->getFlashdata('validation') ? session()->getFlashdata('validation')->getError('cidade') : '' ?>
+                                                </div>
+                                                <small class="form-text text-muted">
+                                                    Cidade onde o logradouro está localizado
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label for="estado" class="form-label">
+                                                    Estado *
+                                                </label>
+                                                <select class="form-select <?= session()->getFlashdata('validation') && session()->getFlashdata('validation')->hasError('estado') ? 'is-invalid' : '' ?>"
+                                                        id="estado" 
+                                                        name="estado" 
+                                                        required>
+                                                    <option value="">UF</option>
+                                                    <?php foreach ($estados as $sigla => $nome): ?>
+                                                        <option value="<?= $sigla ?>" <?= old('estado', $logradouro['estado'] ?? 'PB') == $sigla ? 'selected' : '' ?>>
+                                                            <?= $sigla ?> - <?= $nome ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <div class="invalid-feedback">
+                                                    <?= session()->getFlashdata('validation') ? session()->getFlashdata('validation')->getError('estado') : '' ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="id_bairro" class="form-label">
                                                     Bairro *
@@ -337,11 +378,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const bairro = document.getElementById('id_bairro');
         const selectedBairro = bairro.options[bairro.selectedIndex];
         const cep = document.getElementById('cep').value;
+        const cidade = document.getElementById('cidade').value;
+        const estado = document.getElementById('estado');
+        const selectedEstado = estado.options[estado.selectedIndex];
         
         if (tipo && nome) {
             let preview = `${tipo} ${nome}`;
             if (selectedBairro && selectedBairro.value) {
                 preview += `, ${selectedBairro.text.split(' - ')[0]}`;
+            }
+            if (cidade) {
+                preview += `, ${cidade}`;
+            }
+            if (selectedEstado && selectedEstado.value) {
+                preview += ` - ${selectedEstado.value}`;
             }
             if (cep) {
                 preview += `, CEP: ${cep}`;
@@ -357,6 +407,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nome_logradouro').addEventListener('input', updatePreview);
     document.getElementById('id_bairro').addEventListener('change', updatePreview);
     document.getElementById('cep').addEventListener('input', updatePreview);
+    document.getElementById('cidade').addEventListener('input', updatePreview);
+    document.getElementById('estado').addEventListener('change', updatePreview);
 
     // Initial preview
     updatePreview();
@@ -380,6 +432,8 @@ const originalValues = {
     tipo_logradouro: '<?= $logradouro['tipo_logradouro'] ?>',
     nome_logradouro: '<?= $logradouro['nome_logradouro'] ?>',
     cep: '<?= $logradouro['cep'] ?>',
+    cidade: '<?= $logradouro['cidade'] ?? '' ?>',
+    estado: '<?= $logradouro['estado'] ?? 'PB' ?>',
     id_bairro: '<?= $logradouro['id_bairro'] ?>',
     observacoes: '<?= $logradouro['observacoes'] ?>'
 };
@@ -388,6 +442,8 @@ function resetForm() {
     document.getElementById('tipo_logradouro').value = originalValues.tipo_logradouro;
     document.getElementById('nome_logradouro').value = originalValues.nome_logradouro;
     document.getElementById('cep').value = originalValues.cep;
+    document.getElementById('cidade').value = originalValues.cidade;
+    document.getElementById('estado').value = originalValues.estado;
     document.getElementById('id_bairro').value = originalValues.id_bairro;
     document.getElementById('observacoes').value = originalValues.observacoes;
     

@@ -90,18 +90,29 @@
                                     </div>
                                     
                                     <div class="info-group">
-                                        <label>Endereço:</label>
-                                        <p><?= esc($paciente['endereco'] ?? 'Não informado') ?></p>
-                                    </div>
-                                    
-                                    <div class="info-group">
-                                        <label>Logradouro:</label>
-                                        <p><?= esc($paciente['nome_logradouro'] ?? 'Não informado') ?></p>
-                                    </div>
-                                    
-                                    <div class="info-group">
-                                        <label>Bairro:</label>
-                                        <p><?= esc($paciente['nome_bairro'] ?? 'Não informado') ?></p>
+                                        <label>Endereço Completo:</label>
+                                        <p>
+                                            <?php if (!empty($paciente['nome_logradouro'])): ?>
+                                                <?= esc($paciente['tipo_logradouro'] ?? '') ?> <?= esc($paciente['nome_logradouro']) ?>
+                                                <?php if (!empty($paciente['numero'])): ?>
+                                                    , <?= esc($paciente['numero']) ?>
+                                                <?php endif; ?>
+                                                <?php if (!empty($paciente['complemento'])): ?>
+                                                    - <?= esc($paciente['complemento']) ?>
+                                                <?php endif; ?>
+                                                <?php if (!empty($paciente['nome_bairro'])): ?>
+                                                    <br>Bairro: <?= esc($paciente['nome_bairro']) ?>
+                                                <?php endif; ?>
+                                                <?php if (!empty($paciente['cidade'])): ?>
+                                                    <br>Cidade: <?= esc($paciente['cidade']) ?>
+                                                <?php endif; ?>
+                                                <?php if (!empty($paciente['cep'])): ?>
+                                                    <br>CEP: <?= esc($paciente['cep']) ?>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                Não informado
+                                            <?php endif; ?>
+                                        </p>
                                     </div>
                                     
                                     <div class="info-group">

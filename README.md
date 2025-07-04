@@ -1,60 +1,181 @@
-# CodeIgniter 4 Framework
+# Sistema de Pronto Atendimento
 
-## What is CodeIgniter?
+Sistema de gestão para Pronto Atendimento desenvolvido em CodeIgniter 4, com foco na segurança e integridade dos dados através de soft delete.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## Características Principais
 
-This repository holds the distributable version of the framework.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- ✅ **Soft Delete** habilitado em todos os models
+- ✅ Sistema de auditoria e recuperação de dados
+- ✅ Interface web responsiva
+- ✅ Gestão completa de pacientes, médicos e atendimentos
+- ✅ Controle de procedimentos e exames
+- ✅ Sistema de localização (bairros e logradouros)
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Tecnologias
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+- **Framework:** CodeIgniter 4
+- **Linguagem:** PHP 8.1+
+- **Banco de Dados:** MySQL/MariaDB
+- **Frontend:** Bootstrap, JavaScript
+- **CLI:** Comandos personalizados para gestão
 
-## Important Change with index.php
+## Documentação
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+### Sistema de Soft Delete
+- 📋 [Documentação Completa](docs/soft-delete-system.md) - Visão geral e guia do usuário
+- 🔧 [Documentação Técnica](docs/soft-delete-technical-documentation.md) - Detalhes para desenvolvedores
+- ⚡ [Referência Rápida](docs/soft-delete-quick-reference.md) - Comandos e código essenciais
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+### Outras Documentações
+- 📁 [Análise do Sistema](docs/analysis/)
+- 🗄️ [Estrutura do Banco](docs/database/)
+- 📋 [Requisitos](docs/requeriments/)
 
-**Please** read the user guide for a better explanation of how CI4 works!
+## Instalação
 
-## Repository Management
+1. **Clone o repositório:**
+   ```bash
+   git clone [repository-url]
+   cd prontoatendimento
+   ```
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+2. **Instale as dependências:**
+   ```bash
+   composer install
+   ```
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+3. **Configure o ambiente:**
+   ```bash
+   cp env .env
+   # Edite .env com suas configurações de banco
+   ```
 
-## Contributing
+4. **Execute as migrações:**
+   ```bash
+   php spark migrate
+   ```
 
-We welcome contributions from the community.
+5. **Popule o banco (opcional):**
+   ```bash
+   php spark db:seed BairroSeeder
+   ```
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md) section in the development repository.
+## Comandos CLI Disponíveis
 
-## Server Requirements
+### Gestão de Soft Delete
+```bash
+# Ver estatísticas de registros excluídos
+php spark softdelete:manage stats
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+# Limpar registros antigos (30 dias por padrão)
+php spark softdelete:manage cleanup
 
+# Limpar registros de 60 dias sem confirmação
+php spark softdelete:manage cleanup --days=60 --force
+
+# Restaurar um registro específico
+php spark softdelete:manage restore --model=PacienteModel --id=123
+```
+
+### Outros Comandos
+```bash
+# Verificar usuários online
+php spark check:lastactive
+
+# Criar super admin
+php spark create:superadmin
+
+# Gerenciar soft deletes
+php spark softdelete:manager
+```
+
+## Estrutura do Projeto
+
+```
+app/
+├── Commands/          # Comandos CLI personalizados
+├── Controllers/       # Controladores da aplicação
+├── Models/           # Models com soft delete habilitado
+├── Views/            # Templates e views
+├── Database/
+│   ├── Migrations/   # Migrações do banco
+│   └── Seeds/        # Seeders para popular dados
+└── Config/           # Configurações da aplicação
+
+docs/                 # Documentação completa
+├── soft-delete-system.md
+├── soft-delete-technical-documentation.md
+└── soft-delete-quick-reference.md
+```
+
+## Models com Soft Delete
+
+Todos os models principais possuem soft delete habilitado:
+
+- ✅ **AtendimentoModel** - Atendimentos médicos
+- ✅ **PacienteModel** - Dados dos pacientes  
+- ✅ **MedicoModel** - Cadastro de médicos
+- ✅ **ExameModel** - Tipos de exames
+- ✅ **ProcedimentoModel** - Procedimentos médicos
+- ✅ **BairroModel** - Bairros da cidade
+- ✅ **LogradouroModel** - Logradouros/endereços
+- ✅ **AtendimentoExameModel** - Relação atendimento-exame
+- ✅ **AtendimentoProcedimentoModel** - Relação atendimento-procedimento
+
+## Requisitos do Sistema
+
+**PHP:** versão 8.1 ou superior
+
+**Extensões obrigatórias:**
 - [intl](http://php.net/manual/en/intl.requirements.php)
 - [mbstring](http://php.net/manual/en/mbstring.installation.php)
+- [json](http://php.net/manual/en/json.installation.php) (habilitado por padrão)
+- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) (para MySQL)
+- [libcurl](http://php.net/manual/en/curl.requirements.php) (para requisições HTTP)
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+**Banco de Dados:**
+- MySQL 5.7+ ou MariaDB 10.3+
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## Segurança e Backup
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+⚠️ **IMPORTANTE:** Este sistema utiliza soft delete para preservar dados críticos de saúde.
+
+### Recomendações:
+1. **Backups regulares** do banco de dados
+2. **Limpeza periódica** de registros antigos via CLI
+3. **Monitoramento** do crescimento das tabelas
+4. **Auditoria** regular das exclusões
+
+### Comandos de Manutenção:
+```bash
+# Verificar status dos dados
+php spark softdelete:manage stats
+
+# Limpeza mensal automatizada (via cron)
+0 2 1 * * cd /path/to/project && php spark softdelete:manage cleanup --days=90 --force
+```
+
+## Contribuição
+
+Para contribuir com o projeto:
+
+1. Fork o repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## Suporte
+
+Para suporte e dúvidas:
+- 📋 Consulte a [documentação completa](docs/)
+- 🐛 Reporte bugs através das issues
+- 💬 Discussões e dúvidas no fórum do projeto
+
+---
+
+> **Nota:** Este sistema foi desenvolvido especificamente para Pronto Atendimento, com foco em segurança, auditoria e recuperação de dados através do sistema de soft delete implementado.

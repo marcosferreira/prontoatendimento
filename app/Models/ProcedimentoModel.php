@@ -10,7 +10,7 @@ class ProcedimentoModel extends Model
     protected $primaryKey       = 'id_procedimento';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome',
@@ -66,18 +66,12 @@ class ProcedimentoModel extends Model
     protected $afterDelete    = [];
 
     /**
-     * Verifica se há atendimentos vinculados antes de deletar
+     * Verifica se há atendimentos vinculados antes de deletar (soft delete)
      */
     protected function checkAtendimentosVinculados(array $data)
     {
-        $db = \Config\Database::connect();
-        $builder = $db->table('atendimento_procedimentos');
-        $count = $builder->where('id_procedimento', $data['id'])->countAllResults();
-        
-        if ($count > 0) {
-            throw new \RuntimeException('Não é possível excluir o procedimento. Existem atendimentos vinculados a ele.');
-        }
-        
+        // Com soft delete, permitimos a exclusão mas mantemos os dados
+        // Os atendimentos vinculados não serão afetados
         return $data;
     }
 
@@ -119,5 +113,29 @@ class ProcedimentoModel extends Model
                    ->join('atendimento_procedimentos', 'atendimento_procedimentos.id_procedimento = procedimentos.id_procedimento', 'left')
                    ->groupBy('procedimentos.id_procedimento')
                    ->findAll();
+    }
+
+    /**
+     * Busca procedimentos excluídos (soft deleted)
+     */
+    public function getProcedimentosExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um procedimento excluído
+     */
+    public function restaurarProcedimento($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca procedimento por código incluindo excluídos
+     */
+    public function getProcedimentoByCodigoComExcluidos($codigo)
+    {
+        return $this->withDeleted()->where('codigo', $codigo)->first();
     }
 }

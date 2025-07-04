@@ -177,58 +177,10 @@
                                         </h5>
                                         
                                         <div class="row">
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label for="cep" class="form-label">CEP</label>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           id="cep" 
-                                                           name="cep" 
-                                                           value="<?= old('cep') ?>"
-                                                           placeholder="00000-000"
-                                                           data-mask="00000-000">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-7">
-                                                <div class="mb-3">
-                                                    <label for="endereco" class="form-label">Endereço</label>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           id="endereco" 
-                                                           name="endereco" 
-                                                           value="<?= old('endereco') ?>"
-                                                           placeholder="Digite o endereço">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="mb-3">
-                                                    <label for="numero" class="form-label">Número</label>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           id="numero" 
-                                                           name="numero" 
-                                                           value="<?= old('numero') ?>"
-                                                           placeholder="123">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
                                             <div class="col-md-4">
                                                 <div class="mb-3">
-                                                    <label for="complemento" class="form-label">Complemento</label>
-                                                    <input type="text" 
-                                                           class="form-control" 
-                                                           id="complemento" 
-                                                           name="complemento" 
-                                                           value="<?= old('complemento') ?>"
-                                                           placeholder="Apto, Bloco, etc.">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="mb-3">
-                                                    <label for="id_bairro" class="form-label">Bairro</label>
-                                                    <select class="form-select" id="id_bairro" name="id_bairro">
+                                                    <label for="id_bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="id_bairro" name="id_bairro" required>
                                                         <option value="">Selecione o bairro</option>
                                                         <?php if (isset($bairros) && !empty($bairros)): ?>
                                                             <?php foreach ($bairros as $bairro): ?>
@@ -248,11 +200,11 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-md-8">
                                                 <div class="mb-3">
-                                                    <label for="id_logradouro" class="form-label">Logradouro</label>
-                                                    <select class="form-select" id="id_logradouro" name="id_logradouro">
-                                                        <option value="">Selecione o logradouro</option>
+                                                    <label for="id_logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
+                                                    <select class="form-select" id="id_logradouro" name="id_logradouro" required>
+                                                        <option value="">Primeiro selecione o bairro</option>
                                                         <?php if (isset($logradouros) && !empty($logradouros)): ?>
                                                             <?php foreach ($logradouros as $logradouro): ?>
                                                                 <?php 
@@ -273,15 +225,29 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-3">
                                                 <div class="mb-3">
-                                                    <label for="cidade" class="form-label">Cidade</label>
+                                                    <label for="numero" class="form-label">Número</label>
                                                     <input type="text" 
                                                            class="form-control" 
-                                                           id="cidade" 
-                                                           name="cidade" 
-                                                           value="<?= old('cidade') ?>"
-                                                           placeholder="Digite a cidade">
+                                                           id="numero" 
+                                                           name="numero" 
+                                                           value="<?= old('numero') ?>"
+                                                           placeholder="123">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="mb-3">
+                                                    <label for="complemento" class="form-label">Complemento</label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="complemento" 
+                                                           name="complemento" 
+                                                           value="<?= old('complemento') ?>"
+                                                           placeholder="Apartamento, Bloco, Casa, etc.">
                                                 </div>
                                             </div>
                                         </div>
@@ -392,33 +358,8 @@
 $(document).ready(function() {
     // Máscaras
     $('#cpf').mask('000.000.000-00');
-    $('#cep').mask('00000-000');
     $('#telefone').mask('(00) 0000-0000');
     $('#celular').mask('(00) 00000-0000');
-    
-    // Buscar CEP
-    $('#cep').blur(function() {
-        var cep = $(this).val().replace(/\D/g, '');
-        
-        if (cep.length == 8) {
-            $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function(data) {
-                if (!data.erro) {
-                    $('#endereco').val(data.logradouro);
-                    $('#cidade').val(data.localidade);
-                    
-                    // Buscar bairro no select
-                    var bairroNome = data.bairro.toLowerCase();
-                    $('#id_bairro option').each(function() {
-                        if ($(this).text().toLowerCase().indexOf(bairroNome) !== -1) {
-                            $(this).prop('selected', true);
-                            $('#id_bairro').trigger('change');
-                            return false;
-                        }
-                    });
-                }
-            });
-        }
-    });
     
     // Filtrar logradouros por bairro
     $('#id_bairro').change(function() {

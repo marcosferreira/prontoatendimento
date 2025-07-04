@@ -10,7 +10,7 @@ class AtendimentoModel extends Model
     protected $primaryKey       = 'id_atendimento';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'id_paciente',
@@ -226,5 +226,42 @@ class AtendimentoModel extends Model
             'Retorno' => 'Retorno',
             'Óbito' => 'Óbito'
         ];
+    }
+
+    /**
+     * Busca atendimentos excluídos (soft deleted)
+     */
+    public function getAtendimentosExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um atendimento excluído
+     */
+    public function restaurarAtendimento($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca atendimentos incluindo excluídos
+     */
+    public function getAtendimentosComExcluidos()
+    {
+        return $this->withDeleted()->findAll();
+    }
+
+    /**
+     * Busca atendimentos completos incluindo excluídos
+     */
+    public function getAtendimentosCompletosComExcluidos()
+    {
+        return $this->select('atendimentos.*, pacientes.nome as nome_paciente, pacientes.cpf, medicos.nome as nome_medico, medicos.crm')
+                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                   ->join('medicos', 'medicos.id_medico = atendimentos.id_medico', 'left')
+                   ->withDeleted()
+                   ->orderBy('atendimentos.data_atendimento', 'DESC')
+                   ->findAll();
     }
 }

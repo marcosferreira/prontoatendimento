@@ -7,22 +7,35 @@
 -- =============================================
 
 -- Criação da tabela BAIRRO
-CREATE TABLE bairro (
+CREATE TABLE bairros (
     id_bairro SERIAL PRIMARY KEY,
     nome_bairro VARCHAR(100) NOT NULL,
     area VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Criação da tabela LOGRADOURO
+CREATE TABLE logradouros (
+    id_logradouro SERIAL PRIMARY KEY,
+    nome_logradouro VARCHAR(150) NOT NULL,
+    tipo_logradouro VARCHAR(20) DEFAULT 'Rua' CHECK (tipo_logradouro IN ('Rua', 'Avenida', 'Travessa', 'Alameda', 'Praça', 'Estrada', 'Sítio', 'Rodovia', 'Via', 'Beco', 'Largo')),
+    cep VARCHAR(10),
+    id_bairro INTEGER NOT NULL REFERENCES bairros(id_bairro) ON DELETE CASCADE ON UPDATE CASCADE,
+    observacoes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Criação da tabela PACIENTE
-CREATE TABLE paciente (
+CREATE TABLE pacientes (
     id_paciente SERIAL PRIMARY KEY,
-    nome VARCHAR(200) NOT NULL,
-    sus VARCHAR(20),
-    cpf VARCHAR(14) UNIQUE,
+    nome VARCHAR(255) NOT NULL,
+    sus VARCHAR(15),
+    cpf VARCHAR(14) UNIQUE NOT NULL,
     endereco TEXT,
-    id_bairro INTEGER REFERENCES bairro(id_bairro),
-    data_nascimento DATE,
+    id_logradouro INTEGER REFERENCES logradouros(id_logradouro) ON DELETE SET NULL ON UPDATE CASCADE,
+    data_nascimento DATE NOT NULL,
     idade INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

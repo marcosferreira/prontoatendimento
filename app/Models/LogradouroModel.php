@@ -10,12 +10,14 @@ class LogradouroModel extends Model
     protected $primaryKey       = 'id_logradouro';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome_logradouro',
         'tipo_logradouro',
         'cep',
+        'cidade',
+        'estado',
         'id_bairro',
         'observacoes'
     ];
@@ -37,7 +39,9 @@ class LogradouroModel extends Model
     protected $validationRules      = [
         'nome_logradouro' => 'required|max_length[150]',
         'tipo_logradouro' => 'required|in_list[Rua,Avenida,Travessa,Alameda,Praça,Estrada,Sítio,Rodovia,Via,Beco,Largo]',
-        'cep'             => 'permit_empty|max_length[10]',
+        'cep'             => 'permit_empty|max_length[9]',
+        'cidade'          => 'permit_empty|max_length[100]',
+        'estado'          => 'required|in_list[AC,AL,AP,AM,BA,CE,DF,ES,GO,MA,MT,MS,MG,PA,PB,PR,PE,PI,RJ,RN,RS,RO,RR,SC,SP,SE,TO]',
         'id_bairro'       => 'required|is_natural_no_zero',
         'observacoes'     => 'permit_empty'
     ];
@@ -52,6 +56,13 @@ class LogradouroModel extends Model
         ],
         'cep' => [
             'max_length' => 'O CEP não pode ter mais de 10 caracteres'
+        ],
+        'cidade' => [
+            'max_length' => 'O nome da cidade não pode ter mais de 100 caracteres'
+        ],
+        'estado' => [
+            'required' => 'O estado é obrigatório',
+            'in_list'  => 'Estado inválido. Deve ser uma sigla válida (AC, AL, AM, etc.)'
         ],
         'id_bairro' => [
             'required'           => 'O bairro é obrigatório',
@@ -153,6 +164,66 @@ class LogradouroModel extends Model
             'Via' => 'Via',
             'Beco' => 'Beco',
             'Largo' => 'Largo'
+        ];
+    }
+
+    /**
+     * Busca logradouros excluídos (soft deleted)
+     */
+    public function getLogradourosExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um logradouro excluído
+     */
+    public function restaurarLogradouro($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca logradouros incluindo excluídos
+     */
+    public function getLogradourosComExcluidos()
+    {
+        return $this->withDeleted()->findAll();
+    }
+
+    /**
+     * Retorna a lista de estados brasileiros
+     */
+    public function getEstados()
+    {
+        return [
+            'AC' => 'Acre',
+            'AL' => 'Alagoas', 
+            'AP' => 'Amapá',
+            'AM' => 'Amazonas',
+            'BA' => 'Bahia',
+            'CE' => 'Ceará',
+            'DF' => 'Distrito Federal',
+            'ES' => 'Espírito Santo',
+            'GO' => 'Goiás',
+            'MA' => 'Maranhão',
+            'MT' => 'Mato Grosso',
+            'MS' => 'Mato Grosso do Sul',
+            'MG' => 'Minas Gerais',
+            'PA' => 'Pará',
+            'PB' => 'Paraíba',
+            'PR' => 'Paraná',
+            'PE' => 'Pernambuco',
+            'PI' => 'Piauí',
+            'RJ' => 'Rio de Janeiro',
+            'RN' => 'Rio Grande do Norte',
+            'RS' => 'Rio Grande do Sul',
+            'RO' => 'Rondônia',
+            'RR' => 'Roraima',
+            'SC' => 'Santa Catarina',
+            'SP' => 'São Paulo',
+            'SE' => 'Sergipe',
+            'TO' => 'Tocantins'
         ];
     }
 }

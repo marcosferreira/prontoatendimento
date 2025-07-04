@@ -28,8 +28,23 @@ class CreateLogradouroTable extends Migration
             ],
             'cep' => [
                 'type'       => 'varchar',
-                'constraint' => 10,
+                'constraint' => '9',
                 'null'       => true,
+                'comment'    => 'CEP no formato 00000-000',
+            ],
+            'cidade' => [
+                'type'       => 'varchar',
+                'constraint' => '100',
+                'null'       => true,
+                'default'    => 'Dona Inês',
+                'comment'    => 'Cidade do logradouro',
+            ],
+            'estado' => [
+                'type'       => 'enum',
+                'constraint' => ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'],
+                'default'    => 'PB',
+                'null'       => false,
+                'comment'    => 'Estado do logradouro (sigla UF)',
             ],
             'id_bairro' => [
                 'type'       => 'int',
@@ -40,6 +55,7 @@ class CreateLogradouroTable extends Migration
             'observacoes' => [
                 'type' => 'text',
                 'null' => true,
+                'comment' => 'Observações sobre o logradouro',
             ],
             'created_at' => [
                 'type' => 'datetime',

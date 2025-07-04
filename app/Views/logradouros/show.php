@@ -117,6 +117,28 @@
                                     </div>
 
                                     <div class="info-item mb-3">
+                                        <label class="info-label">Cidade:</label>
+                                        <div class="info-value">
+                                            <?php if (!empty($logradouro['cidade'])): ?>
+                                                <strong><?= esc($logradouro['cidade']) ?></strong>
+                                            <?php else: ?>
+                                                <span class="text-muted">Não informado</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item mb-3">
+                                        <label class="info-label">Estado:</label>
+                                        <div class="info-value">
+                                            <?php if (!empty($logradouro['estado'])): ?>
+                                                <span class="badge bg-primary"><?= esc($logradouro['estado']) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted">Não informado</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-item mb-3">
                                         <label class="info-label">Bairro:</label>
                                         <div class="info-value">
                                             <a href="<?= base_url('bairros/' . $logradouro['id_bairro']) ?>" 
@@ -169,6 +191,12 @@
                                         <span class="text-muted"><?= esc($logradouro['nome_bairro']) ?></span>
                                         <?php if ($logradouro['area']): ?>
                                             <span class="text-muted"> - <?= esc($logradouro['area']) ?></span>
+                                        <?php endif; ?><br>
+                                        <?php if (!empty($logradouro['cidade'])): ?>
+                                            <span class="text-muted"><?= esc($logradouro['cidade']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if (!empty($logradouro['estado'])): ?>
+                                            <span class="text-muted"> - <?= esc($logradouro['estado']) ?></span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="col-md-4 text-end">
@@ -382,7 +410,19 @@ function confirmDelete() {
 }
 
 function copyAddress() {
-    const address = `<?= esc($logradouro['tipo_logradouro'] . ' ' . $logradouro['nome_logradouro'] . ', ' . $logradouro['nome_bairro']) ?><?= $logradouro['cep'] ? ', CEP: ' . $logradouro['cep'] : '' ?>`;
+    let address = `<?= esc($logradouro['tipo_logradouro'] . ' ' . $logradouro['nome_logradouro'] . ', ' . $logradouro['nome_bairro']) ?>`;
+    
+    <?php if (!empty($logradouro['cidade'])): ?>
+        address += `, <?= esc($logradouro['cidade']) ?>`;
+    <?php endif; ?>
+    
+    <?php if (!empty($logradouro['estado'])): ?>
+        address += ` - <?= esc($logradouro['estado']) ?>`;
+    <?php endif; ?>
+    
+    <?php if ($logradouro['cep']): ?>
+        address += `, CEP: <?= esc($logradouro['cep']) ?>`;
+    <?php endif; ?>
     
     navigator.clipboard.writeText(address).then(function() {
         // Show success message

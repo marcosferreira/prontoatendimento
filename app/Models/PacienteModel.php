@@ -10,19 +10,16 @@ class PacienteModel extends Model
     protected $primaryKey       = 'id_paciente';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome',
         'sus',
         'cpf',
         'rg',
-        'endereco',
+        'id_logradouro',
         'numero',
         'complemento',
-        'cep',
-        'cidade',
-        'id_logradouro',
         'data_nascimento',
         'idade',
         'sexo',
@@ -61,17 +58,15 @@ class PacienteModel extends Model
         'telefone' => 'permit_empty|max_length[15]',
         'celular' => 'permit_empty|max_length[16]',
         'numero_sus' => 'permit_empty|max_length[15]',
-        'endereco' => 'permit_empty|max_length[500]',
         'numero' => 'permit_empty|max_length[10]',
         'complemento' => 'permit_empty|max_length[100]',
-        'cep' => 'permit_empty|max_length[9]',
-        'cidade' => 'permit_empty|max_length[100]',
         'rg' => 'permit_empty|max_length[20]',
         'nome_responsavel' => 'permit_empty|max_length[255]',
         'alergias' => 'permit_empty|max_length[1000]',
         'observacoes' => 'permit_empty|max_length[1000]',
         'sus' => 'permit_empty|max_length[15]',
-        'idade' => 'permit_empty|integer|greater_than_equal_to[0]|less_than[200]'
+        'idade' => 'permit_empty|integer|greater_than_equal_to[0]|less_than[200]',
+        'id_logradouro' => 'permit_empty|is_natural_no_zero'
     ];
     
     protected $validationMessages = [
@@ -139,7 +134,7 @@ class PacienteModel extends Model
      */
     public function getPacientesWithLogradouro()
     {
-        $pacientes = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.cep, bairros.nome_bairro, bairros.area')
+        $pacientes = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.tipo_logradouro, logradouros.cep, logradouros.cidade, bairros.nome_bairro, bairros.area')
                          ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
                          ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
                          ->findAll();
@@ -161,7 +156,7 @@ class PacienteModel extends Model
      */
     public function getPacienteWithLogradouro($id)
     {
-        $paciente = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.cep, bairros.nome_bairro, bairros.area')
+        $paciente = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.tipo_logradouro, logradouros.cep, logradouros.cidade, bairros.nome_bairro, bairros.area')
                         ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
                         ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
                         ->where('pacientes.id_paciente', $id)
@@ -206,6 +201,38 @@ class PacienteModel extends Model
                     ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'inner')
                     ->where('logradouros.id_bairro', $idBairro)
                     ->findAll();
+    }
+
+    /**
+     * Busca pacientes excluídos (soft deleted)
+     */
+    public function getPacientesExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um paciente excluído
+     */
+    public function restaurarPaciente($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca pacientes incluindo os excluídos
+     */
+    public function getPacientesComExcluidos()
+    {
+        return $this->withDeleted()->findAll();
+    }
+
+    /**
+     * Busca paciente por CPF incluindo excluídos
+     */
+    public function getPacienteByCpfComExcluidos($cpf)
+    {
+        return $this->withDeleted()->where('cpf', $cpf)->first();
     }
 
     /**

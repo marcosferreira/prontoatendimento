@@ -10,7 +10,7 @@ class BairroModel extends Model
     protected $primaryKey       = 'id_bairro';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'nome_bairro',
@@ -61,18 +61,12 @@ class BairroModel extends Model
     protected $afterDelete    = [];
 
     /**
-     * Verifica se há pacientes vinculados antes de deletar
+     * Verifica se há logradouros vinculados antes de deletar (soft delete)
      */
     protected function checkPacientesVinculados(array $data)
     {
-        // Verificar se há logradouros vinculados ao bairro
-        $logradouroModel = new \App\Models\LogradouroModel();
-        $logradourosVinculados = $logradouroModel->where('id_bairro', $data['id'])->countAllResults();
-        
-        if ($logradourosVinculados > 0) {
-            throw new \RuntimeException('Não é possível excluir o bairro. Existem logradouros vinculados a ele.');
-        }
-        
+        // Com soft delete, permitimos a exclusão mas mantemos os dados
+        // Os logradouros vinculados não serão afetados
         return $data;
     }
 
@@ -152,5 +146,29 @@ class BairroModel extends Model
         $pacientesVinculados = $this->getTotalPacientesByBairro($idBairro);
         
         return $logradourosVinculados === 0 && $pacientesVinculados === 0;
+    }
+
+    /**
+     * Busca bairros excluídos (soft deleted)
+     */
+    public function getBairrosExcluidos()
+    {
+        return $this->onlyDeleted()->findAll();
+    }
+
+    /**
+     * Restaura um bairro excluído
+     */
+    public function restaurarBairro($id)
+    {
+        return $this->update($id, ['deleted_at' => null]);
+    }
+
+    /**
+     * Busca bairros incluindo excluídos
+     */
+    public function getBairrosComExcluidos()
+    {
+        return $this->withDeleted()->findAll();
     }
 }
