@@ -57,22 +57,22 @@ class Atendimentos extends BaseController
         }
         
         if ($classificacao) {
-            $query = $query->where('atendimentos.classificacao_risco', $classificacao);
+            $query = $query->where('pam_atendimentos.classificacao_risco', $classificacao);
         }
         
         if ($data_inicio) {
-            $query = $query->where('DATE(atendimentos.data_atendimento) >=', $data_inicio);
+            $query = $query->where('DATE(pam_atendimentos.data_atendimento) >=', $data_inicio);
         }
         
         if ($data_fim) {
-            $query = $query->where('DATE(atendimentos.data_atendimento) <=', $data_fim);
+            $query = $query->where('DATE(pam_atendimentos.data_atendimento) <=', $data_fim);
         }
         
         if ($medico) {
-            $query = $query->where('atendimentos.id_medico', $medico);
+            $query = $query->where('pam_atendimentos.id_medico', $medico);
         }
         
-        $atendimentos = $query->orderBy('atendimentos.data_atendimento', 'DESC')->findAll();
+        $atendimentos = $query->orderBy('pam_atendimentos.data_atendimento', 'DESC')->findAll();
 
         // Estatísticas
         $stats = [
@@ -454,18 +454,18 @@ class Atendimentos extends BaseController
         $query = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, medicos.nome as medico_nome')
                                        ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
                                        ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
-                                       ->where('DATE(atendimentos.data_atendimento) >=', $data_inicio)
-                                       ->where('DATE(atendimentos.data_atendimento) <=', $data_fim);
+                                       ->where('DATE(pam_atendimentos.data_atendimento) >=', $data_inicio)
+                                       ->where('DATE(pam_atendimentos.data_atendimento) <=', $data_fim);
 
         if ($medico) {
-            $query = $query->where('atendimentos.id_medico', $medico);
+            $query = $query->where('pam_atendimentos.id_medico', $medico);
         }
 
         if ($classificacao) {
-            $query = $query->where('atendimentos.classificacao_risco', $classificacao);
+            $query = $query->where('pam_atendimentos.classificacao_risco', $classificacao);
         }
 
-        $atendimentos = $query->orderBy('atendimentos.data_atendimento', 'DESC')->findAll();
+        $atendimentos = $query->orderBy('pam_atendimentos.data_atendimento', 'DESC')->findAll();
 
         // Estatísticas do período
         $stats = [

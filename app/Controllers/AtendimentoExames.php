@@ -41,7 +41,7 @@ class AtendimentoExames extends BaseController
             ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
             ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
             ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-            ->orderBy('atendimento_exames.data_solicitacao', 'DESC');
+            ->orderBy('pam_atendimento_exames.data_solicitacao', 'DESC');
 
         if ($search) {
             $builder->groupStart()
@@ -60,7 +60,7 @@ class AtendimentoExames extends BaseController
         }
 
         if ($status) {
-            $builder->where('atendimento_exames.status', $status);
+            $builder->where('pam_atendimento_exames.status', $status);
         }
 
         $atendimentoExames = $builder->paginate(20);
@@ -349,8 +349,8 @@ class AtendimentoExames extends BaseController
                      exames.codigo,
                      exames.tipo,
                      COUNT(*) as total_solicitacoes,
-                     SUM(CASE WHEN atendimento_exames.status = "Realizado" THEN 1 ELSE 0 END) as total_realizados,
-                     SUM(CASE WHEN atendimento_exames.status = "Cancelado" THEN 1 ELSE 0 END) as total_cancelados')
+                     SUM(CASE WHEN pam_atendimento_exames.status = "Realizado" THEN 1 ELSE 0 END) as total_realizados,
+                     SUM(CASE WHEN pam_atendimento_exames.status = "Cancelado" THEN 1 ELSE 0 END) as total_cancelados')
             ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
             ->groupBy('atendimento_exames.id_exame')
             ->orderBy('total_solicitacoes', 'DESC');
@@ -361,18 +361,18 @@ class AtendimentoExames extends BaseController
 
         switch ($periodo) {
             case 'hoje':
-                $builder->where('DATE(atendimento_exames.data_solicitacao)', date('Y-m-d'));
+                $builder->where('DATE(pam_atendimento_exames.data_solicitacao)', date('Y-m-d'));
                 break;
             case 'semana':
-                $builder->where('WEEK(atendimento_exames.data_solicitacao)', date('W'))
-                       ->where('YEAR(atendimento_exames.data_solicitacao)', date('Y'));
+                $builder->where('WEEK(pam_atendimento_exames.data_solicitacao)', date('W'))
+                       ->where('YEAR(pam_atendimento_exames.data_solicitacao)', date('Y'));
                 break;
             case 'mes':
-                $builder->where('MONTH(atendimento_exames.data_solicitacao)', date('m'))
-                       ->where('YEAR(atendimento_exames.data_solicitacao)', date('Y'));
+                $builder->where('MONTH(pam_atendimento_exames.data_solicitacao)', date('m'))
+                       ->where('YEAR(pam_atendimento_exames.data_solicitacao)', date('Y'));
                 break;
             case 'ano':
-                $builder->where('YEAR(atendimento_exames.data_solicitacao)', date('Y'));
+                $builder->where('YEAR(pam_atendimento_exames.data_solicitacao)', date('Y'));
                 break;
         }
 
@@ -382,7 +382,7 @@ class AtendimentoExames extends BaseController
         $estatisticasTipo = $this->atendimentoExameModel
             ->select('exames.tipo,
                      COUNT(*) as total,
-                     SUM(CASE WHEN atendimento_exames.status = "Realizado" THEN 1 ELSE 0 END) as realizados')
+                     SUM(CASE WHEN pam_atendimento_exames.status = "Realizado" THEN 1 ELSE 0 END) as realizados')
             ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
             ->groupBy('exames.tipo')
             ->findAll();

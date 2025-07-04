@@ -30,16 +30,16 @@ class AtendimentoProcedimentos extends BaseController
         $procedimento = $this->request->getGet('procedimento');
         
         $builder = $this->atendimentoProcedimentoModel
-            ->select('atendimento_procedimentos.*, 
+            ->select('pam_atendimento_procedimentos.*, 
                      procedimentos.nome as nome_procedimento, 
                      procedimentos.codigo as codigo_procedimento,
                      atendimentos.data_atendimento,
                      pacientes.nome as nome_paciente,
                      pacientes.cpf')
-            ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
-            ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_procedimentos.id_atendimento')
+            ->join('procedimentos', 'procedimentos.id_procedimento = pam_atendimento_procedimentos.id_procedimento')
+            ->join('atendimentos', 'atendimentos.id_atendimento = pam_atendimento_procedimentos.id_atendimento')
             ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-            ->orderBy('atendimento_procedimentos.created_at', 'DESC');
+            ->orderBy('pam_atendimento_procedimentos.created_at', 'DESC');
 
         if ($search) {
             $builder->groupStart()
@@ -50,11 +50,11 @@ class AtendimentoProcedimentos extends BaseController
         }
 
         if ($atendimento) {
-            $builder->where('atendimento_procedimentos.id_atendimento', $atendimento);
+            $builder->where('pam_atendimento_procedimentos.id_atendimento', $atendimento);
         }
 
         if ($procedimento) {
-            $builder->where('atendimento_procedimentos.id_procedimento', $procedimento);
+            $builder->where('pam_atendimento_procedimentos.id_procedimento', $procedimento);
         }
 
         $atendimentoProcedimentos = $builder->paginate(20);
@@ -149,7 +149,7 @@ class AtendimentoProcedimentos extends BaseController
     public function show($id)
     {
         $atendimentoProcedimento = $this->atendimentoProcedimentoModel
-            ->select('atendimento_procedimentos.*, 
+            ->select('pam_atendimento_procedimentos.*, 
                      procedimentos.nome as nome_procedimento, 
                      procedimentos.codigo as codigo_procedimento,
                      procedimentos.descricao as descricao_procedimento,
@@ -157,8 +157,8 @@ class AtendimentoProcedimentos extends BaseController
                      pacientes.nome as nome_paciente,
                      pacientes.cpf,
                      medicos.nome as nome_medico')
-            ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
-            ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_procedimentos.id_atendimento')
+            ->join('procedimentos', 'procedimentos.id_procedimento = pam_atendimento_procedimentos.id_procedimento')
+            ->join('atendimentos', 'atendimentos.id_atendimento = pam_atendimento_procedimentos.id_atendimento')
             ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
             ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
             ->find($id);
@@ -282,25 +282,25 @@ class AtendimentoProcedimentos extends BaseController
             ->select('procedimentos.nome, 
                      procedimentos.codigo,
                      COUNT(*) as total_realizacoes,
-                     SUM(atendimento_procedimentos.quantidade) as quantidade_total')
-            ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
-            ->groupBy('atendimento_procedimentos.id_procedimento')
+                     SUM(pam_atendimento_procedimentos.quantidade) as quantidade_total')
+            ->join('procedimentos', 'procedimentos.id_procedimento = pam_atendimento_procedimentos.id_procedimento')
+            ->groupBy('pam_atendimento_procedimentos.id_procedimento')
             ->orderBy('total_realizacoes', 'DESC');
 
         switch ($periodo) {
             case 'hoje':
-                $builder->where('DATE(atendimento_procedimentos.created_at)', date('Y-m-d'));
+                $builder->where('DATE(pam_atendimento_procedimentos.created_at)', date('Y-m-d'));
                 break;
             case 'semana':
-                $builder->where('WEEK(atendimento_procedimentos.created_at)', date('W'))
-                       ->where('YEAR(atendimento_procedimentos.created_at)', date('Y'));
+                $builder->where('WEEK(pam_atendimento_procedimentos.created_at)', date('W'))
+                       ->where('YEAR(pam_atendimento_procedimentos.created_at)', date('Y'));
                 break;
             case 'mes':
-                $builder->where('MONTH(atendimento_procedimentos.created_at)', date('m'))
-                       ->where('YEAR(atendimento_procedimentos.created_at)', date('Y'));
+                $builder->where('MONTH(pam_atendimento_procedimentos.created_at)', date('m'))
+                       ->where('YEAR(pam_atendimento_procedimentos.created_at)', date('Y'));
                 break;
             case 'ano':
-                $builder->where('YEAR(atendimento_procedimentos.created_at)', date('Y'));
+                $builder->where('YEAR(pam_atendimento_procedimentos.created_at)', date('Y'));
                 break;
         }
 

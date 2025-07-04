@@ -82,6 +82,14 @@
                 <span>Administração</span>
             </a>
             <?php endif; ?>
+            <a href="<?php echo base_url('configuracoes'); ?>" class="nav-item <?= (strpos(current_url(), 'configuracoes') !== false) ? 'active' : '' ?>" data-tooltip="Configurações">
+                <i class="bi bi-gear"></i>
+                <span>Configurações</span>
+            </a>
+            <a href="<?php echo base_url('/logout'); ?>" class="nav-item" data-tooltip="Sair">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sair</span>
+            </a>
         </div>
     </nav>
 </aside>
