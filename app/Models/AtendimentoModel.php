@@ -20,6 +20,7 @@ class AtendimentoModel extends Model
         'consulta_enfermagem',
         'hgt_glicemia',
         'pressao_arterial',
+        'temperatura',
         'hipotese_diagnostico',
         'observacao',
         'encaminhamento',
@@ -34,6 +35,7 @@ class AtendimentoModel extends Model
         'id_medico' => 'int',
         'data_atendimento' => 'datetime',
         'hgt_glicemia' => 'float',
+        'temperatura' => 'float',
         'obito' => 'boolean'
     ];
     protected array $castHandlers = [];

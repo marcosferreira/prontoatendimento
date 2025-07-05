@@ -39,6 +39,35 @@
                         <h5 class="card-title mb-0">Dados do Atendimento</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Exibir mensagens de validação -->
+                        <?php if (session()->has('validation')): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <h6><i class="bi bi-exclamation-triangle"></i> Erro de Validação</h6>
+                                <ul class="mb-0">
+                                    <?php foreach (session('validation')->getErrors() as $error): ?>
+                                        <li><?= esc($error) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Exibir mensagens de erro -->
+                        <?php if (session()->has('error')): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-x-circle"></i> <?= session('error') ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Exibir mensagens de sucesso -->
+                        <?php if (session()->has('success')): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle"></i> <?= session('success') ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
                         <?= form_open('atendimentos/store', ['id' => 'formAtendimento', 'class' => 'needs-validation', 'novalidate' => '']) ?>
 
                         <div class="row">
@@ -47,7 +76,8 @@
                                 <label for="id_paciente" class="form-label">
                                     <i class="bi bi-person"></i> Paciente *
                                 </label>
-                                <select class="form-select" id="id_paciente" name="id_paciente" required data-placeholder="Selecione um paciente">
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_paciente') ? 'is-invalid' : '' ?>" 
+                                        id="id_paciente" name="id_paciente" required data-placeholder="Selecione um paciente">
                                     <option value="">Selecione um paciente</option>
                                     <?php if (isset($pacientes)): ?>
                                         <?php foreach ($pacientes as $paciente): ?>
@@ -57,15 +87,13 @@
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>
-                                <!-- Hidden field to ensure value is sent when select is disabled -->
-                                <input type="hidden" id="id_paciente_hidden" name="id_paciente_backup" value="">
+                                <div class="invalid-feedback">
+                                    <?= session('validation') && session('validation')->hasError('id_paciente') ? session('validation')->getError('id_paciente') : 'Por favor, selecione um paciente.' ?>
+                                </div>
                                 <!-- Button to unlock patient selection (only shown when locked) -->
                                 <button type="button" id="unlock_paciente" class="btn btn-sm btn-outline-warning mt-1" style="display: none;" title="Permitir alteração do paciente">
                                     <i class="bi bi-unlock"></i> Alterar Paciente
                                 </button>
-                                <div class="invalid-feedback">
-                                    Por favor, selecione um paciente.
-                                </div>
                             </div>
 
                             <!-- Médico -->
@@ -73,7 +101,8 @@
                                 <label for="id_medico" class="form-label">
                                     <i class="bi bi-person-badge"></i> Médico *
                                 </label>
-                                <select class="form-select" id="id_medico" name="id_medico" required data-placeholder="Selecione um médico">
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_medico') ? 'is-invalid' : '' ?>" 
+                                        id="id_medico" name="id_medico" required data-placeholder="Selecione um médico">
                                     <option value="">Selecione um médico</option>
                                     <?php if (isset($medicos)): ?>
                                         <?php foreach ($medicos as $medico): ?>
@@ -84,7 +113,7 @@
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Por favor, selecione um médico.
+                                    <?= session('validation') && session('validation')->hasError('id_medico') ? session('validation')->getError('id_medico') : 'Por favor, selecione um médico.' ?>
                                 </div>
                             </div>
                         </div>
@@ -95,10 +124,28 @@
                                 <label for="data_atendimento" class="form-label">
                                     <i class="bi bi-calendar"></i> Data/Hora do Atendimento *
                                 </label>
-                                <input type="datetime-local" class="form-control" id="data_atendimento" name="data_atendimento"
-                                    value="<?= old('data_atendimento', date('Y-m-d\TH:i')) ?>" required>
+                                <?php
+                                // Tratar o formato da data para o input datetime-local
+                                $dataAtendimento = old('data_atendimento', date('Y-m-d\TH:i'));
+                                
+                                // Se a data for um objeto Time, converter para string
+                                if (is_object($dataAtendimento) && method_exists($dataAtendimento, 'format')) {
+                                    $dataAtendimento = $dataAtendimento->format('Y-m-d\TH:i');
+                                }
+                                // Se a data vier no formato do banco (Y-m-d H:i:s), converter para datetime-local (Y-m-d\TH:i)
+                                elseif ($dataAtendimento && !strpos($dataAtendimento, 'T')) {
+                                    // Converter de "2025-07-05 19:59:00" para "2025-07-05T19:59"
+                                    $dataAtendimento = date('Y-m-d\TH:i', strtotime($dataAtendimento));
+                                }
+                                ?>
+                                <input type="datetime-local" class="form-control <?= session('validation') && session('validation')->hasError('data_atendimento') ? 'is-invalid' : '' ?>" 
+                                       id="data_atendimento" name="data_atendimento"
+                                       value="<?= esc($dataAtendimento) ?>" required>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Use o seletor para escolher data e hora. Formato: DD/MM/AAAA HH:MM
+                                </small>
                                 <div class="invalid-feedback">
-                                    Por favor, informe a data e hora do atendimento.
+                                    <?= session('validation') && session('validation')->hasError('data_atendimento') ? session('validation')->getError('data_atendimento') : 'Por favor, informe a data e hora do atendimento.' ?>
                                 </div>
                             </div>
 
@@ -107,7 +154,8 @@
                                 <label for="classificacao_risco" class="form-label">
                                     <i class="bi bi-exclamation-triangle"></i> Classificação de Risco *
                                 </label>
-                                <select class="form-select" id="classificacao_risco" name="classificacao_risco" required>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('classificacao_risco') ? 'is-invalid' : '' ?>" 
+                                        id="classificacao_risco" name="classificacao_risco" required>
                                     <option value="">Selecione a classificação</option>
                                     <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
                                     <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - Urgente</option>
@@ -115,7 +163,7 @@
                                     <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - Não Urgente</option>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Por favor, selecione a classificação de risco.
+                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Por favor, selecione a classificação de risco.' ?>
                                 </div>
                             </div>
                         </div>
@@ -225,6 +273,28 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Função auxiliar para garantir formato correto da data
+        function ensureDateTimeLocalFormat(dateString) {
+            if (!dateString) return '';
+            
+            // Se já está no formato correto (YYYY-MM-DDTHH:MM), retornar como está
+            if (dateString.includes('T') && dateString.length >= 16) {
+                return dateString.substring(0, 16);
+            }
+            
+            // Se está no formato do banco (YYYY-MM-DD HH:MM:SS), converter
+            if (dateString.includes(' ')) {
+                return dateString.replace(' ', 'T').substring(0, 16);
+            }
+            
+            return dateString;
+        }
+
+        // Verificar se o campo de data precisa de correção ao carregar a página
+        const dataInput = document.getElementById('data_atendimento');
+        if (dataInput && dataInput.value) {
+            dataInput.value = ensureDateTimeLocalFormat(dataInput.value);
+        }
         // Pre-select fields based on URL parameters
         function preSelectFromUrlParams() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -233,12 +303,10 @@
             const pacienteId = urlParams.get('paciente');
             if (pacienteId) {
                 const pacienteSelect = document.getElementById('id_paciente');
-                const pacienteHidden = document.getElementById('id_paciente_hidden');
                 const unlockButton = document.getElementById('unlock_paciente');
 
                 // Set the value
                 pacienteSelect.value = pacienteId;
-                pacienteHidden.value = pacienteId;
 
                 // Disable the patient select to prevent manual changes
                 pacienteSelect.disabled = true;
@@ -255,10 +323,7 @@
             } else {
                 // If no paciente parameter, ensure field is enabled
                 const pacienteSelect = document.getElementById('id_paciente');
-                const pacienteHidden = document.getElementById('id_paciente_hidden');
-
                 pacienteSelect.disabled = false;
-                pacienteHidden.value = '';
             }
 
             // Pre-select doctor if medico parameter exists
@@ -276,40 +341,50 @@
             // Pre-set date/time if data parameter exists (format: YYYY-MM-DDTHH:MM)
             const dataAtendimento = urlParams.get('data');
             if (dataAtendimento) {
-                document.getElementById('data_atendimento').value = dataAtendimento;
+                const dataInput = document.getElementById('data_atendimento');
+                dataInput.value = ensureDateTimeLocalFormat(dataAtendimento);
             }
         }
 
-        // Form validation
+        // Form validation and submit handling
         (function() {
             'use strict';
-            window.addEventListener('load', function() {
-                const forms = document.getElementsByClassName('needs-validation');
-                Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        // Ensure hidden field value is set for disabled select
-                        const pacienteSelect = document.getElementById('id_paciente');
-                        const pacienteHidden = document.getElementById('id_paciente_hidden');
+            const forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    const pacienteSelect = document.getElementById('id_paciente');
+                    const dataInput = document.getElementById('data_atendimento');
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const pacienteFromUrl = urlParams.get('paciente');
+                    
+                    // Garantir que a data esteja no formato correto antes do envio
+                    if (dataInput && dataInput.value) {
+                        dataInput.value = ensureDateTimeLocalFormat(dataInput.value);
+                    }
+                    
+                    // If patient was pre-selected and select is disabled, temporarily enable it for submission
+                    if (pacienteSelect.disabled && pacienteFromUrl) {
+                        pacienteSelect.disabled = false;
+                        pacienteSelect.value = pacienteFromUrl;
+                    }
 
-                        if (pacienteSelect.disabled && pacienteHidden.value) {
-                            // Temporarily enable the select to submit its value
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        
+                        // Re-disable the select if validation fails and patient was pre-selected
+                        if (pacienteFromUrl && !pacienteSelect.value) {
+                            pacienteSelect.disabled = true;
+                        }
+                    } else {
+                        // Form is valid, ensure the select stays enabled for submission
+                        if (pacienteFromUrl) {
                             pacienteSelect.disabled = false;
                         }
-
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            // Re-disable the select if validation fails
-                            const urlParams = new URLSearchParams(window.location.search);
-                            if (urlParams.get('paciente')) {
-                                pacienteSelect.disabled = true;
-                            }
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
         })();
 
         // Auto-check óbito when encaminhamento is Óbito
@@ -370,7 +445,6 @@
         // Handle unlock patient button
         document.getElementById('unlock_paciente').addEventListener('click', function() {
             const pacienteSelect = document.getElementById('id_paciente');
-            const pacienteHidden = document.getElementById('id_paciente_hidden');
             const pacienteContainer = pacienteSelect.closest('.mb-3');
 
             // Enable the patient select
@@ -384,9 +458,6 @@
 
             // Hide the unlock button
             this.style.display = 'none';
-
-            // Clear hidden field
-            pacienteHidden.value = '';
 
             // Show success message
             const alertDiv = document.createElement('div');

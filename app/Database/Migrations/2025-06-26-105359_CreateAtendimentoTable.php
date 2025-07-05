@@ -52,6 +52,12 @@ class CreateAtendimentoTable extends Migration
                 'null'       => true,
                 'comment'    => 'Formato: 120x80 mmHg',
             ],
+            'temperatura' => [
+                'type'       => 'decimal',
+                'constraint' => '4,1',
+                'null'       => true,
+                'comment'    => 'Temperatura corporal em °C',
+            ],
             'hipotese_diagnostico' => [
                 'type' => 'text',
                 'null' => true,

@@ -141,11 +141,12 @@ class Atendimentos extends BaseController
         $rules = [
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
-            'data_atendimento' => 'required|valid_date[Y-m-d H:i:s]',
+            'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
             'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
+            'temperatura' => 'permit_empty|decimal',
             'hipotese_diagnostico' => 'permit_empty',
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -165,7 +166,7 @@ class Atendimentos extends BaseController
             ],
             'data_atendimento' => [
                 'required' => 'A data do atendimento é obrigatória',
-                'valid_date' => 'Data do atendimento deve estar no formato válido'
+                'regex_match' => 'Data do atendimento deve estar no formato AAAA-MM-DDTHH:MM (ex: 2024-12-25T14:30). Use o seletor de data/hora.'
             ],
             'classificacao_risco' => [
                 'required' => 'A classificação de risco é obrigatória',
@@ -177,35 +178,60 @@ class Atendimentos extends BaseController
             'pressao_arterial' => [
                 'max_length' => 'Pressão arterial deve ter no máximo 20 caracteres'
             ],
+            'temperatura' => [
+                'decimal' => 'Temperatura deve ser um número decimal'
+            ],
             'encaminhamento' => [
                 'in_list' => 'Encaminhamento deve ser: Alta, Internação, Transferência, Especialista, Retorno ou Óbito'
             ]
         ];
 
+        
+
         if (!$this->validate($rules, $messages)) {
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
-
+        
         $db = \Config\Database::connect();
         $db->transStart();
 
         try {
+            // Converter formato da data de datetime-local (YYYY-MM-DDTHH:MM) para objeto Time do CodeIgniter
+            $dataAtendimento = $this->request->getPost('data_atendimento');
+            if ($dataAtendimento) {
+                // Converter para formato MySQL e criar objeto Time
+                $dataFormatada = str_replace('T', ' ', $dataAtendimento) . ':00';
+                $dataAtendimento = \CodeIgniter\I18n\Time::parse($dataFormatada);
+            }
+
+            
+
             // Salvar o atendimento
             $atendimentoData = [
                 'id_paciente' => $this->request->getPost('id_paciente'),
                 'id_medico' => $this->request->getPost('id_medico'),
-                'data_atendimento' => $this->request->getPost('data_atendimento'),
+                'data_atendimento' => $dataAtendimento,
                 'classificacao_risco' => $this->request->getPost('classificacao_risco'),
                 'consulta_enfermagem' => $this->request->getPost('consulta_enfermagem'),
                 'hgt_glicemia' => $this->request->getPost('hgt_glicemia'),
                 'pressao_arterial' => $this->request->getPost('pressao_arterial'),
+                'temperatura' => $this->request->getPost('temperatura'),
                 'hipotese_diagnostico' => $this->request->getPost('hipotese_diagnostico'),
                 'observacao' => $this->request->getPost('observacao'),
                 'encaminhamento' => $this->request->getPost('encaminhamento'),
                 'obito' => $this->request->getPost('obito') ? true : false
             ];
 
-            $idAtendimento = $this->atendimentoModel->insert($atendimentoData);
+            $idAtendimento = $this->atendimentoModel->skipValidation(true)->insert($atendimentoData);
+
+            // Debug: verificar se o insert foi bem-sucedido
+            if (!$idAtendimento) {
+                $errors = $this->atendimentoModel->errors();
+                log_message('error', 'Erro ao inserir atendimento: ' . json_encode($errors));
+                return redirect()->back()->withInput()->with('error', 'Erro ao salvar atendimento: ' . json_encode($errors));
+            }
+
+            log_message('info', 'Atendimento inserido com ID: ' . $idAtendimento);
 
             // Salvar procedimentos selecionados
             $procedimentos = $this->request->getPost('procedimentos') ?? [];
@@ -337,11 +363,12 @@ class Atendimentos extends BaseController
         $rules = [
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
-            'data_atendimento' => 'required|valid_date[Y-m-d H:i:s]',
+            'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
             'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
+            'temperatura' => 'permit_empty|decimal',
             'hipotese_diagnostico' => 'permit_empty',
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -361,7 +388,7 @@ class Atendimentos extends BaseController
             ],
             'data_atendimento' => [
                 'required' => 'A data do atendimento é obrigatória',
-                'valid_date' => 'Data do atendimento deve estar no formato válido'
+                'regex_match' => 'Data do atendimento deve estar no formato AAAA-MM-DDTHH:MM (ex: 2024-12-25T14:30). Use o seletor de data/hora.'
             ],
             'classificacao_risco' => [
                 'required' => 'A classificação de risco é obrigatória',
@@ -373,6 +400,9 @@ class Atendimentos extends BaseController
             'pressao_arterial' => [
                 'max_length' => 'Pressão arterial deve ter no máximo 20 caracteres'
             ],
+            'temperatura' => [
+                'decimal' => 'Temperatura deve ser um número decimal'
+            ],
             'encaminhamento' => [
                 'in_list' => 'Encaminhamento deve ser: Alta, Internação, Transferência, Especialista, Retorno ou Óbito'
             ]
@@ -382,21 +412,30 @@ class Atendimentos extends BaseController
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
+        // Converter formato da data de datetime-local (YYYY-MM-DDTHH:MM) para objeto Time do CodeIgniter
+        $dataAtendimento = $this->request->getPost('data_atendimento');
+        if ($dataAtendimento) {
+            // Converter para formato MySQL e criar objeto Time
+            $dataFormatada = str_replace('T', ' ', $dataAtendimento) . ':00';
+            $dataAtendimento = \CodeIgniter\I18n\Time::parse($dataFormatada);
+        }
+
         $data = [
             'id_paciente' => $this->request->getPost('id_paciente'),
             'id_medico' => $this->request->getPost('id_medico'),
-            'data_atendimento' => $this->request->getPost('data_atendimento'),
+            'data_atendimento' => $dataAtendimento,
             'classificacao_risco' => $this->request->getPost('classificacao_risco'),
             'consulta_enfermagem' => $this->request->getPost('consulta_enfermagem'),
             'hgt_glicemia' => $this->request->getPost('hgt_glicemia'),
             'pressao_arterial' => $this->request->getPost('pressao_arterial'),
+            'temperatura' => $this->request->getPost('temperatura'),
             'hipotese_diagnostico' => $this->request->getPost('hipotese_diagnostico'),
             'observacao' => $this->request->getPost('observacao'),
             'encaminhamento' => $this->request->getPost('encaminhamento'),
             'obito' => $this->request->getPost('obito') ? true : false
         ];
 
-        if ($this->atendimentoModel->update($id, $data)) {
+        if ($this->atendimentoModel->skipValidation(true)->update($id, $data)) {
             return redirect()->to('/atendimentos')->with('success', 'Atendimento atualizado com sucesso!');
         } else {
             return redirect()->back()->withInput()->with('error', 'Erro ao atualizar atendimento.');
