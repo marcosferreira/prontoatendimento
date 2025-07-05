@@ -20,7 +20,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="<?= base_url('') ?>">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="<?= base_url('atendimentos') ?>">Atendimentos</a></li>
-                        <li class="breadcrumb-item active">Atendimento #<?= $atendimento->id_atendimento ?></li>
+                        <li class="breadcrumb-item active">Atendimento #<?= $atendimento['id_atendimento'] ?></li>
                     </ol>
                 </nav>
 
@@ -32,7 +32,7 @@
                         </a>
                     </div>
                     <div class="action-right m-4">
-                        <a href="<?= base_url('atendimentos/edit/' . $atendimento->id_atendimento) ?>" class="btn btn-primary">
+                        <a href="<?= base_url('atendimentos/edit/' . $atendimento['id_atendimento']) ?>" class="btn btn-primary">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
@@ -55,40 +55,40 @@
                                     <div class="col-md-6">
                                         <div class="info-item">
                                             <strong>ID do Atendimento:</strong>
-                                            <span>#<?= $atendimento->id_atendimento ?></span>
+                                            <span>#<?= $atendimento['id_atendimento'] ?></span>
                                         </div>
                                         <div class="info-item">
                                             <strong>Data/Hora:</strong>
-                                            <span><?= date('d/m/Y H:i', strtotime($atendimento->data_atendimento)) ?></span>
+                                            <span><?= date('d/m/Y H:i', strtotime($atendimento['data_atendimento'])) ?></span>
                                         </div>
                                         <div class="info-item">
                                             <strong>Classificação de Risco:</strong>
                                             <span class="badge bg-<?=
-                                                                    $atendimento->classificacao_risco == 'Verde' ? 'success' : ($atendimento->classificacao_risco == 'Amarelo' ? 'warning' : ($atendimento->classificacao_risco == 'Vermelho' ? 'danger' : 'info'))
+                                                                    $atendimento['classificacao_risco'] == 'Verde' ? 'success' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : 'info'))
                                                                     ?> fs-6">
-                                                <?= $atendimento->classificacao_risco ?>
+                                                <?= $atendimento['classificacao_risco'] ?>
                                             </span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="info-item">
                                             <strong>Status:</strong>
-                                            <?php if ($atendimento->obito): ?>
+                                            <?php if ($atendimento['obito']): ?>
                                                 <span class="badge bg-dark fs-6">Óbito</span>
-                                            <?php elseif ($atendimento->encaminhamento): ?>
-                                                <span class="badge bg-secondary fs-6"><?= $atendimento->encaminhamento ?></span>
+                                            <?php elseif ($atendimento['encaminhamento']): ?>
+                                                <span class="badge bg-secondary fs-6"><?= $atendimento['encaminhamento'] ?></span>
                                             <?php else: ?>
                                                 <span class="badge bg-primary fs-6">Em Atendimento</span>
                                             <?php endif; ?>
                                         </div>
                                         <div class="info-item">
                                             <strong>Criado em:</strong>
-                                            <span><?= date('d/m/Y H:i', strtotime($atendimento->created_at)) ?></span>
+                                            <span><?= date('d/m/Y H:i', strtotime($atendimento['created_at'])) ?></span>
                                         </div>
-                                        <?php if ($atendimento->updated_at): ?>
+                                        <?php if ($atendimento['updated_at']): ?>
                                             <div class="info-item">
                                                 <strong>Última atualização:</strong>
-                                                <span><?= date('d/m/Y H:i', strtotime($atendimento->updated_at)) ?></span>
+                                                <span><?= date('d/m/Y H:i', strtotime($atendimento['updated_at'])) ?></span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -108,34 +108,28 @@
                                     <div class="col-md-6">
                                         <div class="info-item">
                                             <strong>Nome:</strong>
-                                            <span><?= esc($atendimento->paciente_nome) ?></span>
+                                            <span><?= esc($atendimento['paciente_nome']) ?></span>
                                         </div>
                                         <div class="info-item">
                                             <strong>CPF:</strong>
-                                            <span><?= $atendimento->paciente_cpf ?></span>
+                                            <span><?= $atendimento['cpf'] ?></span>
                                         </div>
-                                        <?php if (isset($atendimento->paciente_sus)): ?>
+                                        <?php if (isset($atendimento['data_nascimento'])): ?>
                                             <div class="info-item">
-                                                <strong>SUS:</strong>
-                                                <span><?= $atendimento->paciente_sus ?></span>
+                                                <strong>Data de Nascimento:</strong>
+                                                <span><?= date('d/m/Y', strtotime($atendimento['data_nascimento'])) ?></span>
                                             </div>
                                         <?php endif; ?>
                                     </div>
                                     <div class="col-md-6">
-                                        <?php if (isset($atendimento->paciente_idade)): ?>
-                                            <div class="info-item">
-                                                <strong>Idade:</strong>
-                                                <span><?= $atendimento->paciente_idade ?> anos</span>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if (isset($atendimento->paciente_sexo)): ?>
+                                        <?php if (isset($atendimento['sexo'])): ?>
                                             <div class="info-item">
                                                 <strong>Sexo:</strong>
-                                                <span><?= $atendimento->paciente_sexo == 'M' ? 'Masculino' : 'Feminino' ?></span>
+                                                <span><?= $atendimento['sexo'] == 'M' ? 'Masculino' : 'Feminino' ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <div class="text-end">
-                                            <a href="<?= base_url('pacientes/show/' . $atendimento->id_paciente) ?>"
+                                            <a href="<?= base_url('pacientes/show/' . $atendimento['id_paciente']) ?>"
                                                 class="btn btn-outline-primary btn-sm">
                                                 <i class="bi bi-eye"></i> Ver Paciente
                                             </a>
@@ -157,22 +151,22 @@
                                     <div class="col-md-6">
                                         <div class="info-item">
                                             <strong>Nome:</strong>
-                                            <span><?= esc($atendimento->medico_nome) ?></span>
+                                            <span><?= esc($atendimento['medico_nome']) ?></span>
                                         </div>
                                         <div class="info-item">
                                             <strong>CRM:</strong>
-                                            <span><?= $atendimento->medico_crm ?></span>
+                                            <span><?= $atendimento['crm'] ?></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <?php if (isset($atendimento->medico_especialidade)): ?>
+                                        <?php if (isset($atendimento['especialidade'])): ?>
                                             <div class="info-item">
                                                 <strong>Especialidade:</strong>
-                                                <span><?= $atendimento->medico_especialidade ?></span>
+                                                <span><?= $atendimento['especialidade'] ?></span>
                                             </div>
                                         <?php endif; ?>
                                         <div class="text-end">
-                                            <a href="<?= base_url('medicos/show/' . $atendimento->id_medico) ?>"
+                                            <a href="<?= base_url('medicos/show/' . $atendimento['id_medico']) ?>"
                                                 class="btn btn-outline-primary btn-sm">
                                                 <i class="bi bi-eye"></i> Ver Médico
                                             </a>
@@ -193,28 +187,28 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <?php if ($atendimento->hgt_glicemia): ?>
+                                <?php if ($atendimento['hgt_glicemia']): ?>
                                     <div class="info-item">
                                         <strong>Glicemia:</strong>
-                                        <span><?= $atendimento->hgt_glicemia ?> mg/dL</span>
+                                        <span><?= $atendimento['hgt_glicemia'] ?> mg/dL</span>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ($atendimento->pressao_arterial): ?>
+                                <?php if ($atendimento['pressao_arterial']): ?>
                                     <div class="info-item">
                                         <strong>Pressão Arterial:</strong>
-                                        <span><?= $atendimento->pressao_arterial ?></span>
+                                        <span><?= $atendimento['pressao_arterial'] ?></span>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if (isset($atendimento->temperatura)): ?>
+                                <?php if (isset($atendimento['temperatura']) && $atendimento['temperatura']): ?>
                                     <div class="info-item">
                                         <strong>Temperatura:</strong>
-                                        <span><?= $atendimento->temperatura ?>°C</span>
+                                        <span><?= $atendimento['temperatura'] ?>°C</span>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if (!$atendimento->hgt_glicemia && !$atendimento->pressao_arterial && !isset($atendimento->temperatura)): ?>
+                                <?php if (!$atendimento['hgt_glicemia'] && !$atendimento['pressao_arterial'] && (!isset($atendimento['temperatura']) || !$atendimento['temperatura'])): ?>
                                     <p class="text-muted">Nenhum dado vital registrado</p>
                                 <?php endif; ?>
                             </div>
@@ -255,12 +249,12 @@
                                 <div class="card-body">
                                     <?php foreach ($exames as $exame): ?>
                                         <div class="exam-item">
-                                            <strong><?= esc($exame->exame_nome) ?></strong>
+                                            <strong><?= esc($exame['nome']) ?></strong>
                                             <span class="badge bg-<?=
-                                                                    $exame->status == 'Realizado' ? 'success' : ($exame->status == 'Cancelado' ? 'danger' : 'warning')
-                                                                    ?>"><?= $exame->status ?></span>
-                                            <?php if ($exame->resultado): ?>
-                                                <small class="d-block text-muted"><?= esc($exame->resultado) ?></small>
+                                                                    $exame['status'] == 'Realizado' ? 'success' : ($exame['status'] == 'Cancelado' ? 'danger' : 'warning')
+                                                                    ?>"><?= $exame['status'] ?></span>
+                                            <?php if (isset($exame['observacao']) && $exame['observacao']): ?>
+                                                <small class="d-block text-muted"><?= esc($exame['observacao']) ?></small>
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
@@ -280,28 +274,28 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <?php if ($atendimento->consulta_enfermagem): ?>
+                                <?php if ($atendimento['consulta_enfermagem']): ?>
                                     <div class="clinical-note">
                                         <h6><i class="bi bi-clipboard-pulse"></i> Consulta de Enfermagem</h6>
-                                        <p><?= nl2br(esc($atendimento->consulta_enfermagem)) ?></p>
+                                        <p><?= nl2br(esc($atendimento['consulta_enfermagem'])) ?></p>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ($atendimento->hipotese_diagnostico): ?>
+                                <?php if ($atendimento['hipotese_diagnostico']): ?>
                                     <div class="clinical-note">
                                         <h6><i class="bi bi-clipboard-check"></i> Hipótese Diagnóstica</h6>
-                                        <p><?= nl2br(esc($atendimento->hipotese_diagnostico)) ?></p>
+                                        <p><?= nl2br(esc($atendimento['hipotese_diagnostico'])) ?></p>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if ($atendimento->observacao): ?>
+                                <?php if ($atendimento['observacao']): ?>
                                     <div class="clinical-note">
                                         <h6><i class="bi bi-chat-text"></i> Observações Gerais</h6>
-                                        <p><?= nl2br(esc($atendimento->observacao)) ?></p>
+                                        <p><?= nl2br(esc($atendimento['observacao'])) ?></p>
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if (!$atendimento->consulta_enfermagem && !$atendimento->hipotese_diagnostico && !$atendimento->observacao): ?>
+                                <?php if (!$atendimento['consulta_enfermagem'] && !$atendimento['hipotese_diagnostico'] && !$atendimento['observacao']): ?>
                                     <p class="text-muted">Nenhuma observação clínica registrada</p>
                                 <?php endif; ?>
                             </div>
