@@ -241,4 +241,18 @@ $routes->group('ajuda', static function ($routes) {
     $routes->get('artigo/(:segment)', 'Ajuda::artigo/$1');
 });
 
+// Rotas de Notificações BI
+$routes->group('notificacoes', static function ($routes) {
+    $routes->get('/', 'Notificacoes::index');
+    $routes->get('show/(:num)', 'Notificacoes::show/$1');
+    $routes->get('api', 'Notificacoes::api');
+    $routes->post('resolver/(:num)', 'Notificacoes::resolver/$1');
+    $routes->post('cancelar/(:num)', 'Notificacoes::cancelar/$1');
+    $routes->post('executarAnalise', 'Notificacoes::executarAnalise');
+    $routes->get('estatisticas', 'Notificacoes::estatisticas');
+    $routes->get('relatorio', 'Notificacoes::relatorio');
+    $routes->get('configuracoes', 'Notificacoes::configuracoes');
+    $routes->post('configuracoes', 'Notificacoes::salvarConfiguracoes');
+});
+
 service('auth')->routes($routes);

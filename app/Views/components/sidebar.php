@@ -59,6 +59,23 @@
         </div>
         
         <div class="nav-section">
+            <div class="nav-section-title">Monitoramento</div>
+            <a href="<?php echo base_url('notificacoes'); ?>" class="nav-item <?= (strpos(current_url(), 'notificacoes') !== false) ? 'active' : '' ?>" data-tooltip="Notificações BI">
+                <i class="bi bi-bell-fill"></i>
+                <span>Notificações BI</span>
+                <?php 
+                // Busca notificações críticas para badge
+                if (class_exists('\App\Models\NotificacaoModel')) {
+                    $notificacaoModel = new \App\Models\NotificacaoModel();
+                    $criticas = $notificacaoModel->where('status', 'ativa')->where('severidade', 'critica')->countAllResults();
+                    if ($criticas > 0): ?>
+                        <span class="nav-badge"><?= min($criticas, 99) ?></span>
+                    <?php endif;
+                } ?>
+            </a>
+        </div>
+        
+        <div class="nav-section">
             <div class="nav-section-title">Relatórios</div>
             <a href="<?php echo base_url('atendimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Atendimentos">
                 <i class="bi bi-bar-chart"></i>
