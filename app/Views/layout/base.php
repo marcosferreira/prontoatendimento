@@ -17,6 +17,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo base_url('assets/css/style.css'); ?>">
+    <?php echo $this->renderSection('styles'); ?>
 </head>
 
 <body>
@@ -106,6 +107,7 @@
         
         setInterval(updateTime, 1000);
     </script>
+    <?php echo $this->renderSection('scripts'); ?>
 </body>
 
 </html>

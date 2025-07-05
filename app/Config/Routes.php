@@ -220,6 +220,19 @@ $routes->group('admin', static function ($routes) {
     $routes->get('reports', 'Admin::reports');
 });
 
+// Rotas de Configurações
+$routes->group('configuracoes', static function ($routes) {
+    $routes->get('/', 'Configuracoes::index');
+    $routes->post('salvarConfiguracoes', 'Configuracoes::salvarConfiguracoes');
+    $routes->get('usuarios', 'Configuracoes::usuarios');
+    $routes->post('criarUsuario', 'Configuracoes::criarUsuario');
+    $routes->post('editarUsuario/(:num)', 'Configuracoes::editarUsuario/$1');
+    $routes->post('resetarSenha/(:num)', 'Configuracoes::resetarSenha/$1');
+    $routes->get('auditoria', 'Configuracoes::auditoria');
+    $routes->post('criarBackup', 'Configuracoes::criarBackup');
+    $routes->post('inicializarConfiguracoes', 'Configuracoes::inicializarConfiguracoes');
+});
+
 // Rotas de Ajuda
 $routes->group('ajuda', static function ($routes) {
     $routes->get('/', 'Ajuda::index');

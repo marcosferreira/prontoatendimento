@@ -1,7 +1,7 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <a href="<?php echo base_url('#'); ?>" class="sidebar-logo">
-            <i class="bi bi-hospital"></i>
+            <img src="<?php echo base_url('assets/images/logo-white.svg'); ?>" alt="SisPAM Logo" class="sidebar-logo-img">
             <div>
                 <h3 class="sidebar-logo-text">SisPAM</h3>
                 <p class="sidebar-subtitle">Pronto Atendimento</p>
@@ -82,10 +82,12 @@
                 <span>Administração</span>
             </a>
             <?php endif; ?>
+            <?php if(auth()->user() && (auth()->user()->inGroup('superadmin') || auth()->user()->inGroup('admin'))): ?>
             <a href="<?php echo base_url('configuracoes'); ?>" class="nav-item <?= (strpos(current_url(), 'configuracoes') !== false) ? 'active' : '' ?>" data-tooltip="Configurações">
                 <i class="bi bi-gear"></i>
                 <span>Configurações</span>
             </a>
+            <?php endif; ?>
             <a href="<?php echo base_url('ajuda') ?>" class="nav-item <?= (strpos(current_url(), 'ajuda') !== false) ? 'active' : '' ?>" data-tooltip="Ajuda">
                 <i class="bi bi-question-circle"></i>
                 <span>Ajuda</span>

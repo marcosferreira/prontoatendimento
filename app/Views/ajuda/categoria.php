@@ -1,33 +1,17 @@
-<?php echo $this->extend('layout/help'); ?>
+<?= $this->extend('layout/base') ?>
 
-<?php echo $this->section('styles'); ?>
+<?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('assets/css/ajuda.css') ?>">
-<?php echo $this->endSection(); ?>
+<?= $this->endSection() ?>
 
-<?php echo $this->section('content'); ?>
+<?= $this->section('content') ?>
 
 <div class="app-container">
     <!-- Sidebar -->
-    <?php echo $this->include('components/sidebar'); ?>
+    <?= $this->include('components/sidebar') ?>
 
     <!-- Topbar -->
-    <header class="topbar">
-        <div class="topbar-left">
-            <button class="mobile-menu-toggle">
-                <i class="bi bi-list"></i>
-            </button>
-            <h1 class="topbar-title"><?php echo esc($category['name']); ?></h1>
-            <nav class="breadcrumb">
-                <a href="<?php echo base_url('ajuda'); ?>" class="breadcrumb-link">Ajuda</a>
-                <i class="bi bi-chevron-right"></i>
-                <span><?php echo esc($category['name']); ?></span>
-            </nav>
-        </div>
-        
-        <div class="topbar-right">
-            <?php echo $this->include('components/user_info'); ?>
-        </div>
-    </header>
+    <?= $this->include('components/topbar') ?>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -190,7 +174,9 @@
             </div>
 
             <!-- Footer -->
-            <?php echo $this->include('components/footer'); ?>
+            <div class="footer">
+                <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
+            </div>
         </div>
     </main>
 </div>
@@ -427,4 +413,4 @@ function openTicket() {
 }
 </style>
 
-<?php echo $this->endSection(); ?>
+<?= $this->endSection() ?>
