@@ -11,7 +11,7 @@
             <!-- Header -->
             <div class="header">
                 <h1><i class="bi bi-pencil"></i> Editar Atendimento</h1>
-                <p class="subtitle">Editar dados do atendimento médico #<?= $atendimento->id_atendimento ?></p>
+                <p class="subtitle">Editar dados do atendimento médico #<?= $atendimento['id_atendimento'] ?></p>
             </div>
 
             <div class="content-wrapper">
@@ -20,7 +20,7 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="<?= base_url('') ?>">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="<?= base_url('atendimentos') ?>">Atendimentos</a></li>
-                        <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimento->id_atendimento) ?>">Atendimento #<?= $atendimento->id_atendimento ?></a></li>
+                        <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
                         <li class="breadcrumb-item active">Editar</li>
                     </ol>
                 </nav>
@@ -31,7 +31,7 @@
                         <h5 class="card-title mb-0">Dados do Atendimento</h5>
                     </div>
                     <div class="card-body">
-                        <?= form_open('atendimentos/update/' . $atendimento->id_atendimento, ['id' => 'formAtendimento', 'class' => 'needs-validation', 'novalidate' => '']) ?>
+                        <?= form_open('atendimentos/update/' . $atendimento['id_atendimento'], ['id' => 'formAtendimento', 'class' => 'needs-validation', 'novalidate' => '']) ?>
 
                         <div class="row">
                             <!-- Paciente -->
@@ -43,9 +43,9 @@
                                     <option value="">Selecione um paciente</option>
                                     <?php if (isset($pacientes)): ?>
                                         <?php foreach ($pacientes as $paciente): ?>
-                                            <option value="<?= $paciente->id_paciente ?>"
-                                                <?= ($atendimento->id_paciente == $paciente->id_paciente || old('id_paciente') == $paciente->id_paciente) ? 'selected' : '' ?>>
-                                                <?= esc($paciente->nome) ?> - CPF: <?= $paciente->cpf ?>
+                                            <option value="<?= $paciente['id_paciente'] ?>"
+                                                <?= ($atendimento['id_paciente'] == $paciente['id_paciente'] || old('id_paciente') == $paciente['id_paciente']) ? 'selected' : '' ?>>
+                                                <?= esc($paciente['nome']) ?> - CPF: <?= $paciente['cpf'] ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -64,9 +64,9 @@
                                     <option value="">Selecione um médico</option>
                                     <?php if (isset($medicos)): ?>
                                         <?php foreach ($medicos as $medico): ?>
-                                            <option value="<?= $medico->id_medico ?>"
-                                                <?= ($atendimento->id_medico == $medico->id_medico || old('id_medico') == $medico->id_medico) ? 'selected' : '' ?>>
-                                                <?= esc($medico->nome) ?> - CRM: <?= $medico->crm ?>
+                                            <option value="<?= $medico['id_medico'] ?>"
+                                                <?= ($atendimento['id_medico'] == $medico['id_medico'] || old('id_medico') == $medico['id_medico']) ? 'selected' : '' ?>>
+                                                <?= esc($medico['nome']) ?> - CRM: <?= $medico['crm'] ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -84,7 +84,7 @@
                                     <i class="bi bi-calendar"></i> Data/Hora do Atendimento *
                                 </label>
                                 <input type="datetime-local" class="form-control" id="data_atendimento" name="data_atendimento"
-                                    value="<?= old('data_atendimento', date('Y-m-d\TH:i', strtotime($atendimento->data_atendimento))) ?>" required>
+                                    value="<?= old('data_atendimento', date('Y-m-d\TH:i', strtotime($atendimento['data_atendimento']))) ?>" required>
                                 <div class="invalid-feedback">
                                     Por favor, informe a data e hora do atendimento.
                                 </div>
@@ -97,10 +97,10 @@
                                 </label>
                                 <select class="form-select" id="classificacao_risco" name="classificacao_risco" required>
                                     <option value="">Selecione a classificação</option>
-                                    <option value="Verde" <?= ($atendimento->classificacao_risco == 'Verde' || old('classificacao_risco') == 'Verde') ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
-                                    <option value="Amarelo" <?= ($atendimento->classificacao_risco == 'Amarelo' || old('classificacao_risco') == 'Amarelo') ? 'selected' : '' ?>>Amarelo - Urgente</option>
-                                    <option value="Vermelho" <?= ($atendimento->classificacao_risco == 'Vermelho' || old('classificacao_risco') == 'Vermelho') ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
-                                    <option value="Azul" <?= ($atendimento->classificacao_risco == 'Azul' || old('classificacao_risco') == 'Azul') ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                    <option value="Verde" <?= ($atendimento['classificacao_risco'] == 'Verde' || old('classificacao_risco') == 'Verde') ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
+                                    <option value="Amarelo" <?= ($atendimento['classificacao_risco'] == 'Amarelo' || old('classificacao_risco') == 'Amarelo') ? 'selected' : '' ?>>Amarelo - Urgente</option>
+                                    <option value="Vermelho" <?= ($atendimento['classificacao_risco'] == 'Vermelho' || old('classificacao_risco') == 'Vermelho') ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
+                                    <option value="Azul" <?= ($atendimento['classificacao_risco'] == 'Azul' || old('classificacao_risco') == 'Azul') ? 'selected' : '' ?>>Azul - Não Urgente</option>
                                 </select>
                                 <div class="invalid-feedback">
                                     Por favor, selecione a classificação de risco.
@@ -116,7 +116,7 @@
                                 </label>
                                 <input type="number" class="form-control" id="hgt_glicemia" name="hgt_glicemia"
                                     step="0.01" min="0" max="999.99"
-                                    value="<?= old('hgt_glicemia', $atendimento->hgt_glicemia) ?>">
+                                    value="<?= old('hgt_glicemia', $atendimento['hgt_glicemia']) ?>">
                             </div>
 
                             <div class="col-md-4 mb-3">
@@ -125,7 +125,7 @@
                                 </label>
                                 <input type="text" class="form-control" id="pressao_arterial" name="pressao_arterial"
                                     placeholder="Ex: 120x80"
-                                    value="<?= old('pressao_arterial', $atendimento->pressao_arterial) ?>">
+                                    value="<?= old('pressao_arterial', $atendimento['pressao_arterial']) ?>">
                             </div>
 
                             <div class="col-md-4 mb-3">
@@ -134,7 +134,7 @@
                                 </label>
                                 <input type="number" class="form-control" id="temperatura" name="temperatura"
                                     step="0.1" min="30" max="45"
-                                    value="<?= old('temperatura', isset($atendimento->temperatura) ? $atendimento->temperatura : '') ?>">
+                                    value="<?= old('temperatura', isset($atendimento['temperatura']) ? $atendimento['temperatura'] : '') ?>">
                             </div>
                         </div>
 
@@ -144,7 +144,7 @@
                                 <i class="bi bi-clipboard-pulse"></i> Consulta de Enfermagem
                             </label>
                             <textarea class="form-control" id="consulta_enfermagem" name="consulta_enfermagem"
-                                rows="3" placeholder="Observações da consulta de enfermagem..."><?= old('consulta_enfermagem', $atendimento->consulta_enfermagem) ?></textarea>
+                                rows="3" placeholder="Observações da consulta de enfermagem..."><?= old('consulta_enfermagem', $atendimento['consulta_enfermagem']) ?></textarea>
                         </div>
 
                         <!-- Hipótese Diagnóstica -->
@@ -153,7 +153,7 @@
                                 <i class="bi bi-clipboard-check"></i> Hipótese Diagnóstica
                             </label>
                             <textarea class="form-control" id="hipotese_diagnostico" name="hipotese_diagnostico"
-                                rows="3" placeholder="Hipótese diagnóstica..."><?= old('hipotese_diagnostico', $atendimento->hipotese_diagnostico) ?></textarea>
+                                rows="3" placeholder="Hipótese diagnóstica..."><?= old('hipotese_diagnostico', $atendimento['hipotese_diagnostico']) ?></textarea>
                         </div>
 
                         <!-- Observações -->
@@ -162,7 +162,7 @@
                                 <i class="bi bi-chat-text"></i> Observações
                             </label>
                             <textarea class="form-control" id="observacao" name="observacao"
-                                rows="3" placeholder="Observações gerais..."><?= old('observacao', $atendimento->observacao) ?></textarea>
+                                rows="3" placeholder="Observações gerais..."><?= old('observacao', $atendimento['observacao']) ?></textarea>
                         </div>
 
                         <!-- Encaminhamento -->
@@ -172,12 +172,12 @@
                             </label>
                             <select class="form-select" id="encaminhamento" name="encaminhamento">
                                 <option value="">Selecione o encaminhamento</option>
-                                <option value="Alta" <?= ($atendimento->encaminhamento == 'Alta' || old('encaminhamento') == 'Alta') ? 'selected' : '' ?>>Alta</option>
-                                <option value="Internação" <?= ($atendimento->encaminhamento == 'Internação' || old('encaminhamento') == 'Internação') ? 'selected' : '' ?>>Internação</option>
-                                <option value="Transferência" <?= ($atendimento->encaminhamento == 'Transferência' || old('encaminhamento') == 'Transferência') ? 'selected' : '' ?>>Transferência</option>
-                                <option value="Especialista" <?= ($atendimento->encaminhamento == 'Especialista' || old('encaminhamento') == 'Especialista') ? 'selected' : '' ?>>Especialista</option>
-                                <option value="Retorno" <?= ($atendimento->encaminhamento == 'Retorno' || old('encaminhamento') == 'Retorno') ? 'selected' : '' ?>>Retorno</option>
-                                <option value="Óbito" <?= ($atendimento->encaminhamento == 'Óbito' || old('encaminhamento') == 'Óbito') ? 'selected' : '' ?>>Óbito</option>
+                                <option value="Alta" <?= ($atendimento['encaminhamento'] == 'Alta' || old('encaminhamento') == 'Alta') ? 'selected' : '' ?>>Alta</option>
+                                <option value="Internação" <?= ($atendimento['encaminhamento'] == 'Internação' || old('encaminhamento') == 'Internação') ? 'selected' : '' ?>>Internação</option>
+                                <option value="Transferência" <?= ($atendimento['encaminhamento'] == 'Transferência' || old('encaminhamento') == 'Transferência') ? 'selected' : '' ?>>Transferência</option>
+                                <option value="Especialista" <?= ($atendimento['encaminhamento'] == 'Especialista' || old('encaminhamento') == 'Especialista') ? 'selected' : '' ?>>Especialista</option>
+                                <option value="Retorno" <?= ($atendimento['encaminhamento'] == 'Retorno' || old('encaminhamento') == 'Retorno') ? 'selected' : '' ?>>Retorno</option>
+                                <option value="Óbito" <?= ($atendimento['encaminhamento'] == 'Óbito' || old('encaminhamento') == 'Óbito') ? 'selected' : '' ?>>Óbito</option>
                             </select>
                         </div>
 
@@ -185,7 +185,7 @@
                         <div class="mb-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="obito" name="obito" value="1"
-                                    <?= ($atendimento->obito || old('obito')) ? 'checked' : '' ?>>
+                                    <?= ($atendimento['obito'] || old('obito')) ? 'checked' : '' ?>>
                                 <label class="form-check-label text-danger" for="obito">
                                     <i class="bi bi-exclamation-triangle"></i> Marcar como óbito
                                 </label>
@@ -194,7 +194,7 @@
 
                         <!-- Buttons -->
                         <div class="d-flex justify-content-between">
-                            <a href="<?= base_url('atendimentos/show/' . $atendimento->id_atendimento) ?>" class="btn btn-secondary">
+                            <a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Voltar
                             </a>
                             <div>
