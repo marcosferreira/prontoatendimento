@@ -217,7 +217,7 @@
                                                     <?php endif; ?>
 
                                                     <div class="mt-2">
-                                                        <a href="<?= base_url('atendimentos/' . $atendimento['id_atendimento']) ?>"
+                                                        <a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>"
                                                             class="btn btn-outline-primary btn-sm">
                                                             Ver Detalhes
                                                         </a>

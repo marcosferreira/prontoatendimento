@@ -5,6 +5,9 @@ namespace App\Controllers;
 use App\Models\PacienteModel;
 use App\Models\BairroModel;
 use App\Models\LogradouroModel;
+use App\Models\AtendimentoModel;
+use App\Models\AtendimentoExameModel;
+use App\Models\AtendimentoProcedimentoModel;
 use CodeIgniter\Controller;
 
 class Pacientes extends BaseController
@@ -12,12 +15,18 @@ class Pacientes extends BaseController
     protected $pacienteModel;
     protected $bairroModel;
     protected $logradouroModel;
+    protected $atendimentoModel;
+    protected $atendimentoExameModel;
+    protected $atendimentoProcedimentoModel;
 
     public function __construct()
     {
         $this->pacienteModel = new PacienteModel();
         $this->bairroModel = new BairroModel();
         $this->logradouroModel = new LogradouroModel();
+        $this->atendimentoModel = new AtendimentoModel();
+        $this->atendimentoExameModel = new AtendimentoExameModel();
+        $this->atendimentoProcedimentoModel = new AtendimentoProcedimentoModel();
     }
 
     /**
@@ -182,10 +191,33 @@ class Pacientes extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Paciente não encontrado');
         }
 
+        // Buscar atendimentos do paciente
+        $atendimentos = $this->atendimentoModel->getAtendimentosCompletosByPaciente($id);
+
+        // Buscar exames do paciente
+        $exames = $this->atendimentoExameModel->getExamesByPaciente($id);
+
+        // Buscar procedimentos do paciente
+        $procedimentos = $this->atendimentoProcedimentoModel->getProcedimentosByPaciente($id);
+
+        // Estatísticas do paciente
+        $stats = [
+            'total_atendimentos' => count($atendimentos),
+            'exames_realizados' => count($exames),
+            'procedimentos_realizados' => count($procedimentos),
+            'ultimo_atendimento' => !empty($atendimentos) 
+                ? date('d/m/Y', strtotime($atendimentos[0]['data_atendimento'])) 
+                : 'Nunca'
+        ];
+
         $data = [
             'title' => 'Detalhes do Paciente',
             'description' => 'Visualizar Paciente',
-            'paciente' => $paciente
+            'paciente' => $paciente,
+            'atendimentos' => $atendimentos,
+            'exames' => $exames,
+            'procedimentos' => $procedimentos,
+            'stats' => $stats
         ];
 
         return view('pacientes/show', $data);

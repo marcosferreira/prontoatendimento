@@ -194,4 +194,21 @@ class AtendimentoProcedimentoModel extends Model
                    ->where('atendimento_procedimentos.id_atendimento', $idAtendimento)
                    ->findAll();
     }
+
+    /**
+     * Busca procedimentos de um paciente específico com dados completos
+     */
+    public function getProcedimentosByPaciente($idPaciente)
+    {
+        return $this->select('atendimento_procedimentos.*, procedimentos.nome, procedimentos.codigo,
+                             atendimentos.data_atendimento, pacientes.nome as nome_paciente,
+                             medicos.nome as nome_medico')
+                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_procedimentos.id_atendimento')
+                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                   ->join('medicos', 'medicos.id_medico = atendimentos.id_medico', 'left')
+                   ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento', 'left')
+                   ->where('pacientes.id_paciente', $idPaciente)
+                   ->orderBy('atendimentos.data_atendimento', 'DESC')
+                   ->findAll();
+    }
 }

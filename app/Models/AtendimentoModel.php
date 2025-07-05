@@ -266,4 +266,16 @@ class AtendimentoModel extends Model
                    ->orderBy('atendimentos.data_atendimento', 'DESC')
                    ->findAll();
     }
+
+    /**
+     * Busca atendimentos completos de um paciente específico
+     */
+    public function getAtendimentosCompletosByPaciente($idPaciente)
+    {
+        return $this->select('atendimentos.*, medicos.nome as nome_medico, medicos.crm, medicos.especialidade')
+                   ->join('medicos', 'medicos.id_medico = atendimentos.id_medico', 'left')
+                   ->where('atendimentos.id_paciente', $idPaciente)
+                   ->orderBy('atendimentos.data_atendimento', 'DESC')
+                   ->findAll();
+    }
 }

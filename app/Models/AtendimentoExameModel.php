@@ -335,4 +335,19 @@ class AtendimentoExameModel extends Model
                    ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
                    ->findAll();
     }
+
+    /**
+     * Busca exames de um paciente específico com dados completos
+     */
+    public function getExamesByPaciente($idPaciente)
+    {
+        return $this->select('atendimento_exames.*, exames.nome, exames.tipo, 
+                             atendimentos.data_atendimento, pacientes.nome as nome_paciente')
+                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame', 'left')
+                   ->where('pacientes.id_paciente', $idPaciente)
+                   ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
+                   ->findAll();
+    }
 }
