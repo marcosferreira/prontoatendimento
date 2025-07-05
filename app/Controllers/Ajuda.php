@@ -174,6 +174,51 @@ class Ajuda extends BaseController
                 'icon' => 'cloud-arrow-down',
                 'icon_color' => 'primary',
                 'category' => 'sistema'
+            ],
+            [
+                'slug' => 'configuracoes-sistema',
+                'title' => 'Configurações do Sistema',
+                'description' => 'Como acessar e gerenciar configurações globais do SisPAM',
+                'views' => 189,
+                'icon' => 'gear-fill',
+                'icon_color' => 'secondary',
+                'category' => 'configuracoes'
+            ],
+            [
+                'slug' => 'notificacoes-bi',
+                'title' => 'Central de Notificações BI',
+                'description' => 'Monitoramento inteligente e alertas do sistema',
+                'views' => 145,
+                'icon' => 'bell-fill',
+                'icon_color' => 'warning',
+                'category' => 'monitoramento'
+            ],
+            [
+                'slug' => 'configurar-alertas',
+                'title' => 'Configurar Alertas e Monitoramento',
+                'description' => 'Como personalizar alertas e notificações automáticas',
+                'views' => 112,
+                'icon' => 'exclamation-triangle-fill',
+                'icon_color' => 'danger',
+                'category' => 'monitoramento'
+            ],
+            [
+                'slug' => 'parametros-sistema',
+                'title' => 'Gerenciar Parâmetros do Sistema',
+                'description' => 'Configuração de limites, thresholds e comportamentos',
+                'views' => 98,
+                'icon' => 'sliders',
+                'icon_color' => 'info',
+                'category' => 'configuracoes'
+            ],
+            [
+                'slug' => 'analise-bi-dados',
+                'title' => 'Análise BI e Insights',
+                'description' => 'Como interpretar dados e gráficos do sistema BI',
+                'views' => 87,
+                'icon' => 'graph-up-arrow',
+                'icon_color' => 'success',
+                'category' => 'monitoramento'
             ]
         ];
     }
@@ -231,6 +276,22 @@ class Ajuda extends BaseController
                 'icon' => 'gear',
                 'color' => 'secondary',
                 'articles_count' => 6
+            ],
+            [
+                'slug' => 'configuracoes',
+                'name' => 'Configurações Avançadas',
+                'description' => 'Parâmetros, limites e personalizações',
+                'icon' => 'gear-fill',
+                'color' => 'dark',
+                'articles_count' => 8
+            ],
+            [
+                'slug' => 'monitoramento',
+                'name' => 'Monitoramento e BI',
+                'description' => 'Alertas, notificações e análise inteligente',
+                'icon' => 'activity',
+                'color' => 'purple',
+                'articles_count' => 12
             ]
         ];
     }
@@ -280,6 +341,26 @@ class Ajuda extends BaseController
             [
                 'question' => 'Sistema desconectou, perdi os dados que estava digitando?',
                 'answer' => 'O sistema salva automaticamente os dados a cada 30 segundos. Ao reconectar, você deve encontrar suas informações na tela de rascunhos.'
+            ],
+            [
+                'question' => 'Como interpretar as notificações BI do sistema?',
+                'answer' => 'As notificações BI alertam sobre padrões anômalos: vermelho indica situações críticas que precisam ação imediata, amarelo são alertas que merecem atenção, e verde são informativos. Acesse a Central de Notificações para detalhes.'
+            ],
+            [
+                'question' => 'Posso personalizar os alertas e limites do sistema?',
+                'answer' => 'Sim, administradores podem acessar "Configurações" > "Parâmetros do Sistema" para ajustar limites de alertas, thresholds de monitoramento e configurações de notificações.'
+            ],
+            [
+                'question' => 'O que fazer quando recebo uma notificação crítica?',
+                'answer' => 'Notificações críticas exigem ação imediata. Clique na notificação para ver detalhes, siga as ações sugeridas pelo sistema e marque como resolvida após tomar as medidas apropriadas.'
+            ],
+            [
+                'question' => 'Como acessar relatórios de análise BI?',
+                'answer' => 'Acesse "Monitoramento" > "Central de Notificações BI" > "Relatórios". Lá você encontra análises de tendências, estatísticas de atendimento e insights sobre o funcionamento da unidade.'
+            ],
+            [
+                'question' => 'Posso desativar certas notificações automáticas?',
+                'answer' => 'Administradores podem configurar quais tipos de notificações são ativadas em "Configurações" > "Notificações BI". Não é recomendado desativar alertas críticos de segurança.'
             ]
         ];
     }
@@ -290,6 +371,18 @@ class Ajuda extends BaseController
     private function getRecentUpdates(): array
     {
         return [
+            [
+                'version' => '2.2.0',
+                'date' => '05/07/2025',
+                'type' => 'major',
+                'changes' => [
+                    'Nova Central de Notificações BI com monitoramento inteligente',
+                    'Sistema de configurações avançadas e parâmetros personalizáveis',
+                    'Análise automática de padrões e alertas preventivos',
+                    'Dashboard interativo com gráficos Chart.js',
+                    'Melhorias na segurança e auditoria do sistema'
+                ]
+            ],
             [
                 'version' => '2.1.0',
                 'date' => '01/06/2025',
@@ -329,14 +422,56 @@ class Ajuda extends BaseController
     private function searchHelpContent($searchTerm): array
     {
         $articles = $this->getPopularArticles();
+        $categories = $this->getHelpCategories();
         $results = [];
 
+        // Buscar em artigos
         foreach ($articles as $article) {
-            if (stripos($article['title'], $searchTerm) !== false || 
-                stripos($article['description'], $searchTerm) !== false) {
+            $score = 0;
+            
+            // Busca no título (peso maior)
+            if (stripos($article['title'], $searchTerm) !== false) {
+                $score += 10;
+            }
+            
+            // Busca na descrição
+            if (stripos($article['description'], $searchTerm) !== false) {
+                $score += 5;
+            }
+            
+            // Busca na categoria
+            if (stripos($article['category'], $searchTerm) !== false) {
+                $score += 3;
+            }
+            
+            // Palavras-chave específicas para novas funcionalidades
+            $keywords = [
+                'notificação' => ['notificacoes-bi', 'configurar-alertas', 'analise-bi-dados'],
+                'bi' => ['notificacoes-bi', 'analise-bi-dados'],
+                'alerta' => ['notificacoes-bi', 'configurar-alertas'],
+                'configuração' => ['configuracoes-sistema', 'parametros-sistema'],
+                'parâmetro' => ['parametros-sistema'],
+                'monitoramento' => ['notificacoes-bi', 'analise-bi-dados'],
+                'dashboard' => ['notificacoes-bi', 'analise-bi-dados'],
+                'gráfico' => ['analise-bi-dados']
+            ];
+            
+            foreach ($keywords as $keyword => $relatedSlugs) {
+                if (stripos($searchTerm, $keyword) !== false && in_array($article['slug'], $relatedSlugs)) {
+                    $score += 15;
+                }
+            }
+            
+            if ($score > 0) {
+                $article['relevance_score'] = $score;
                 $results[] = $article;
             }
         }
+
+        // Ordenar por relevância
+        usort($results, function($a, $b) {
+            return $b['relevance_score'] - $a['relevance_score'];
+        });
 
         return $results;
     }
@@ -362,9 +497,17 @@ class Ajuda extends BaseController
      */
     private function getArticlesByCategory($categorySlug): array
     {
-        // Aqui você implementaria a lógica para buscar artigos de uma categoria específica
-        // Por enquanto, retornamos alguns exemplos
-        return $this->getPopularArticles();
+        $allArticles = $this->getPopularArticles();
+        $categoryArticles = [];
+
+        foreach ($allArticles as $article) {
+            if ($article['category'] === $categorySlug) {
+                $categoryArticles[] = $article;
+            }
+        }
+
+        // Se não encontrou artigos específicos, retorna os mais populares como fallback
+        return !empty($categoryArticles) ? $categoryArticles : array_slice($allArticles, 0, 6);
     }
 
     /**
@@ -415,7 +558,12 @@ class Ajuda extends BaseController
             'gerar-relatorios' => $this->getGerarRelatoriosContent(),
             'triagem-pacientes' => $this->getTriagemPacientesContent(),
             'gerenciar-estoque' => $this->getGerenciarEstoqueContent(),
-            'backup-dados' => $this->getBackupDadosContent()
+            'backup-dados' => $this->getBackupDadosContent(),
+            'configuracoes-sistema' => $this->getConfiguracoesSistemaContent(),
+            'notificacoes-bi' => $this->getNotificacoesBIContent(),
+            'configurar-alertas' => $this->getConfigurarAlertasContent(),
+            'parametros-sistema' => $this->getParametrosSistemaContent(),
+            'analise-bi-dados' => $this->getAnaliseBIDadosContent()
         ];
 
         return $content[$slug] ?? '<p>Conteúdo não encontrado.</p>';
@@ -693,5 +841,440 @@ class Ajuda extends BaseController
             <i class="bi bi-exclamation-triangle"></i>
             <strong>Atenção:</strong> NUNCA tente restaurar dados sem orientação técnica. Contate sempre o suporte.
         </div>';
+    }
+
+    private function getConfiguracoesSistemaContent(): string
+    {
+        return '
+        <h3>Configurações do Sistema SisPAM</h3>
+        <p>O sistema de configurações permite personalizar o comportamento do SisPAM de acordo com as necessidades da sua unidade de saúde.</p>
+
+        <h4>Como acessar as configurações</h4>
+        <ol>
+            <li><strong>Acesse o menu:</strong> Clique em "Configurações" no menu lateral</li>
+            <li><strong>Autenticação:</strong> Apenas administradores têm acesso completo</li>
+            <li><strong>Categorias:</strong> As configurações são organizadas por módulos</li>
+        </ol>
+
+        <h4>Principais seções de configuração</h4>
+        <ul>
+            <li><strong>Geral:</strong> Nome da unidade, endereço, contatos</li>
+            <li><strong>Atendimento:</strong> Horários, tipos de consulta, especialidades</li>
+            <li><strong>Medicamentos:</strong> Controle de estoque, alertas de vencimento</li>
+            <li><strong>Relatórios:</strong> Modelos, assinaturas digitais, cabeçalhos</li>
+            <li><strong>Segurança:</strong> Políticas de senha, sessões, auditoria</li>
+            <li><strong>Notificações:</strong> Alertas automáticos, limites, thresholds</li>
+        </ul>
+
+        <h4>Configurações importantes</h4>
+        <ol>
+            <li><strong>Horário de funcionamento:</strong> Define disponibilidade do sistema</li>
+            <li><strong>Tempo de sessão:</strong> Controla logout automático por segurança</li>
+            <li><strong>Backup automático:</strong> Frequência e retenção de backups</li>
+            <li><strong>Alertas de estoque:</strong> Níveis mínimos de medicamentos</li>
+            <li><strong>Integração:</strong> APIs externas e sistemas terceiros</li>
+        </ol>
+
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Atenção:</strong> Alterações nas configurações afetam todo o sistema. Sempre documente as mudanças e teste em ambiente controlado.
+        </div>
+
+        <h4>Backup de configurações</h4>
+        <p>Antes de fazer alterações importantes:</p>
+        <ol>
+            <li>Acesse "Configurações" > "Backup/Restaurar"</li>
+            <li>Clique em "Exportar Configurações Atuais"</li>
+            <li>Salve o arquivo em local seguro</li>
+            <li>Para restaurar, use "Importar Configurações"</li>
+        </ol>';
+    }
+
+    private function getNotificacoesBIContent(): string
+    {
+        return '
+        <h3>Central de Notificações BI</h3>
+        <p>A Central de Notificações BI é um sistema inteligente que monitora o funcionamento do SisPAM e gera alertas automáticos sobre situações que merecem atenção.</p>
+
+        <h4>Como acessar</h4>
+        <ol>
+            <li><strong>Menu principal:</strong> Clique em "Monitoramento" > "Notificações BI"</li>
+            <li><strong>Dashboard:</strong> Visualize estatísticas e gráficos em tempo real</li>
+            <li><strong>Lista de alertas:</strong> Veja todas as notificações ativas</li>
+        </ol>
+
+        <h4>Tipos de notificações</h4>
+        <ul>
+            <li><strong>Paciente Recorrente:</strong> Pacientes com muitos atendimentos em pouco tempo</li>
+            <li><strong>Surto de Sintomas:</strong> Aumento anormal de casos similares em uma região</li>
+            <li><strong>Alta Demanda:</strong> Sobrecarga no atendimento acima da capacidade</li>
+            <li><strong>Anomalia Estatística:</strong> Padrões fora do esperado em indicadores</li>
+            <li><strong>Medicamento Crítico:</strong> Estoque baixo de medicamentos essenciais</li>
+            <li><strong>Equipamento:</strong> Falhas ou manutenção preventiva necessária</li>
+        </ul>
+
+        <h4>Níveis de severidade</h4>
+        <ul>
+            <li><strong class="text-danger">Crítica:</strong> Requer ação imediata (vermelho)</li>
+            <li><strong class="text-warning">Alta:</strong> Importante, ação em até 2 horas (laranja)</li>
+            <li><strong class="text-info">Média:</strong> Atenção necessária no dia (amarelo)</li>
+            <li><strong class="text-success">Baixa:</strong> Informativo, ação quando possível (verde)</li>
+        </ul>
+
+        <h4>Como resolver notificações</h4>
+        <ol>
+            <li><strong>Clique na notificação:</strong> Para ver detalhes completos</li>
+            <li><strong>Analise os dados:</strong> Gráficos e parâmetros relacionados</li>
+            <li><strong>Siga as ações sugeridas:</strong> O sistema sugere medidas específicas</li>
+            <li><strong>Execute as ações:</strong> Tome as medidas necessárias</li>
+            <li><strong>Marque como resolvida:</strong> Com observações sobre o que foi feito</li>
+        </ol>
+
+        <h4>Dashboard interativo</h4>
+        <ul>
+            <li><strong>Gráfico de severidade:</strong> Distribuição dos alertas ativos</li>
+            <li><strong>Gráfico de tipos:</strong> Quais problemas são mais frequentes</li>
+            <li><strong>Tendência 7 dias:</strong> Evolução dos alertas na semana</li>
+            <li><strong>Cards de estatísticas:</strong> Números consolidados</li>
+        </ul>
+
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Dica:</strong> O sistema aprende com suas ações. Quanto mais você resolve notificações adequadamente, mais precisos ficam os alertas futuros.
+        </div>';
+    }
+
+    private function getConfigurarAlertasContent(): string
+    {
+        return '
+        <h3>Configurar Alertas e Monitoramento</h3>
+        <p>Personalize os alertas automáticos para atender às necessidades específicas da sua unidade de saúde.</p>
+
+        <h4>Acessando configurações de alertas</h4>
+        <ol>
+            <li><strong>Acesse:</strong> Configurações > Notificações BI</li>
+            <li><strong>Autenticação:</strong> Requer permissão de administrador</li>
+            <li><strong>Categorias:</strong> Organizadas por tipo de alerta</li>
+        </ol>
+
+        <h4>Configurações por tipo de alerta</h4>
+
+        <h5>📋 Paciente Recorrente</h5>
+        <ul>
+            <li><strong>Limite de atendimentos:</strong> Quantidade de consultas no período</li>
+            <li><strong>Período de análise:</strong> Dias para considerar (padrão: 30 dias)</li>
+            <li><strong>Severidade:</strong> Nível de alerta baseado na frequência</li>
+            <li><strong>Exceções:</strong> Pacientes com condições crônicas conhecidas</li>
+        </ul>
+
+        <h5>🦠 Surto de Sintomas</h5>
+        <ul>
+            <li><strong>Threshold de casos:</strong> Número mínimo para gerar alerta</li>
+            <li><strong>Aumento percentual:</strong> % de crescimento que dispara alerta</li>
+            <li><strong>Período de monitoramento:</strong> Janela de tempo para análise</li>
+            <li><strong>Sintomas monitorados:</strong> Lista de sintomas para vigilância</li>
+        </ul>
+
+        <h5>📈 Alta Demanda</h5>
+        <ul>
+            <li><strong>Capacidade máxima:</strong> Número de atendimentos simultâneos</li>
+            <li><strong>Limite de fila:</strong> Quantidade máxima na espera</li>
+            <li><strong>Tempo de espera:</strong> Minutos máximos aceitáveis</li>
+            <li><strong>Horários críticos:</strong> Períodos de maior atenção</li>
+        </ul>
+
+        <h5>💊 Medicamentos Críticos</h5>
+        <ul>
+            <li><strong>Estoque mínimo:</strong> Quantidade que dispara alerta</li>
+            <li><strong>Dias de antecedência:</strong> Prazo antes do vencimento</li>
+            <li><strong>Medicamentos prioritários:</strong> Lista de essenciais</li>
+            <li><strong>Fornecedores:</strong> Contatos para reposição urgente</li>
+        </ul>
+
+        <h4>Personalizações avançadas</h4>
+        <ol>
+            <li><strong>Horários de notificação:</strong> Quando enviar alertas</li>
+            <li><strong>Canais de comunicação:</strong> Email, SMS, sistema interno</li>
+            <li><strong>Responsáveis:</strong> Quem recebe cada tipo de alerta</li>
+            <li><strong>Escalação:</strong> Para quem encaminhar se não resolvido</li>
+        </ol>
+
+        <h4>Testando configurações</h4>
+        <ol>
+            <li><strong>Modo teste:</strong> Ative para simular alertas</li>
+            <li><strong>Dados históricos:</strong> Use para validar configurações</li>
+            <li><strong>Feedback da equipe:</strong> Colete opiniões sobre efetividade</li>
+            <li><strong>Ajustes finos:</strong> Refine baseado na experiência real</li>
+        </ol>
+
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Importante:</strong> Evite configurar muitos alertas de baixa relevância, pois pode gerar "fadiga de alerta" na equipe.
+        </div>';
+    }
+
+    private function getParametrosSistemaContent(): string
+    {
+        return '
+        <h3>Gerenciar Parâmetros do Sistema</h3>
+        <p>Os parâmetros controlam comportamentos específicos do SisPAM, permitindo fine-tuning para otimizar a operação.</p>
+
+        <h4>Categorias de parâmetros</h4>
+
+        <h5>⚙️ Parâmetros Gerais</h5>
+        <ul>
+            <li><strong>Timeout de sessão:</strong> Tempo de inatividade antes do logout</li>
+            <li><strong>Itens por página:</strong> Quantos registros mostrar em listas</li>
+            <li><strong>Formato de data:</strong> Como exibir datas no sistema</li>
+            <li><strong>Moeda padrão:</strong> Para valores financeiros</li>
+            <li><strong>Fuso horário:</strong> Timezone da unidade</li>
+        </ul>
+
+        <h5>🏥 Parâmetros de Atendimento</h5>
+        <ul>
+            <li><strong>Tempo médio consulta:</strong> Duração estimada por tipo</li>
+            <li><strong>Intervalo entre consultas:</strong> Tempo de preparação</li>
+            <li><strong>Capacidade simultânea:</strong> Atendimentos paralelos</li>
+            <li><strong>Horário de funcionamento:</strong> Início e fim das atividades</li>
+            <li><strong>Tolerância atraso:</strong> Minutos aceitáveis de atraso</li>
+        </ul>
+
+        <h5>📊 Parâmetros de Análise BI</h5>
+        <ul>
+            <li><strong>Frequência de análise:</strong> A cada quantos minutos executar</li>
+            <li><strong>Período de histórico:</strong> Quantos dias considerar</li>
+            <li><strong>Sensibilidade alertas:</strong> Quão sensível aos padrões</li>
+            <li><strong>Confiança estatística:</strong> Nível de certeza necessário</li>
+            <li><strong>Retenção de dados:</strong> Por quanto tempo manter dados</li>
+        </ul>
+
+        <h5>🔒 Parâmetros de Segurança</h5>
+        <ul>
+            <li><strong>Complexidade senha:</strong> Regras para senhas válidas</li>
+            <li><strong>Tentativas de login:</strong> Máximo antes de bloquear</li>
+            <li><strong>Validade da senha:</strong> Dias antes de exigir troca</li>
+            <li><strong>Sessões simultâneas:</strong> Quantas por usuário</li>
+            <li><strong>Auditoria detalhada:</strong> Nível de logs de segurança</li>
+        </ul>
+
+        <h4>Como alterar parâmetros</h4>
+        <ol>
+            <li><strong>Acesse:</strong> Configurações > Parâmetros do Sistema</li>
+            <li><strong>Selecione categoria:</strong> Use abas para navegar</li>
+            <li><strong>Encontre o parâmetro:</strong> Use busca se necessário</li>
+            <li><strong>Altere o valor:</strong> Digite novo valor ou use controles</li>
+            <li><strong>Valide entrada:</strong> Sistema verifica se é válido</li>
+            <li><strong>Salve alterações:</strong> Clique em "Aplicar"</li>
+            <li><strong>Teste funcionamento:</strong> Verifique se funciona como esperado</li>
+        </ol>
+
+        <h4>Parâmetros críticos</h4>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i>
+            <strong>Atenção especial para:</strong>
+            <ul class="mb-0 mt-2">
+                <li>Configurações de banco de dados</li>
+                <li>Parâmetros de segurança</li>
+                <li>Integrações com sistemas externos</li>
+                <li>Configurações de backup</li>
+            </ul>
+        </div>
+
+        <h4>Backup e restauração</h4>
+        <ol>
+            <li><strong>Backup automático:</strong> Feito antes de cada alteração</li>
+            <li><strong>Backup manual:</strong> "Exportar Configurações Atuais"</li>
+            <li><strong>Restauração:</strong> "Importar Configurações" ou "Restaurar Backup"</li>
+            <li><strong>Valores padrão:</strong> "Restaurar Configurações de Fábrica"</li>
+        </ol>
+
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            <strong>Dica:</strong> Documente todas as alterações de parâmetros com data, motivo e responsável para facilitar troubleshooting futuro.
+        </div>';
+    }
+
+    private function getAnaliseBIDadosContent(): string
+    {
+        return '
+        <h3>Análise BI e Insights</h3>
+        <p>O módulo de Business Intelligence analisa automaticamente os dados do SisPAM para identificar padrões, tendências e anomalias.</p>
+
+        <h4>O que é analisado</h4>
+        <ul>
+            <li><strong>Padrões de atendimento:</strong> Horários de pico, sazonalidade</li>
+            <li><strong>Perfil epidemiológico:</strong> Doenças mais comuns por região/época</li>
+            <li><strong>Eficiência operacional:</strong> Tempos de espera, produtividade</li>
+            <li><strong>Uso de recursos:</strong> Medicamentos, equipamentos, pessoal</li>
+            <li><strong>Qualidade do cuidado:</strong> Indicadores de satisfação e desfecho</li>
+        </ul>
+
+        <h4>Tipos de gráficos e relatórios</h4>
+
+        <h5>📊 Dashboard Principal</h5>
+        <ul>
+            <li><strong>Gráfico de pizza:</strong> Distribuição por severidade de alertas</li>
+            <li><strong>Gráfico de barras:</strong> Tipos de notificações mais frequentes</li>
+            <li><strong>Gráfico de linha:</strong> Tendência dos últimos 7 dias</li>
+            <li><strong>Cards estatísticos:</strong> KPIs resumidos</li>
+        </ul>
+
+        <h5>📈 Análises Avançadas</h5>
+        <ul>
+            <li><strong>Heatmaps:</strong> Concentração geográfica de casos</li>
+            <li><strong>Séries temporais:</strong> Evolução de indicadores ao longo do tempo</li>
+            <li><strong>Correlações:</strong> Relações entre diferentes variáveis</li>
+            <li><strong>Previsões:</strong> Projeções baseadas em dados históricos</li>
+        </ul>
+
+        <h4>Como interpretar os dados</h4>
+
+        <h5>🔴 Alertas Críticos</h5>
+        <ul>
+            <li><strong>Ação:</strong> Requer intervenção imediata</li>
+            <li><strong>Exemplo:</strong> Surto de doença infecciosa detectado</li>
+            <li><strong>Resposta:</strong> Ativar protocolos de emergência</li>
+        </ul>
+
+        <h5>🟡 Alertas de Atenção</h5>
+        <ul>
+            <li><strong>Ação:</strong> Monitorar de perto, planejar intervenção</li>
+            <li><strong>Exemplo:</strong> Aumento de 30% em determinado sintoma</li>
+            <li><strong>Resposta:</strong> Investigar causas, preparar recursos</li>
+        </ul>
+
+        <h5>🟢 Informações</h5>
+        <ul>
+            <li><strong>Ação:</strong> Acompanhar, usar para planejamento</li>
+            <li><strong>Exemplo:</strong> Tendência sazonal esperada</li>
+            <li><strong>Resposta:</strong> Ajustar recursos conforme padrão</li>
+        </ul>
+
+        <h4>Utilizando insights para tomada de decisão</h4>
+        <ol>
+            <li><strong>Revisão diária:</strong> Verifique alertas e tendências</li>
+            <li><strong>Análise semanal:</strong> Identifique padrões emergentes</li>
+            <li><strong>Planejamento mensal:</strong> Use dados para alocar recursos</li>
+            <li><strong>Avaliação trimestral:</strong> Ajuste processos e protocolos</li>
+        </ol>
+
+        <h4>Exportando e compartilhando dados</h4>
+        <ul>
+            <li><strong>PDF:</strong> Relatórios executivos para gestão</li>
+            <li><strong>Excel:</strong> Dados detalhados para análise externa</li>
+            <li><strong>Imagens:</strong> Gráficos para apresentações</li>
+            <li><strong>API:</strong> Integração com outros sistemas</li>
+        </ul>
+
+        <h4>Configurando análises personalizadas</h4>
+        <ol>
+            <li><strong>Defina KPIs:</strong> Quais indicadores são importantes</li>
+            <li><strong>Configure filtros:</strong> Foque nos dados relevantes</li>
+            <li><strong>Agende relatórios:</strong> Automação de análises regulares</li>
+            <li><strong>Personalize dashboards:</strong> Organize conforme necessidade</li>
+        </ol>
+
+        <div class="alert alert-success">
+            <i class="bi bi-lightbulb"></i>
+            <strong>Insight:</strong> O BI é mais efetivo quando usado consistentemente. Reserve tempo diário para revisar os indicadores e agir com base nos insights gerados.
+        </div>
+
+        <h4>Limitações e cuidados</h4>
+        <ul>
+            <li><strong>Qualidade dos dados:</strong> Análises dependem de dados bem registrados</li>
+            <li><strong>Contexto local:</strong> Considere particularidades da sua região</li>
+            <li><strong>Correlação vs causalidade:</strong> Nem toda correlação indica causa</li>
+            <li><strong>Fatores externos:</strong> Eventos externos podem influenciar dados</li>
+        </ul>';
+    }
+
+    /**
+     * Retorna guias rápidos para novas funcionalidades
+     */
+    public function getQuickStartGuides(): array
+    {
+        return [
+            [
+                'title' => 'Central de Notificações BI',
+                'description' => 'Sistema inteligente de monitoramento automático',
+                'icon' => 'bell-fill',
+                'color' => 'warning',
+                'url' => 'notificacoes',
+                'help_article' => 'notificacoes-bi',
+                'steps' => [
+                    'Acesse o menu "Monitoramento" > "Notificações BI"',
+                    'Visualize alertas ativos no dashboard',
+                    'Clique em uma notificação para ver detalhes',
+                    'Execute ações sugeridas pelo sistema',
+                    'Marque como resolvida após tratamento'
+                ],
+                'benefits' => [
+                    'Detecção automática de padrões anômalos',
+                    'Alertas preventivos em tempo real',
+                    'Sugestões inteligentes de ação',
+                    'Dashboard visual com gráficos',
+                    'Histórico e tendências'
+                ]
+            ],
+            [
+                'title' => 'Sistema de Configurações',
+                'description' => 'Personalize o SisPAM conforme sua necessidade',
+                'icon' => 'gear-fill',
+                'color' => 'secondary',
+                'url' => 'configuracoes',
+                'help_article' => 'configuracoes-sistema',
+                'steps' => [
+                    'Acesse "Configurações" no menu lateral',
+                    'Escolha a categoria desejada',
+                    'Ajuste os parâmetros conforme necessário',
+                    'Salve as alterações',
+                    'Teste o funcionamento'
+                ],
+                'benefits' => [
+                    'Interface personalizada por unidade',
+                    'Parâmetros flexíveis de operação',
+                    'Backup automático de configurações',
+                    'Controle granular de comportamentos',
+                    'Integração com sistemas externos'
+                ]
+            ],
+            [
+                'title' => 'Análise BI e Insights',
+                'description' => 'Relatórios inteligentes e análise de dados',
+                'icon' => 'graph-up-arrow',
+                'color' => 'info',
+                'url' => 'notificacoes',
+                'help_article' => 'analise-bi-dados',
+                'steps' => [
+                    'Acesse a Central de Notificações BI',
+                    'Visualize gráficos no dashboard',
+                    'Gere relatórios personalizados',
+                    'Exporte dados para análise externa',
+                    'Configure alertas personalizados'
+                ],
+                'benefits' => [
+                    'Insights baseados em dados reais',
+                    'Identificação de tendências',
+                    'Otimização de recursos',
+                    'Tomada de decisão informada',
+                    'Prevenção de problemas'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Página de guias rápidos
+     */
+    public function guias()
+    {
+        $data = [
+            'title' => 'Guias Rápidos - Novas Funcionalidades',
+            'description' => 'Aprenda a usar as novas funcionalidades do SisPAM',
+            'keywords' => 'guias, tutorial, novas funcionalidades, SisPAM',
+            'guides' => $this->getQuickStartGuides()
+        ];
+        
+        return view('ajuda/guias', $data);
     }
 }

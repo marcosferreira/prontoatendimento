@@ -17,20 +17,21 @@
                 <p class="subtitle">Editar Dados do Bairro: <?= esc($bairro['nome_bairro']) ?></p>
             </div>
 
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" class="mb-4">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="<?= base_url() ?>">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="<?= base_url('bairros') ?>">Bairros</a>
-                    </li>
-                    <li class="breadcrumb-item active">Editar Bairro</li>
-                </ol>
-            </nav>
+            <div class="content-wrapper">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="<?= base_url() ?>">Dashboard</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="<?= base_url('bairros') ?>">Bairros</a>
+                        </li>
+                        <li class="breadcrumb-item active">Editar Bairro</li>
+                    </ol>
+                </nav>
 
-            <!-- Flash Messages -->
+                <!-- Flash Messages -->
             <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill"></i>
@@ -201,6 +202,7 @@
                     </div>
                 </div>
             </div>
+            <?php echo $this->include('components/footer'); ?>
         </div>
     </main>
 </div>

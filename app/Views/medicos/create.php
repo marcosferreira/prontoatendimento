@@ -9,6 +9,7 @@
 
     <main class="main-content">
         <div class="main-container">
+            <div class="content-wrapper">
             <!-- Header -->
             <div class="header">
                 <h1><i class="bi bi-person-plus"></i> Novo Médico</h1>
@@ -102,6 +103,8 @@
                     </div>
                 </div>
             </div>
+            </div>
+            <?= $this->include('components/footer') ?>
         </div>
     </main>
 </div>

@@ -4,8 +4,6 @@ namespace App\Controllers;
 
 class Admin extends BaseController
 {
-    protected $helpers = ['auth'];
-
     /**
      * Dashboard principal do admin
      */

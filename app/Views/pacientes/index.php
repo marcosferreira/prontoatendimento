@@ -19,7 +19,7 @@
                 <div class="action-left m-4">
                     <div class="search-container position-relative">
                         <input type="text" id="searchPaciente" class="form-control search-input pe-5"
-                        placeholder="Buscar por nome, CPF ou SUS...">
+                            placeholder="Buscar por nome, CPF ou SUS...">
                         <i class="bi bi-search search-icon position-absolute top-50 end-0 translate-middle-y me-3"></i>
                     </div>
                 </div>
@@ -159,6 +159,7 @@
                     <?php endif; ?>
                 </div>
             </div>
+            <?= $this->include('components/footer') ?>
         </div>
     </main>
 </div>
@@ -181,7 +182,7 @@
                         <h6 class="form-section-title">
                             <i class="bi bi-person"></i> Dados Pessoais
                         </h6>
-                        
+
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">
@@ -207,15 +208,15 @@
                                     <label for="modal_cpf" class="form-label">
                                         CPF <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" class="form-control" id="modal_cpf" name="cpf" 
-                                           placeholder="000.000.000-00" required>
+                                    <input type="text" class="form-control" id="modal_cpf" name="cpf"
+                                        placeholder="000.000.000-00" required>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="modal_rg" class="form-label">RG</label>
-                                    <input type="text" class="form-control" id="modal_rg" name="rg" 
-                                           placeholder="Digite o RG">
+                                    <input type="text" class="form-control" id="modal_rg" name="rg"
+                                        placeholder="Digite o RG">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -236,15 +237,15 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="modal_telefone" class="form-label">Telefone</label>
-                                    <input type="text" class="form-control" id="modal_telefone" name="telefone" 
-                                           placeholder="(00) 0000-0000">
+                                    <input type="text" class="form-control" id="modal_telefone" name="telefone"
+                                        placeholder="(00) 0000-0000">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="modal_celular" class="form-label">Celular</label>
-                                    <input type="text" class="form-control" id="modal_celular" name="celular" 
-                                           placeholder="(00) 00000-0000">
+                                    <input type="text" class="form-control" id="modal_celular" name="celular"
+                                        placeholder="(00) 00000-0000">
                                 </div>
                             </div>
                         </div>
@@ -253,15 +254,15 @@
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label for="modal_email" class="form-label">E-mail</label>
-                                    <input type="email" class="form-control" id="modal_email" name="email" 
-                                           placeholder="exemplo@email.com">
+                                    <input type="email" class="form-control" id="modal_email" name="email"
+                                        placeholder="exemplo@email.com">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="modal_numero_sus" class="form-label">Número do SUS</label>
-                                    <input type="text" class="form-control" id="modal_numero_sus" name="numero_sus" 
-                                           placeholder="000000000000000" maxlength="15">
+                                    <input type="text" class="form-control" id="modal_numero_sus" name="numero_sus"
+                                        placeholder="000000000000000" maxlength="15">
                                 </div>
                             </div>
                         </div>
@@ -272,7 +273,7 @@
                         <h6 class="form-section-title">
                             <i class="bi bi-geo-alt"></i> Endereço
                         </h6>
-                        
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
@@ -301,15 +302,15 @@
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="modal_numero" class="form-label">Número</label>
-                                    <input type="text" class="form-control" id="modal_numero" name="numero" 
-                                           placeholder="123">
+                                    <input type="text" class="form-control" id="modal_numero" name="numero"
+                                        placeholder="123">
                                 </div>
                             </div>
                             <div class="col-md-9">
                                 <div class="mb-3">
                                     <label for="modal_complemento" class="form-label">Complemento</label>
-                                    <input type="text" class="form-control" id="modal_complemento" name="complemento" 
-                                           placeholder="Apartamento, Bloco, Casa, etc.">
+                                    <input type="text" class="form-control" id="modal_complemento" name="complemento"
+                                        placeholder="Apartamento, Bloco, Casa, etc.">
                                 </div>
                             </div>
                         </div>
@@ -320,7 +321,7 @@
                         <h6 class="form-section-title">
                             <i class="bi bi-heart-pulse"></i> Informações Médicas
                         </h6>
-                        
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
@@ -341,8 +342,8 @@
                             <div class="col-md-8">
                                 <div class="mb-3">
                                     <label for="modal_nome_responsavel" class="form-label">Nome do Responsável</label>
-                                    <input type="text" class="form-control" id="modal_nome_responsavel" name="nome_responsavel" 
-                                           placeholder="Nome do responsável (para menores de idade)">
+                                    <input type="text" class="form-control" id="modal_nome_responsavel" name="nome_responsavel"
+                                        placeholder="Nome do responsável (para menores de idade)">
                                 </div>
                             </div>
                         </div>
@@ -352,7 +353,7 @@
                                 <div class="mb-3">
                                     <label for="modal_alergias" class="form-label">Alergias</label>
                                     <textarea class="form-control" id="modal_alergias" name="alergias" rows="2"
-                                              placeholder="Descreva as alergias conhecidas do paciente"></textarea>
+                                        placeholder="Descreva as alergias conhecidas do paciente"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -362,7 +363,7 @@
                                 <div class="mb-3">
                                     <label for="modal_observacoes" class="form-label">Observações</label>
                                     <textarea class="form-control" id="modal_observacoes" name="observacoes" rows="2"
-                                              placeholder="Observações gerais sobre o paciente"></textarea>
+                                        placeholder="Observações gerais sobre o paciente"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -430,22 +431,22 @@
         document.getElementById('modal_id_bairro').addEventListener('change', function() {
             const bairroId = this.value;
             const logradouroSelect = document.getElementById('modal_id_logradouro');
-            
+
             // Limpar options do logradouro
             logradouroSelect.innerHTML = '<option value="">Selecione o logradouro</option>';
-            
+
             if (bairroId) {
                 // Filtrar logradouros do bairro selecionado
                 <?php if (isset($logradouros)): ?>
-                const logradouros = <?= json_encode($logradouros) ?>;
-                const logradourosFiltrados = logradouros.filter(l => l.id_bairro == bairroId);
-                
-                logradourosFiltrados.forEach(function(logradouro) {
-                    const option = document.createElement('option');
-                    option.value = logradouro.id_logradouro;
-                    option.textContent = logradouro.tipo_logradouro + ' ' + logradouro.nome_logradouro;
-                    logradouroSelect.appendChild(option);
-                });
+                    const logradouros = <?= json_encode($logradouros) ?>;
+                    const logradourosFiltrados = logradouros.filter(l => l.id_bairro == bairroId);
+
+                    logradourosFiltrados.forEach(function(logradouro) {
+                        const option = document.createElement('option');
+                        option.value = logradouro.id_logradouro;
+                        option.textContent = logradouro.tipo_logradouro + ' ' + logradouro.nome_logradouro;
+                        logradouroSelect.appendChild(option);
+                    });
                 <?php endif; ?>
             }
         });
@@ -456,14 +457,14 @@
             const hoje = new Date();
             let idade = hoje.getFullYear() - nascimento.getFullYear();
             const mes = hoje.getMonth() - nascimento.getMonth();
-            
+
             if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
                 idade--;
             }
-            
+
             const responsavelField = document.getElementById('modal_nome_responsavel');
             const responsavelLabel = document.querySelector('label[for="modal_nome_responsavel"]');
-            
+
             if (idade < 18) {
                 responsavelField.required = true;
                 responsavelLabel.innerHTML = 'Nome do Responsável <span class="text-danger">*</span>';
@@ -573,31 +574,31 @@
 
 <!-- Estilos para o modal -->
 <style>
-.form-section {
-    border: 1px solid #e9ecef;
-    border-radius: 0.375rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    margin-bottom: 1rem;
-}
+    .form-section {
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        margin-bottom: 1rem;
+    }
 
-.form-section-title {
-    color: #0d6efd;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.25rem;
-    border-bottom: 1px solid #0d6efd;
-    font-size: 0.9rem;
-}
+    .form-section-title {
+        color: #0d6efd;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.25rem;
+        border-bottom: 1px solid #0d6efd;
+        font-size: 0.9rem;
+    }
 
-.form-section-title i {
-    margin-right: 0.5rem;
-}
+    .form-section-title i {
+        margin-right: 0.5rem;
+    }
 
-.modal-xl .modal-body {
-    max-height: 70vh;
-    overflow-y: auto;
-}
+    .modal-xl .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
 </style>
 
 <?= $this->endSection() ?>

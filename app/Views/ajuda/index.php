@@ -62,6 +62,57 @@
                     <?php endforeach; ?>
                 </div>
 
+                <!-- Novidades e Recursos Avançados -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="section-card bg-gradient-primary text-white">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h2 class="text-white mb-3">
+                                        <i class="bi bi-stars"></i> Novas Funcionalidades
+                                    </h2>
+                                    <p class="lead mb-3">
+                                        Descubra os novos recursos do SisPAM v2.2.0: Central de Notificações BI e Sistema de Configurações Avançadas
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-bell-fill me-2 fs-4"></i>
+                                                <div>
+                                                    <strong>Notificações BI</strong><br>
+                                                    <small>Monitoramento inteligente automático</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6 mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-gear-fill me-2 fs-4"></i>
+                                                <div>
+                                                    <strong>Configurações Avançadas</strong><br>
+                                                    <small>Personalize o sistema conforme sua necessidade</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="btn-group-vertical gap-2" role="group">
+                                        <a href="<?= base_url('ajuda/artigo/notificacoes-bi') ?>" class="btn btn-light btn-lg">
+                                            <i class="bi bi-bell-fill text-warning"></i> Guia de Notificações BI
+                                        </a>
+                                        <a href="<?= base_url('ajuda/artigo/configuracoes-sistema') ?>" class="btn btn-outline-light btn-lg">
+                                            <i class="bi bi-gear-fill"></i> Configurações do Sistema
+                                        </a>
+                                        <a href="<?= base_url('notificacoes') ?>" class="btn btn-success btn-lg">
+                                            <i class="bi bi-rocket-takeoff"></i> Acessar Agora
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Popular Articles -->
                 <div class="row mb-4">
                     <div class="col-lg-8">
@@ -102,13 +153,19 @@
                                 <button class="btn btn-outline-primary" onclick="openVideoTutorial()">
                                     <i class="bi bi-play-circle"></i> Vídeo Tutorial
                                 </button>
+                                <a href="<?= base_url('notificacoes') ?>" class="btn btn-outline-warning">
+                                    <i class="bi bi-bell-fill"></i> Central de Notificações BI
+                                </a>
+                                <a href="<?= base_url('configuracoes') ?>" class="btn btn-outline-secondary">
+                                    <i class="bi bi-gear-fill"></i> Configurações do Sistema
+                                </a>
                                 <button class="btn btn-outline-success" onclick="downloadManual()">
                                     <i class="bi bi-download"></i> Manual do Usuário
                                 </button>
                                 <button class="btn btn-outline-info" onclick="openTicket()">
                                     <i class="bi bi-headset"></i> Abrir Chamado
                                 </button>
-                                <button class="btn btn-outline-warning" onclick="contactSupport()">
+                                <button class="btn btn-outline-danger" onclick="contactSupport()">
                                     <i class="bi bi-telephone"></i> Contatar Suporte
                                 </button>
                             </div>
@@ -122,8 +179,8 @@
                             </h3>
                             
                             <div class="system-info">
-                                <p><strong>Versão:</strong> SisPAM v2.1.0</p>
-                                <p><strong>Última Atualização:</strong> 01/06/2025</p>
+                                <p><strong>Versão:</strong> SisPAM v2.2.0</p>
+                                <p><strong>Última Atualização:</strong> 05/07/2025</p>
                                 <p><strong>Status:</strong> <span class="badge bg-success">Online</span></p>
                                 <p><strong>Suporte:</strong> (11) 3333-3333</p>
                                 <p><strong>Email:</strong> suporte@pam.gov.br</p>
@@ -186,10 +243,7 @@
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="footer">
-                <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
-            </div>
+            <?php echo $this->include('components/footer'); ?>
         </div>
     </main>
 </div>

@@ -129,9 +129,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="footer">
-                <p>&copy; 2025 Sistema de Pronto Atendimento Municipal. Todos os direitos reservados. | Versão 2.1.0</p>
-            </div>
+            <?php echo $this->include('components/footer'); ?>
         </div>
     </main>
 </div>

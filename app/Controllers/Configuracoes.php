@@ -8,7 +8,6 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class Configuracoes extends BaseController
 {
-    protected $helpers = ['auth', 'form'];
     protected $configuracaoModel;
     protected $auditoriaModel;
 

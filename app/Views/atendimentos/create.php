@@ -24,6 +24,15 @@
             </nav>
 
             <!-- Form -->
+            <!-- 
+                Parâmetros URL suportados para pré-seleção:
+                - ?paciente=ID - Pré-seleciona o paciente
+                - ?medico=ID - Pré-seleciona o médico  
+                - ?classificacao=VALOR - Pré-seleciona a classificação de risco (Verde|Amarelo|Vermelho|Azul)
+                - ?data=YYYY-MM-DDTHH:MM - Pré-define a data/hora do atendimento
+                
+                Exemplo: /atendimentos/create?paciente=5&medico=2&classificacao=Amarelo
+            -->
             <div class="card m-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Dados do Atendimento</h5>
@@ -37,16 +46,22 @@
                             <label for="id_paciente" class="form-label">
                                 <i class="bi bi-person"></i> Paciente *
                             </label>
-                            <select class="form-select" id="id_paciente" name="id_paciente" required>
+                            <select class="form-select" id="id_paciente" name="id_paciente" required data-placeholder="Selecione um paciente">
                                 <option value="">Selecione um paciente</option>
                                 <?php if (isset($pacientes)): ?>
                                     <?php foreach ($pacientes as $paciente): ?>
-                                        <option value="<?= $paciente->id_paciente ?>" <?= old('id_paciente') == $paciente->id_paciente ? 'selected' : '' ?>>
-                                            <?= esc($paciente->nome) ?> - CPF: <?= $paciente->cpf ?>
+                                        <option value="<?= $paciente['id_paciente'] ?>" <?= old('id_paciente') == $paciente['id_paciente'] ? 'selected' : '' ?>>
+                                            <?= esc($paciente['nome']) ?> - CPF: <?= $paciente['cpf'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
+                            <!-- Hidden field to ensure value is sent when select is disabled -->
+                            <input type="hidden" id="id_paciente_hidden" name="id_paciente_backup" value="">
+                            <!-- Button to unlock patient selection (only shown when locked) -->
+                            <button type="button" id="unlock_paciente" class="btn btn-sm btn-outline-warning mt-1" style="display: none;" title="Permitir alteração do paciente">
+                                <i class="bi bi-unlock"></i> Alterar Paciente
+                            </button>
                             <div class="invalid-feedback">
                                 Por favor, selecione um paciente.
                             </div>
@@ -57,12 +72,12 @@
                             <label for="id_medico" class="form-label">
                                 <i class="bi bi-person-badge"></i> Médico *
                             </label>
-                            <select class="form-select" id="id_medico" name="id_medico" required>
+                            <select class="form-select" id="id_medico" name="id_medico" required data-placeholder="Selecione um médico">
                                 <option value="">Selecione um médico</option>
                                 <?php if (isset($medicos)): ?>
                                     <?php foreach ($medicos as $medico): ?>
-                                        <option value="<?= $medico->id_medico ?>" <?= old('id_medico') == $medico->id_medico ? 'selected' : '' ?>>
-                                            <?= esc($medico->nome) ?> - CRM: <?= $medico->crm ?>
+                                        <option value="<?= $medico['id_medico'] ?>" <?= old('id_medico') == $medico['id_medico'] ? 'selected' : '' ?>>
+                                            <?= esc($medico['nome']) ?> - CRM: <?= $medico['crm'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -206,17 +221,87 @@
 
 <?= $this->section('scripts') ?>
 <script>
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Pre-select fields based on URL parameters
+    function preSelectFromUrlParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Pre-select patient if paciente parameter exists
+        const pacienteId = urlParams.get('paciente');
+        if (pacienteId) {
+            const pacienteSelect = document.getElementById('id_paciente');
+            const pacienteHidden = document.getElementById('id_paciente_hidden');
+            const unlockButton = document.getElementById('unlock_paciente');
+            
+            // Set the value
+            pacienteSelect.value = pacienteId;
+            pacienteHidden.value = pacienteId;
+            
+            // Disable the patient select to prevent manual changes
+            pacienteSelect.disabled = true;
+            
+            // Add visual indication that field is locked
+            const label = pacienteSelect.closest('.mb-3').querySelector('label');
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-info text-white ms-1';
+            badge.innerHTML = '<i class="bi bi-lock"></i> Pré-selecionado';
+            label.appendChild(badge);
+            
+            // Show unlock button
+            unlockButton.style.display = 'inline-block';
+        } else {
+            // If no paciente parameter, ensure field is enabled
+            const pacienteSelect = document.getElementById('id_paciente');
+            const pacienteHidden = document.getElementById('id_paciente_hidden');
+            
+            pacienteSelect.disabled = false;
+            pacienteHidden.value = '';
+        }
+        
+        // Pre-select doctor if medico parameter exists
+        const medicoId = urlParams.get('medico');
+        if (medicoId) {
+            document.getElementById('id_medico').value = medicoId;
+        }
+        
+        // Pre-select risk classification if classificacao parameter exists
+        const classificacao = urlParams.get('classificacao');
+        if (classificacao) {
+            document.getElementById('classificacao_risco').value = classificacao;
+        }
+        
+        // Pre-set date/time if data parameter exists (format: YYYY-MM-DDTHH:MM)
+        const dataAtendimento = urlParams.get('data');
+        if (dataAtendimento) {
+            document.getElementById('data_atendimento').value = dataAtendimento;
+        }
+    }
+
     // Form validation
     (function() {
         'use strict';
         window.addEventListener('load', function() {
-            var forms = document.getElementsByClassName('needs-validation');
-            var validation = Array.prototype.filter.call(forms, function(form) {
+            const forms = document.getElementsByClassName('needs-validation');
+            Array.prototype.filter.call(forms, function(form) {
                 form.addEventListener('submit', function(event) {
+                    // Ensure hidden field value is set for disabled select
+                    const pacienteSelect = document.getElementById('id_paciente');
+                    const pacienteHidden = document.getElementById('id_paciente_hidden');
+                    
+                    if (pacienteSelect.disabled && pacienteHidden.value) {
+                        // Temporarily enable the select to submit its value
+                        pacienteSelect.disabled = false;
+                    }
+                    
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();
+                        
+                        // Re-disable the select if validation fails
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.get('paciente')) {
+                            pacienteSelect.disabled = true;
+                        }
                     }
                     form.classList.add('was-validated');
                 }, false);
@@ -225,33 +310,103 @@ $(document).ready(function() {
     })();
 
     // Auto-check óbito when encaminhamento is Óbito
-    $('#encaminhamento').on('change', function() {
-        if ($(this).val() === 'Óbito') {
-            $('#obito').prop('checked', true);
+    document.getElementById('encaminhamento').addEventListener('change', function() {
+        const obitoCheckbox = document.getElementById('obito');
+        if (this.value === 'Óbito') {
+            obitoCheckbox.checked = true;
         } else {
-            $('#obito').prop('checked', false);
+            obitoCheckbox.checked = false;
         }
     });
 
     // Auto-set encaminhamento when óbito is checked
-    $('#obito').on('change', function() {
-        if ($(this).is(':checked')) {
-            $('#encaminhamento').val('Óbito');
-        } else if ($('#encaminhamento').val() === 'Óbito') {
-            $('#encaminhamento').val('');
+    document.getElementById('obito').addEventListener('change', function() {
+        const encaminhamentoSelect = document.getElementById('encaminhamento');
+        if (this.checked) {
+            encaminhamentoSelect.value = 'Óbito';
+        } else if (encaminhamentoSelect.value === 'Óbito') {
+            encaminhamentoSelect.value = '';
         }
     });
-
-    // Select2 for better dropdowns
-    if (typeof $.fn.select2 !== 'undefined') {
-        $('#id_paciente, #id_medico').select2({
-            theme: 'bootstrap-5',
-            width: '100%',
-            placeholder: function() {
-                return $(this).data('placeholder');
-            }
-        });
+    
+    // Pre-select fields based on URL parameters
+    preSelectFromUrlParams();
+    
+    // Add visual feedback for pre-selected fields
+    function highlightPreSelectedFields() {
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.get('paciente')) {
+            const pacienteContainer = document.getElementById('id_paciente').closest('.mb-3');
+            pacienteContainer.classList.add('border', 'border-primary', 'rounded', 'p-2', 'bg-light');
+            setTimeout(() => {
+                pacienteContainer.classList.remove('border', 'border-primary', 'rounded', 'p-2', 'bg-light');
+            }, 3000);
+        }
+        
+        if (urlParams.get('medico')) {
+            const medicoContainer = document.getElementById('id_medico').closest('.mb-3');
+            medicoContainer.classList.add('border', 'border-primary', 'rounded', 'p-2', 'bg-light');
+            setTimeout(() => {
+                medicoContainer.classList.remove('border', 'border-primary', 'rounded', 'p-2', 'bg-light');
+            }, 3000);
+        }
+        
+        if (urlParams.get('classificacao')) {
+            const classificacaoContainer = document.getElementById('classificacao_risco').closest('.mb-3');
+            classificacaoContainer.classList.add('border', 'border-success', 'rounded', 'p-2', 'bg-light');
+            setTimeout(() => {
+                classificacaoContainer.classList.remove('border', 'border-success', 'rounded', 'p-2', 'bg-light');
+            }, 3000);
+        }
     }
+    
+    // Call highlight function
+    highlightPreSelectedFields();
+    
+    // Handle unlock patient button
+    document.getElementById('unlock_paciente').addEventListener('click', function() {
+        const pacienteSelect = document.getElementById('id_paciente');
+        const pacienteHidden = document.getElementById('id_paciente_hidden');
+        const pacienteContainer = pacienteSelect.closest('.mb-3');
+        
+        // Enable the patient select
+        pacienteSelect.disabled = false;
+        
+        // Remove the locked badge
+        const badge = pacienteContainer.querySelector('.badge');
+        if (badge) {
+            badge.remove();
+        }
+        
+        // Hide the unlock button
+        this.style.display = 'none';
+        
+        // Clear hidden field
+        pacienteHidden.value = '';
+        
+        // Show success message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show mt-2';
+        alertDiv.setAttribute('role', 'alert');
+        alertDiv.innerHTML = `
+            <i class="bi bi-check-circle"></i> Agora você pode alterar o paciente selecionado.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        pacienteContainer.appendChild(alertDiv);
+        
+        // Auto-dismiss the alert after 3 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 300);
+            }
+        }, 3000);
+    });
 });
 </script>
 <?= $this->endSection() ?>
