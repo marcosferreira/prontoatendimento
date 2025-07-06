@@ -76,6 +76,13 @@ class CreateAtendimentoTable extends Migration
                 'default' => false,
                 'null'    => false,
             ],
+            'status' => [
+                'type'       => 'enum',
+                'constraint' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso'],
+                'default'    => 'Em Andamento',
+                'null'       => false,
+                'comment'    => 'Status atual do atendimento',
+            ],
             'created_at' => [
                 'type' => 'datetime',
                 'null' => true,

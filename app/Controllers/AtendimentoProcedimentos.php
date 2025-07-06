@@ -98,7 +98,10 @@ class AtendimentoProcedimentos extends BaseController
             return redirect()->to('/atendimentos')->with('error', 'Atendimento não especificado');
         }
 
-        $atendimento = $this->atendimentoModel->getAtendimentoCompleto($idAtendimento);
+        $atendimento = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, pacientes.cpf, medicos.nome as medico_nome, medicos.crm')
+                                            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                                            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
+                                            ->find($idAtendimento);
         if (!$atendimento) {
             return redirect()->to('/atendimentos')->with('error', 'Atendimento não encontrado');
         }
@@ -187,7 +190,10 @@ class AtendimentoProcedimentos extends BaseController
             return redirect()->to('/atendimento-procedimentos')->with('error', 'Registro não encontrado');
         }
 
-        $atendimento = $this->atendimentoModel->getAtendimentoCompleto($atendimentoProcedimento['id_atendimento']);
+        $atendimento = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, pacientes.cpf, medicos.nome as medico_nome, medicos.crm')
+                                            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                                            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
+                                            ->find($atendimentoProcedimento['id_atendimento']);
         $procedimentos = $this->procedimentoModel->orderBy('nome', 'ASC')->findAll();
 
         $data = [

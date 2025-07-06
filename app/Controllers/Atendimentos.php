@@ -127,7 +127,8 @@ class Atendimentos extends BaseController
             'procedimentos' => $procedimentos,
             'exames' => $exames,
             'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
-            'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito']
+            'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
+            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
         ];
 
         return view('atendimentos/create', $data);
@@ -150,7 +151,8 @@ class Atendimentos extends BaseController
             'hipotese_diagnostico' => 'permit_empty',
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
-            'obito' => 'permit_empty|in_list[0,1]'
+            'obito' => 'permit_empty|in_list[0,1]',
+            'status_opcoes' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
         ];
 
         $messages = [
@@ -183,6 +185,12 @@ class Atendimentos extends BaseController
             ],
             'encaminhamento' => [
                 'in_list' => 'Encaminhamento deve ser: Alta, Internação, Transferência, Especialista, Retorno ou Óbito'
+            ],
+            'obito' => [
+                'in_list' => 'Opção de óbito deve ser 0 (não) ou 1 (sim)'
+            ],
+            'status_opcoes' => [
+                'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
             ]
         ];
 
@@ -219,7 +227,8 @@ class Atendimentos extends BaseController
                 'hipotese_diagnostico' => $this->request->getPost('hipotese_diagnostico'),
                 'observacao' => $this->request->getPost('observacao'),
                 'encaminhamento' => $this->request->getPost('encaminhamento'),
-                'obito' => $this->request->getPost('obito') ? true : false
+                'obito' => $this->request->getPost('obito') ? true : false,
+                'status' => $this->request->getPost('status_opcoes') ?? 'Em Andamento'
             ];
 
             $idAtendimento = $this->atendimentoModel->skipValidation(true)->insert($atendimentoData);
@@ -255,7 +264,7 @@ class Atendimentos extends BaseController
                 $this->atendimentoExameModel->insert([
                     'id_atendimento' => $idAtendimento,
                     'id_exame' => $idExame,
-                    'data_solicitacao' => date('Y-m-d H:i:s'),
+                    'data_solicitacao' => \CodeIgniter\I18n\Time::now(),
                     'status' => 'Solicitado',
                     'observacao' => $observacao
                 ]);
@@ -290,16 +299,23 @@ class Atendimentos extends BaseController
         }
 
         // Buscar procedimentos realizados
-        $procedimentos = $this->atendimentoProcedimentoModel->select('atendimento_procedimentos.*, procedimentos.nome, procedimentos.codigo')
+        $procedimentos = $this->atendimentoProcedimentoModel->select('atendimento_procedimentos.*, procedimentos.nome as procedimento_nome, procedimentos.codigo')
                                                            ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
                                                            ->where('id_atendimento', $id)
                                                            ->findAll();
 
-        // Buscar exames solicitados
-        $exames = $this->atendimentoExameModel->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo')
-                                            ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                                            ->where('id_atendimento', $id)
-                                            ->findAll();
+        // Buscar exames solicitados - usando consulta direta para evitar problemas com casting de campos NULL
+        $db = \Config\Database::connect();
+        $examesQuery = $db->table('atendimento_exames ae')
+                         ->select('ae.*, e.nome, e.codigo, e.tipo,
+                                   ae.data_solicitacao as data_solicitacao_raw,
+                                   ae.data_realizacao as data_realizacao_raw')
+                         ->join('exames e', 'e.id_exame = ae.id_exame')
+                         ->where('ae.id_atendimento', $id)
+                         ->where('ae.deleted_at IS NULL')
+                         ->get();
+        
+        $exames = $examesQuery->getResultArray();
 
         $data = [
             'title' => 'Detalhes do Atendimento',
@@ -330,7 +346,14 @@ class Atendimentos extends BaseController
 
         // Buscar procedimentos e exames já vinculados
         $procedimentosVinculados = $this->atendimentoProcedimentoModel->where('id_atendimento', $id)->findAll();
-        $examesVinculados = $this->atendimentoExameModel->where('id_atendimento', $id)->findAll();
+        
+        // Buscar exames vinculados - usando consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $examesVinculadosQuery = $db->table('atendimento_exames')
+                                   ->where('id_atendimento', $id)
+                                   ->where('deleted_at IS NULL')
+                                   ->get();
+        $examesVinculados = $examesVinculadosQuery->getResultArray();
 
         $data = [
             'title' => 'Editar Atendimento',
@@ -343,7 +366,8 @@ class Atendimentos extends BaseController
             'procedimentos_vinculados' => $procedimentosVinculados,
             'exames_vinculados' => $examesVinculados,
             'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
-            'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito']
+            'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
+            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
         ];
 
         return view('atendimentos/edit', $data);
@@ -372,7 +396,8 @@ class Atendimentos extends BaseController
             'hipotese_diagnostico' => 'permit_empty',
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
-            'obito' => 'permit_empty|in_list[0,1]'
+            'obito' => 'permit_empty|in_list[0,1]',
+            'status_opcoes' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
         ];
 
         $messages = [
@@ -405,6 +430,12 @@ class Atendimentos extends BaseController
             ],
             'encaminhamento' => [
                 'in_list' => 'Encaminhamento deve ser: Alta, Internação, Transferência, Especialista, Retorno ou Óbito'
+            ],
+            'obito' => [
+                'in_list' => 'Opção de óbito deve ser 0 (não) ou 1 (sim)'
+            ],
+            'status_opcoes' => [
+                'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
             ]
         ];
 
@@ -513,7 +544,14 @@ class Atendimentos extends BaseController
             'amarelo' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Amarelo')),
             'vermelho' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Vermelho')),
             'azul' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Azul')),
-            'obitos' => count(array_filter($atendimentos, fn($a) => $a['obito'] == 1))
+            'obitos' => count(array_filter($atendimentos, fn($a) => $a['obito'] == 1)),
+            'status' => [
+                'Em Andamento' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Em Andamento')),
+                'Finalizado' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Finalizado')),
+                'Cancelado' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Cancelado')),
+                'Aguardando' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Aguardando')),
+                'Suspenso' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Suspenso'))
+            ]
         ];
 
         $medicos = $this->medicoModel->where('status', 'Ativo')->orderBy('nome', 'ASC')->findAll();

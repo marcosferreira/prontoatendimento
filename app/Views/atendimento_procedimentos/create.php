@@ -31,12 +31,12 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Paciente:</strong> <?= esc($atendimento['nome_paciente']) ?></p>
+                            <p><strong>Paciente:</strong> <?= esc($atendimento['paciente_nome']) ?></p>
                             <p><strong>CPF:</strong> <?= esc($atendimento['cpf']) ?></p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Data do Atendimento:</strong> <?= date('d/m/Y H:i', strtotime($atendimento['data_atendimento'])) ?></p>
-                            <p><strong>Médico:</strong> <?= esc($atendimento['nome_medico']) ?></p>
+                            <p><strong>Médico:</strong> <?= esc($atendimento['medico_nome']) ?></p>
                         </div>
                     </div>
                 </div>

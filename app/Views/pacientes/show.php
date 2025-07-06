@@ -314,7 +314,7 @@
                                                     <tr>
                                                         <td><?= date('d/m/Y', strtotime($procedimento['data_atendimento'])) ?></td>
                                                         <td>
-                                                            <strong><?= esc($procedimento['nome_procedimento']) ?></strong>
+                                                            <strong><?= esc($procedimento['procedimento_nome']) ?></strong>
                                                             <?php if (!empty($procedimento['codigo'])): ?>
                                                                 <br><small class="text-muted"><?= esc($procedimento['codigo']) ?></small>
                                                             <?php endif; ?>

@@ -85,7 +85,7 @@ class AtendimentoProcedimentoModel extends Model
      */
     public function getProcedimentosByAtendimento($idAtendimento)
     {
-        return $this->select('atendimento_procedimentos.*, procedimentos.nome, procedimentos.codigo, procedimentos.descricao')
+        return $this->select('atendimento_procedimentos.*, procedimentos.nome as procedimento_nome, procedimentos.codigo, procedimentos.descricao')
                    ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
                    ->where('atendimento_procedimentos.id_atendimento', $idAtendimento)
                    ->findAll();
@@ -189,7 +189,7 @@ class AtendimentoProcedimentoModel extends Model
      */
     public function getProcedimentosCompletosAtendimento($idAtendimento)
     {
-        return $this->select('atendimento_procedimentos.*, procedimentos.nome, procedimentos.codigo, procedimentos.descricao')
+        return $this->select('atendimento_procedimentos.*, procedimentos.nome as procedimento_nome, procedimentos.codigo, procedimentos.descricao')
                    ->join('procedimentos', 'procedimentos.id_procedimento = atendimento_procedimentos.id_procedimento')
                    ->where('atendimento_procedimentos.id_atendimento', $idAtendimento)
                    ->findAll();
@@ -200,8 +200,11 @@ class AtendimentoProcedimentoModel extends Model
      */
     public function getProcedimentosByPaciente($idPaciente)
     {
-        return $this->select('atendimento_procedimentos.*, procedimentos.nome, procedimentos.codigo,
-                             atendimentos.data_atendimento, pacientes.nome as nome_paciente,
+        return $this->select('atendimento_procedimentos.*, 
+                             procedimentos.nome as procedimento_nome, 
+                             procedimentos.codigo,
+                             atendimentos.data_atendimento, 
+                             pacientes.nome as nome_paciente,
                              medicos.nome as nome_medico')
                    ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_procedimentos.id_atendimento')
                    ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')

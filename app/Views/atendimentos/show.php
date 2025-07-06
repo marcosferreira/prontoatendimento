@@ -215,38 +215,48 @@
                         </div>
 
                         <!-- Procedimentos Realizados -->
-                        <?php if (isset($procedimentos) && !empty($procedimentos)): ?>
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="bi bi-list-check"></i> Procedimentos
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-list-check"></i> Procedimentos
+                                </h5>
+                                <a href="<?= base_url('atendimento-procedimentos/create?atendimento=' . $atendimento['id_atendimento']) ?>" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-plus"></i> Adicionar
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <?php if (isset($procedimentos) && !empty($procedimentos)): ?>
                                     <?php foreach ($procedimentos as $proc): ?>
                                         <div class="procedure-item">
-                                            <strong><?= esc($proc->procedimento_nome) ?></strong>
-                                            <?php if ($proc->quantidade > 1): ?>
-                                                <span class="badge bg-secondary"><?= $proc->quantidade ?>x</span>
+                                            <strong><?= esc($proc['procedimento_nome']) ?></strong>
+                                            <?php if ($proc['quantidade'] > 1): ?>
+                                                <span class="badge bg-secondary"><?= $proc['quantidade'] ?>x</span>
                                             <?php endif; ?>
-                                            <?php if ($proc->observacao): ?>
-                                                <small class="d-block text-muted"><?= esc($proc->observacao) ?></small>
+                                            <?php if ($proc['observacao']): ?>
+                                                <small class="d-block text-muted"><?= esc($proc['observacao']) ?></small>
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
-                                </div>
+                                <?php else: ?>
+                                    <p class="text-muted">Nenhum procedimento realizado</p>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
+                        </div>
 
                         <!-- Exames Solicitados -->
-                        <?php if (isset($exames) && !empty($exames)): ?>
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="bi bi-clipboard2-data"></i> Exames
-                                    </h5>
-                                </div>
-                                <div class="card-body">
+                        <div class="card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-clipboard2-data"></i> Exames
+                                </h5>
+                                <a href="<?= base_url('atendimento-exames/create?atendimento=' . $atendimento['id_atendimento']) ?>" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-plus"></i> Solicitar
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <?php if (isset($exames) && !empty($exames)): ?>
                                     <?php foreach ($exames as $exame): ?>
                                         <div class="exam-item">
                                             <strong><?= esc($exame['nome']) ?></strong>
@@ -258,9 +268,11 @@
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
-                                </div>
+                                <?php else: ?>
+                                    <p class="text-muted">Nenhum exame solicitado</p>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
                 </div>
 
@@ -346,6 +358,15 @@
         border-bottom: none;
         margin-bottom: 0;
         padding-bottom: 0;
+    }
+
+    .card-header .btn-sm {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .card-header .btn-sm i {
+        font-size: 0.75rem;
     }
 
     @media print {

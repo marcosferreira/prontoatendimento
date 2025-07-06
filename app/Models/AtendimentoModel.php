@@ -24,7 +24,8 @@ class AtendimentoModel extends Model
         'hipotese_diagnostico',
         'observacao',
         'encaminhamento',
-        'obito'
+        'obito',
+        'status'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -56,7 +57,8 @@ class AtendimentoModel extends Model
         'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
-        'obito' => 'in_list[0,1]'
+        'obito' => 'in_list[0,1]',
+        'status' => 'in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
     ];
     
     protected $validationMessages = [
@@ -85,6 +87,9 @@ class AtendimentoModel extends Model
         ],
         'encaminhamento' => [
             'in_list' => 'Encaminhamento inválido'
+        ],
+        'status' => [
+            'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
         ]
     ];
     
@@ -227,6 +232,20 @@ class AtendimentoModel extends Model
             'Especialista' => 'Especialista',
             'Retorno' => 'Retorno',
             'Óbito' => 'Óbito'
+        ];
+    }
+
+    /**
+     * Lista tipos de status do atendimento
+     */
+    public function getTiposStatus()
+    {
+        return [
+            'Em Andamento' => 'Em Andamento',
+            'Finalizado' => 'Finalizado',
+            'Cancelado' => 'Cancelado',
+            'Aguardando' => 'Aguardando',
+            'Suspenso' => 'Suspenso'
         ];
     }
 

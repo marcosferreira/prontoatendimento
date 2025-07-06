@@ -105,7 +105,10 @@ class AtendimentoExames extends BaseController
             return redirect()->to('/atendimentos')->with('error', 'Atendimento não especificado');
         }
 
-        $atendimento = $this->atendimentoModel->getAtendimentoCompleto($idAtendimento);
+        $atendimento = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, pacientes.cpf, medicos.nome as medico_nome, medicos.crm')
+                                            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                                            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
+                                            ->find($idAtendimento);
         if (!$atendimento) {
             return redirect()->to('/atendimentos')->with('error', 'Atendimento não encontrado');
         }
@@ -134,13 +137,73 @@ class AtendimentoExames extends BaseController
      */
     public function store()
     {
+        $rules = [
+            'id_atendimento' => 'required|integer|is_not_unique[atendimentos.id_atendimento]',
+            'id_exame' => 'required|integer|is_not_unique[exames.id_exame]',
+            'status' => 'required|in_list[Solicitado,Realizado,Cancelado]',
+            'data_realizacao' => 'permit_empty|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
+            'resultado' => 'permit_empty',
+            'observacao' => 'permit_empty'
+        ];
+
+        $messages = [
+            'id_atendimento' => [
+                'required' => 'O atendimento é obrigatório',
+                'integer' => 'ID do atendimento deve ser um número',
+                'is_not_unique' => 'Atendimento não encontrado'
+            ],
+            'id_exame' => [
+                'required' => 'O exame é obrigatório',
+                'integer' => 'ID do exame deve ser um número',
+                'is_not_unique' => 'Exame não encontrado'
+            ],
+            'status' => [
+                'required' => 'O status é obrigatório',
+                'in_list' => 'Status deve ser: Solicitado, Realizado ou Cancelado'
+            ],
+            'data_realizacao' => [
+                'regex_match' => 'Data de realização deve estar no formato AAAA-MM-DDTHH:MM'
+            ]
+        ];
+
+        // Validações condicionais para status "Realizado"
+        $status = $this->request->getPost('status');
+        if ($status === 'Realizado') {
+            $rules['data_realizacao'] = 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]';
+            $rules['resultado'] = 'required';
+            
+            $messages['data_realizacao']['required'] = 'Data de realização é obrigatória quando status for "Realizado"';
+            $messages['resultado'] = [
+                'required' => 'Resultado é obrigatório quando status for "Realizado"'
+            ];
+        }
+
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
         $data = [
             'id_atendimento' => $this->request->getPost('id_atendimento'),
             'id_exame' => $this->request->getPost('id_exame'),
-            'status' => 'Solicitado',
-            'data_solicitacao' => date('Y-m-d H:i:s'),
+            'status' => $status,
+            'data_solicitacao' => \CodeIgniter\I18n\Time::now(),
             'observacao' => $this->request->getPost('observacao')
         ];
+
+        // Adicionar campos específicos para status "Realizado"
+        if ($status === 'Realizado') {
+            $dataRealizacao = $this->request->getPost('data_realizacao');
+            if ($dataRealizacao) {
+                // Converter formato datetime-local para objeto Time
+                $dataFormatada = str_replace('T', ' ', $dataRealizacao) . ':00';
+                $data['data_realizacao'] = \CodeIgniter\I18n\Time::parse($dataFormatada);
+            } else {
+                // Se não informada, usar data atual
+                $data['data_realizacao'] = \CodeIgniter\I18n\Time::now();
+            }
+            
+            $data['resultado'] = $this->request->getPost('resultado');
+        }
 
         if (!$this->atendimentoExameModel->save($data)) {
             $errors = $this->atendimentoExameModel->errors();
@@ -148,7 +211,7 @@ class AtendimentoExames extends BaseController
         }
 
         return redirect()->to('/atendimentos/show/' . $data['id_atendimento'])
-                        ->with('success', 'Exame solicitado com sucesso!');
+                        ->with('success', 'Exame cadastrado com sucesso!');
     }
 
     /**
@@ -156,21 +219,28 @@ class AtendimentoExames extends BaseController
      */
     public function show($id)
     {
-        $atendimentoExame = $this->atendimentoExameModel
-            ->select('atendimento_exames.*, 
-                     exames.nome as nome_exame, 
-                     exames.codigo as codigo_exame,
-                     exames.tipo as tipo_exame,
-                     exames.descricao as descricao_exame,
-                     atendimentos.data_atendimento,
-                     pacientes.nome as nome_paciente,
-                     pacientes.cpf,
-                     medicos.nome as nome_medico')
-            ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-            ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
-            ->find($id);
+        // Usar consulta direta para evitar problemas com casting de campos datetime NULL
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames ae')
+            ->select('ae.*, 
+                     e.nome as nome_exame, 
+                     e.codigo as codigo_exame,
+                     e.tipo as tipo_exame,
+                     e.descricao as descricao_exame,
+                     a.data_atendimento,
+                     p.nome as nome_paciente,
+                     p.cpf,
+                     m.nome as nome_medico,
+                     ae.data_solicitacao as data_solicitacao_raw,
+                     ae.data_realizacao as data_realizacao_raw')
+            ->join('exames e', 'e.id_exame = ae.id_exame')
+            ->join('atendimentos a', 'a.id_atendimento = ae.id_atendimento')
+            ->join('pacientes p', 'p.id_paciente = a.id_paciente')
+            ->join('medicos m', 'm.id_medico = a.id_medico')
+            ->where('ae.id_atendimento_exame', $id)
+            ->where('ae.deleted_at IS NULL')
+            ->get()
+            ->getRowArray();
 
         if (!$atendimentoExame) {
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
@@ -196,7 +266,10 @@ class AtendimentoExames extends BaseController
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
         }
 
-        $atendimento = $this->atendimentoModel->getAtendimentoCompleto($atendimentoExame['id_atendimento']);
+        $atendimento = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, pacientes.cpf, medicos.nome as medico_nome, medicos.crm')
+                                            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                                            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
+                                            ->find($atendimentoExame['id_atendimento']);
         $exames = $this->exameModel->orderBy('tipo', 'ASC')->orderBy('nome', 'ASC')->findAll();
 
         $data = [
@@ -231,17 +304,33 @@ class AtendimentoExames extends BaseController
 
         // Se está mudando para "Realizado", definir data de realização
         if ($data['status'] === 'Realizado' && $atendimentoExame['status'] !== 'Realizado') {
-            $data['data_realizacao'] = $this->request->getPost('data_realizacao') ?: date('Y-m-d H:i:s');
+            $dataRealizacao = $this->request->getPost('data_realizacao');
+            if ($dataRealizacao) {
+                // Se foi fornecida uma data específica, converter para objeto Time
+                $data['data_realizacao'] = \CodeIgniter\I18n\Time::parse($dataRealizacao);
+            } else {
+                // Usar data/hora atual
+                $data['data_realizacao'] = \CodeIgniter\I18n\Time::now();
+            }
         }
 
         // Se está mudando de "Realizado" para outro status, limpar data de realização
+        $limparDataRealizacao = false;
         if ($data['status'] !== 'Realizado' && $atendimentoExame['status'] === 'Realizado') {
-            $data['data_realizacao'] = null;
+            $limparDataRealizacao = true;
         }
 
         if (!$this->atendimentoExameModel->update($id, $data)) {
             $errors = $this->atendimentoExameModel->errors();
             return redirect()->back()->withInput()->with('errors', $errors);
+        }
+
+        // Se precisa limpar a data de realização, fazer update direto na base
+        if ($limparDataRealizacao) {
+            $db = \Config\Database::connect();
+            $db->table('atendimento_exames')
+               ->where('id_atendimento_exame', $id)
+               ->update(['data_realizacao' => null]);
         }
 
         return redirect()->to('/atendimentos/show/' . $atendimentoExame['id_atendimento'])
@@ -314,15 +403,24 @@ class AtendimentoExames extends BaseController
 
         // Se está mudando para "Realizado", definir data de realização
         if ($status === 'Realizado' && $atendimentoExame['status'] !== 'Realizado') {
-            $data['data_realizacao'] = date('Y-m-d H:i:s');
+            $data['data_realizacao'] = \CodeIgniter\I18n\Time::now();
         }
 
         // Se está mudando de "Realizado" para outro status, limpar data de realização
+        $limparDataRealizacao = false;
         if ($status !== 'Realizado' && $atendimentoExame['status'] === 'Realizado') {
-            $data['data_realizacao'] = null;
+            $limparDataRealizacao = true;
         }
 
         if ($this->atendimentoExameModel->update($id, $data)) {
+            // Se precisa limpar a data de realização, fazer update direto na base
+            if ($limparDataRealizacao) {
+                $db = \Config\Database::connect();
+                $db->table('atendimento_exames')
+                   ->where('id_atendimento_exame', $id)
+                   ->update(['data_realizacao' => null]);
+            }
+
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Status atualizado com sucesso!'

@@ -152,7 +152,7 @@ $routes->group('atendimentos', static function ($routes) {
 });
 
 // Rotas de Atendimento Procedimentos
-$routes->group('atendimento_procedimentos', static function ($routes) {
+$routes->group('atendimento-procedimentos', static function ($routes) {
     $routes->get('/', 'AtendimentoProcedimentos::index');
     $routes->get('create', 'AtendimentoProcedimentos::create');
     $routes->post('store', 'AtendimentoProcedimentos::store');
@@ -174,7 +174,7 @@ $routes->group('atendimento_procedimentos', static function ($routes) {
 });
 
 // Rotas de Atendimento Exames
-$routes->group('atendimento_exames', static function ($routes) {
+$routes->group('atendimento-exames', static function ($routes) {
     $routes->get('/', 'AtendimentoExames::index');
     $routes->get('create', 'AtendimentoExames::create');
     $routes->post('store', 'AtendimentoExames::store');

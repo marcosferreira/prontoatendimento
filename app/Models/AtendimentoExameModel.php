@@ -47,8 +47,8 @@ class AtendimentoExameModel extends Model
         'status' => 'required|in_list[Solicitado,Realizado,Cancelado]',
         'data_solicitacao' => 'required|valid_date',
         'data_realizacao' => 'permit_empty|valid_date',
-        'resultado' => 'max_length[65535]',
-        'observacao' => 'max_length[65535]'
+        'resultado' => 'permit_empty|max_length[65535]',
+        'observacao' => 'permit_empty|max_length[65535]'
     ];
     
     protected $validationMessages = [
@@ -101,7 +101,7 @@ class AtendimentoExameModel extends Model
     protected function setDataSolicitacao(array $data)
     {
         if (!isset($data['data']['data_solicitacao'])) {
-            $data['data']['data_solicitacao'] = date('Y-m-d H:i:s');
+            $data['data']['data_solicitacao'] = \CodeIgniter\I18n\Time::now();
         }
         return $data;
     }
@@ -113,7 +113,7 @@ class AtendimentoExameModel extends Model
     {
         if (isset($data['data']['status']) && $data['data']['status'] === 'Realizado') {
             if (!isset($data['data']['data_realizacao'])) {
-                $data['data']['data_realizacao'] = date('Y-m-d H:i:s');
+                $data['data']['data_realizacao'] = \CodeIgniter\I18n\Time::now();
             }
         }
         return $data;
@@ -124,11 +124,33 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesByAtendimento($idAtendimento)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, exames.descricao')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                   ->where('atendimento_exames.id_atendimento', $idAtendimento)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, exames.descricao')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
+                  ->where('atendimento_exames.id_atendimento', $idAtendimento)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
+                  ->get()
+                  ->getResultArray();
+    }
+
+    /**
+     * Busca exames de um atendimento sem problemas de casting
+     */
+    public function getExamesByAtendimentoSafe($idAtendimento)
+    {
+        $db = \Config\Database::connect();
+        return $db->table($this->table . ' ae')
+                 ->select('ae.*, e.nome, e.codigo, e.tipo, e.descricao,
+                           ae.data_solicitacao as data_solicitacao_raw,
+                           ae.data_realizacao as data_realizacao_raw')
+                 ->join('exames e', 'e.id_exame = ae.id_exame')
+                 ->where('ae.id_atendimento', $idAtendimento)
+                 ->where('ae.deleted_at IS NULL')
+                 ->orderBy('ae.data_solicitacao', 'DESC')
+                 ->get()
+                 ->getResultArray();
     }
 
     /**
@@ -136,12 +158,16 @@ class AtendimentoExameModel extends Model
      */
     public function getAtendimentosByExame($idExame)
     {
-        return $this->select('atendimento_exames.*, atendimentos.data_atendimento, pacientes.nome as nome_paciente')
-                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                   ->where('atendimento_exames.id_exame', $idExame)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, atendimentos.data_atendimento, pacientes.nome as nome_paciente')
+                  ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                  ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                  ->where('atendimento_exames.id_exame', $idExame)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -183,7 +209,7 @@ class AtendimentoExameModel extends Model
         $data = [
             'resultado' => $resultado,
             'status' => 'Realizado',
-            'data_realizacao' => date('Y-m-d H:i:s')
+            'data_realizacao' => \CodeIgniter\I18n\Time::now()
         ];
 
         if ($observacao !== null) {
@@ -211,13 +237,17 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesByStatus($status)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, pacientes.nome as nome_paciente, atendimentos.data_atendimento')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                   ->where('atendimento_exames.status', $status)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, pacientes.nome as nome_paciente, atendimentos.data_atendimento')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
+                  ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                  ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                  ->where('atendimento_exames.status', $status)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -254,13 +284,17 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesByTipo($tipo)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.codigo, exames.descricao, pacientes.nome as nome_paciente, atendimentos.data_atendimento')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                   ->where('exames.tipo', $tipo)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome, exames.codigo, exames.descricao, pacientes.nome as nome_paciente, atendimentos.data_atendimento')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
+                  ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                  ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                  ->where('exames.tipo', $tipo)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -292,9 +326,13 @@ class AtendimentoExameModel extends Model
      */
     public function getEstatisticasStatus()
     {
-        return $this->select('status, COUNT(*) as total')
-                   ->groupBy('status')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('status, COUNT(*) as total')
+                  ->where('deleted_at IS NULL')
+                  ->groupBy('status')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -302,11 +340,15 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesCompletosAtendimento($idAtendimento)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, exames.descricao')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                   ->where('atendimento_exames.id_atendimento', $idAtendimento)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome, exames.codigo, exames.tipo, exames.descricao')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
+                  ->where('atendimento_exames.id_atendimento', $idAtendimento)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -325,15 +367,19 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesComAtraso($horasLimite = 24)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.codigo, pacientes.nome as nome_paciente,
-                             TIMESTAMPDIFF(HOUR, atendimento_exames.data_solicitacao, NOW()) as horas_pendente')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                   ->where('atendimento_exames.status', 'Solicitado')
-                   ->where('TIMESTAMPDIFF(HOUR, atendimento_exames.data_solicitacao, NOW()) >', $horasLimite)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome, exames.codigo, pacientes.nome as nome_paciente,
+                           TIMESTAMPDIFF(HOUR, atendimento_exames.data_solicitacao, NOW()) as horas_pendente')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
+                  ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                  ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                  ->where('atendimento_exames.status', 'Solicitado')
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->where('TIMESTAMPDIFF(HOUR, atendimento_exames.data_solicitacao, NOW()) >', $horasLimite)
+                  ->orderBy('atendimento_exames.data_solicitacao', 'ASC')
+                  ->get()
+                  ->getResultArray();
     }
 
     /**
@@ -341,13 +387,53 @@ class AtendimentoExameModel extends Model
      */
     public function getExamesByPaciente($idPaciente)
     {
-        return $this->select('atendimento_exames.*, exames.nome, exames.tipo, 
-                             atendimentos.data_atendimento, pacientes.nome as nome_paciente')
-                   ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                   ->join('exames', 'exames.id_exame = atendimento_exames.id_exame', 'left')
-                   ->where('pacientes.id_paciente', $idPaciente)
-                   ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
-                   ->findAll();
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                  ->select('atendimento_exames.*, exames.nome as nome_exame, exames.tipo, 
+                           atendimentos.data_atendimento, pacientes.nome as nome_paciente')
+                  ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
+                  ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                  ->join('exames', 'exames.id_exame = atendimento_exames.id_exame', 'left')
+                  ->where('pacientes.id_paciente', $idPaciente)
+                  ->where('atendimento_exames.deleted_at IS NULL')
+                  ->orderBy('atendimento_exames.data_solicitacao', 'DESC')
+                  ->get()
+                  ->getResultArray();
+    }
+
+    /**
+     * Busca um exame específico sem problemas de casting
+     */
+    public function findSafe($id)
+    {
+        $db = \Config\Database::connect();
+        return $db->table($this->table)
+                 ->where('id_atendimento_exame', $id)
+                 ->where('deleted_at IS NULL')
+                 ->get()
+                 ->getRowArray();
+    }
+
+    /**
+     * Atualiza um exame sem usar o ORM para evitar problemas de casting
+     */
+    public function updateSafe($id, $data)
+    {
+        $db = \Config\Database::connect();
+        
+        // Converter objetos Time para strings se necessário
+        if (isset($data['data_realizacao']) && is_object($data['data_realizacao'])) {
+            $data['data_realizacao'] = $data['data_realizacao']->format('Y-m-d H:i:s');
+        }
+        if (isset($data['data_solicitacao']) && is_object($data['data_solicitacao'])) {
+            $data['data_solicitacao'] = $data['data_solicitacao']->format('Y-m-d H:i:s');
+        }
+        
+        // Adicionar updated_at
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        
+        return $db->table($this->table)
+                 ->where('id_atendimento_exame', $id)
+                 ->update($data);
     }
 }

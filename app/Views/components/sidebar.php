@@ -48,11 +48,11 @@
                 <i class="bi bi-clipboard2-data"></i>
                 <span>Exames</span>
             </a>
-            <a href="<?php echo base_url('atendimento_procedimentos'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_procedimentos') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Procedimentos">
+            <a href="<?php echo base_url('atendimento-procedimentos'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento-procedimentos') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Procedimentos">
                 <i class="bi bi-clipboard2-check"></i>
                 <span>Atend. Procedimentos</span>
             </a>
-            <a href="<?php echo base_url('atendimento_exames'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_exames') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Exames">
+            <a href="<?php echo base_url('atendimento-exames'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento-exames') !== false) ? 'active' : '' ?>" data-tooltip="Atend. Exames">
                 <i class="bi bi-file-medical"></i>
                 <span>Atend. Exames</span>
             </a>
@@ -81,11 +81,11 @@
                 <i class="bi bi-bar-chart"></i>
                 <span>Rel. Atendimentos</span>
             </a>
-            <a href="<?php echo base_url('atendimento_procedimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_procedimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Procedimentos">
+            <a href="<?php echo base_url('atendimento-procedimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento-procedimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Procedimentos">
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Rel. Procedimentos</span>
             </a>
-            <a href="<?php echo base_url('atendimento_exames/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento_exames/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Exames">
+            <a href="<?php echo base_url('atendimento-exames/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimento-exames/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Exames">
                 <i class="bi bi-graph-up"></i>
                 <span>Rel. Exames</span>
             </a>
