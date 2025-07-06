@@ -53,21 +53,17 @@
 
                             <!-- Código -->
                             <div class="col-md-4 mb-3">
-                                <label for="codigo" class="form-label">
-                                    <i class="bi bi-hash"></i> Código
-                                </label>
-                                <div class="row">
-                                    <div class="col-8">
-                                        <input type="text" class="form-control" id="codigo" name="codigo"
-                                            value="<?= old('codigo', isset($procedimento) ? $procedimento['codigo'] . '_COPY' : '') ?>" maxlength="50"
-                                            placeholder="Ex: PROC001 ou 0301010026">
-                                    </div>
-                                    <div class="col-4">
-                                        <button type="button" class="btn btn-outline-info btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#tussModal" title="Ver códigos TUSS">
-                                            <i class="bi bi-question-circle"></i> Ajuda TUSS
-                                        </button>
-                                    </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <label for="codigo" class="form-label mb-0 me-2">
+                                        <i class="bi bi-hash"></i> Código
+                                    </label>
+                                    <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#tussModal" title="Ver códigos TUSS">
+                                        <i class="bi bi-question-circle"></i> Ajuda TUSS
+                                    </button>
                                 </div>
+                                <input type="text" class="form-control" id="codigo" name="codigo"
+                                    value="<?= old('codigo', isset($procedimento) ? $procedimento['codigo'] . '_COPY' : '') ?>" maxlength="50"
+                                    placeholder="Ex: PROC001 ou 0301010026">
                                 <div class="form-text">Código interno ou TUSS (opcional)</div>
                                 <?php if (isset(session('validation')['codigo'])): ?>
                                     <div class="text-danger small mt-1">
@@ -278,6 +274,7 @@
                     <i class="bi bi-info-circle"></i>
                     <strong>Dica:</strong> Use os códigos TUSS para padronizar os procedimentos conforme a tabela oficial da ANS.
                     Isso facilita o faturamento e a comunicação com outros sistemas de saúde.
+                    <br><small class="text-muted">Clique no botão "Usar" para preencher automaticamente o formulário.</small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -294,6 +291,9 @@
 
 <?= $this->section('scripts') ?>
 <script>
+    // Global variables
+    window.formChanged = false;
+
     $(document).ready(function() {
         // Form validation
         (function() {
@@ -325,23 +325,28 @@
         });
 
         // Confirm before leaving if form has changes
-        let formChanged = false;
         $('#formProcedimento input, #formProcedimento textarea').on('change input', function() {
-            formChanged = true;
+            window.formChanged = true;
         });
 
         $(window).on('beforeunload', function() {
-            if (formChanged) {
+            if (window.formChanged) {
                 return 'Você tem alterações não salvas. Tem certeza que deseja sair?';
             }
         });
 
         $('#formProcedimento').on('submit', function() {
-            formChanged = false;
+            window.formChanged = false;
         });
 
-        // TUSS Modal functionality
-        initTussModal();
+        // Initialize TUSS Modal when modal is shown
+        $('#tussModal').on('shown.bs.modal', function () {
+            console.log('Modal TUSS aberta!');
+            initTussModal();
+        });
+        
+        // Debug para verificar se função está disponível
+        console.log('Função selectTussCode disponível:', typeof selectTussCode);
     });
 
     // Reset form function
@@ -350,30 +355,49 @@
             document.getElementById('formProcedimento').reset();
             // Remove validation classes
             $('#formProcedimento').removeClass('was-validated');
-            formChanged = false;
+            window.formChanged = false;
         }
     }
 
     // TUSS Modal Functions
     function initTussModal() {
+        console.log('Inicializando modal TUSS...'); // Debug
+        
         // Search functionality
-        $('#searchTuss').on('input', function() {
+        $('#searchTuss').off('input').on('input', function() {
+            console.log('Buscando:', $(this).val()); // Debug
             filterTussTable();
         });
 
         // Category filter
-        $('#filterCategory').on('change', function() {
+        $('#filterCategory').off('change').on('change', function() {
+            console.log('Filtrando categoria:', $(this).val()); // Debug
             filterTussTable();
+        });
+        
+        // Adicionar eventos de click aos botões "Usar" como alternativa
+        $('#tussTableBody').off('click', '.btn-primary').on('click', '.btn-primary', function(e) {
+            e.preventDefault();
+            console.log('Botão "Usar" clicado via event listener');
+            
+            const row = $(this).closest('tr');
+            const code = row.find('td:first code').text();
+            const description = row.find('td:eq(1)').text();
+            
+            console.log('Dados capturados - Código:', code, 'Descrição:', description);
+            selectTussCode(code, description);
         });
     }
 
     function filterTussTable() {
         const searchTerm = $('#searchTuss').val().toLowerCase();
         const selectedCategory = $('#filterCategory').val();
+        
+        console.log('Filtros aplicados:', searchTerm, selectedCategory); // Debug
 
         $('#tussTableBody tr').each(function() {
             const row = $(this);
-            const code = row.find('td:first').text().toLowerCase();
+            const code = row.find('td:first code').text().toLowerCase();
             const description = row.find('td:eq(1)').text().toLowerCase();
             const category = row.attr('data-category') || '';
 
@@ -393,23 +417,58 @@
         });
     }
 
+    // Global function to select TUSS code
     function selectTussCode(code, description) {
-        // Set the code in the form
-        $('#codigo').val(code);
+        console.log('=== FUNÇÃO CHAMADA ===');
+        console.log('Código:', code);
+        console.log('Descrição:', description);
+        
+        try {
+            // Verifica se os elementos existem
+            const codigoField = document.getElementById('codigo');
+            const nomeField = document.getElementById('nome');
+            
+            console.log('Campo código encontrado:', codigoField !== null);
+            console.log('Campo nome encontrado:', nomeField !== null);
+            
+            if (!codigoField || !nomeField) {
+                console.error('Campos não encontrados!');
+                return;
+            }
+            
+            // Set the code in the form
+            codigoField.value = code;
+            console.log('Código definido para:', codigoField.value);
 
-        // If name field is empty, suggest the description
-        if ($('#nome').val().trim() === '' || $('#nome').val().includes('(Cópia)')) {
-            $('#nome').val(description);
+            // Always update the name field with the TUSS description
+            nomeField.value = description;
+            console.log('Nome atualizado para:', nomeField.value);
+            
+            // Trigger input events to ensure validation and other listeners work
+            const inputEvent = new Event('input', { bubbles: true });
+            codigoField.dispatchEvent(inputEvent);
+            nomeField.dispatchEvent(inputEvent);
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('tussModal'));
+            if (modal) {
+                modal.hide();
+                console.log('Modal fechada via bootstrap');
+            } else {
+                $('#tussModal').modal('hide');
+                console.log('Modal fechada via jQuery');
+            }
+
+            // Show success message
+            showToast('Código TUSS selecionado!', 'Código ' + code + ' e nome "' + description + '" adicionados ao formulário.', 'success');
+
+            // Mark form as changed
+            window.formChanged = true;
+            console.log('Form marcado como alterado');
+            
+        } catch (error) {
+            console.error('Erro na função selectTussCode:', error);
         }
-
-        // Close the modal
-        $('#tussModal').modal('hide');
-
-        // Show success message
-        showToast('Código TUSS selecionado!', 'Código ' + code + ' adicionado ao formulário.', 'success');
-
-        // Mark form as changed
-        formChanged = true;
     }
 
     // Toast notification function
