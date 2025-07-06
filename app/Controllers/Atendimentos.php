@@ -152,7 +152,7 @@ class Atendimentos extends BaseController
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
             'obito' => 'permit_empty|in_list[0,1]',
-            'status_opcoes' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
+            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
         ];
 
         $messages = [
@@ -189,7 +189,7 @@ class Atendimentos extends BaseController
             'obito' => [
                 'in_list' => 'Opção de óbito deve ser 0 (não) ou 1 (sim)'
             ],
-            'status_opcoes' => [
+            'status' => [
                 'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
             ]
         ];
@@ -214,6 +214,12 @@ class Atendimentos extends BaseController
 
             
 
+            // Preparar dados para inserção
+            $hgtGlicemia = $this->request->getPost('hgt_glicemia');
+            $temperatura = $this->request->getPost('temperatura');
+            $pressaoArterial = $this->request->getPost('pressao_arterial');
+            $encaminhamento = $this->request->getPost('encaminhamento');
+
             // Salvar o atendimento
             $atendimentoData = [
                 'id_paciente' => $this->request->getPost('id_paciente'),
@@ -221,14 +227,14 @@ class Atendimentos extends BaseController
                 'data_atendimento' => $dataAtendimento,
                 'classificacao_risco' => $this->request->getPost('classificacao_risco'),
                 'consulta_enfermagem' => $this->request->getPost('consulta_enfermagem'),
-                'hgt_glicemia' => $this->request->getPost('hgt_glicemia'),
-                'pressao_arterial' => $this->request->getPost('pressao_arterial'),
-                'temperatura' => $this->request->getPost('temperatura'),
+                'hgt_glicemia' => (!empty($hgtGlicemia) && is_numeric($hgtGlicemia)) ? (float)$hgtGlicemia : null,
+                'pressao_arterial' => !empty($pressaoArterial) ? trim($pressaoArterial) : null,
+                'temperatura' => (!empty($temperatura) && is_numeric($temperatura)) ? (float)$temperatura : null,
                 'hipotese_diagnostico' => $this->request->getPost('hipotese_diagnostico'),
                 'observacao' => $this->request->getPost('observacao'),
-                'encaminhamento' => $this->request->getPost('encaminhamento'),
-                'obito' => $this->request->getPost('obito') ? true : false,
-                'status' => $this->request->getPost('status_opcoes') ?? 'Em Andamento'
+                'encaminhamento' => !empty($encaminhamento) ? $encaminhamento : null,
+                'obito' => $this->request->getPost('obito') ? 1 : 0,
+                'status' => $this->request->getPost('status') ?? 'Em Andamento'
             ];
 
             $idAtendimento = $this->atendimentoModel->skipValidation(true)->insert($atendimentoData);
@@ -397,7 +403,7 @@ class Atendimentos extends BaseController
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
             'obito' => 'permit_empty|in_list[0,1]',
-            'status_opcoes' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
+            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
         ];
 
         $messages = [
@@ -434,7 +440,7 @@ class Atendimentos extends BaseController
             'obito' => [
                 'in_list' => 'Opção de óbito deve ser 0 (não) ou 1 (sim)'
             ],
-            'status_opcoes' => [
+            'status' => [
                 'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
             ]
         ];
@@ -451,19 +457,26 @@ class Atendimentos extends BaseController
             $dataAtendimento = \CodeIgniter\I18n\Time::parse($dataFormatada);
         }
 
+        // Preparar dados para atualização
+        $hgtGlicemia = $this->request->getPost('hgt_glicemia');
+        $temperatura = $this->request->getPost('temperatura');
+        $pressaoArterial = $this->request->getPost('pressao_arterial');
+        $encaminhamento = $this->request->getPost('encaminhamento');
+
         $data = [
             'id_paciente' => $this->request->getPost('id_paciente'),
             'id_medico' => $this->request->getPost('id_medico'),
             'data_atendimento' => $dataAtendimento,
             'classificacao_risco' => $this->request->getPost('classificacao_risco'),
             'consulta_enfermagem' => $this->request->getPost('consulta_enfermagem'),
-            'hgt_glicemia' => $this->request->getPost('hgt_glicemia'),
-            'pressao_arterial' => $this->request->getPost('pressao_arterial'),
-            'temperatura' => $this->request->getPost('temperatura'),
+            'hgt_glicemia' => (!empty($hgtGlicemia) && is_numeric($hgtGlicemia)) ? (float)$hgtGlicemia : null,
+            'pressao_arterial' => !empty($pressaoArterial) ? trim($pressaoArterial) : null,
+            'temperatura' => (!empty($temperatura) && is_numeric($temperatura)) ? (float)$temperatura : null,
             'hipotese_diagnostico' => $this->request->getPost('hipotese_diagnostico'),
             'observacao' => $this->request->getPost('observacao'),
-            'encaminhamento' => $this->request->getPost('encaminhamento'),
-            'obito' => $this->request->getPost('obito') ? true : false
+            'encaminhamento' => !empty($encaminhamento) ? $encaminhamento : null,
+            'obito' => $this->request->getPost('obito') ? 1 : 0,
+            'status' => $this->request->getPost('status') ?: 'Em Andamento'
         ];
 
         if ($this->atendimentoModel->skipValidation(true)->update($id, $data)) {

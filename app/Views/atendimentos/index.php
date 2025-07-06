@@ -132,8 +132,8 @@
                                                     <span class="badge bg-dark">Óbito</span>
                                                 <?php elseif ($atendimento['encaminhamento']): ?>
                                                     <span class="badge bg-secondary"><?= $atendimento['encaminhamento'] ?></span>
-                                                <?php else: ?>
-                                                    <span class="badge bg-primary">Em Atendimento</span>
+                                                <?php elseif ($atendimento['status']): ?>
+                                                    <span class="badge bg-primary"><?= $atendimento['status'] ?></span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>

@@ -157,10 +157,25 @@
                                 <select class="form-select <?= session('validation') && session('validation')->hasError('classificacao_risco') ? 'is-invalid' : '' ?>" 
                                         id="classificacao_risco" name="classificacao_risco" required>
                                     <option value="">Selecione a classificação</option>
-                                    <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
-                                    <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - Urgente</option>
-                                    <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
-                                    <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                    <?php if (isset($classificacoes)): ?>
+                                        <?php 
+                                        $descricoes = [
+                                            'Azul' => 'Azul - Não Urgente',
+                                            'Verde' => 'Verde - Pouco Urgente', 
+                                            'Amarelo' => 'Amarelo - Urgente',
+                                            'Vermelho' => 'Vermelho - Muito Urgente'
+                                        ];
+                                        foreach ($classificacoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= old('classificacao_risco') == $opcao ? 'selected' : '' ?>>
+                                                <?= $descricoes[$opcao] ?? $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
+                                        <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - Urgente</option>
+                                        <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
+                                        <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                    <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
                                     <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Por favor, selecione a classificação de risco.' ?>
@@ -222,20 +237,59 @@
                                 rows="3" placeholder="Observações gerais..."><?= old('observacao') ?></textarea>
                         </div>
 
-                        <!-- Encaminhamento -->
-                        <div class="mb-3">
-                            <label for="encaminhamento" class="form-label">
-                                <i class="bi bi-arrow-right-circle"></i> Encaminhamento
-                            </label>
-                            <select class="form-select" id="encaminhamento" name="encaminhamento">
-                                <option value="">Selecione o encaminhamento</option>
-                                <option value="Alta" <?= old('encaminhamento') == 'Alta' ? 'selected' : '' ?>>Alta</option>
-                                <option value="Internação" <?= old('encaminhamento') == 'Internação' ? 'selected' : '' ?>>Internação</option>
-                                <option value="Transferência" <?= old('encaminhamento') == 'Transferência' ? 'selected' : '' ?>>Transferência</option>
-                                <option value="Especialista" <?= old('encaminhamento') == 'Especialista' ? 'selected' : '' ?>>Especialista</option>
-                                <option value="Retorno" <?= old('encaminhamento') == 'Retorno' ? 'selected' : '' ?>>Retorno</option>
-                                <option value="Óbito" <?= old('encaminhamento') == 'Óbito' ? 'selected' : '' ?>>Óbito</option>
-                            </select>
+                        <!-- Status do Atendimento -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <i class="bi bi-activity"></i> Status do Atendimento *
+                                </label>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('status') ? 'is-invalid' : '' ?>" 
+                                        id="status" name="status" required>
+                                    <?php if (isset($status_opcoes)): ?>
+                                        <?php foreach ($status_opcoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= old('status', 'Em Andamento') == $opcao ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Em Andamento" <?= old('status', 'Em Andamento') == 'Em Andamento' ? 'selected' : '' ?>>Em Andamento</option>
+                                        <option value="Finalizado" <?= old('status') == 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
+                                        <option value="Cancelado" <?= old('status') == 'Cancelado' ? 'selected' : '' ?>>Cancelado</option>
+                                        <option value="Aguardando" <?= old('status') == 'Aguardando' ? 'selected' : '' ?>>Aguardando</option>
+                                        <option value="Suspenso" <?= old('status') == 'Suspenso' ? 'selected' : '' ?>>Suspenso</option>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">
+                                    <?= session('validation') && session('validation')->hasError('status') ? session('validation')->getError('status') : 'Por favor, selecione o status do atendimento.' ?>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Status padrão: Em Andamento
+                                </small>
+                            </div>
+
+                            <!-- Encaminhamento -->
+                            <div class="col-md-6 mb-3">
+                                <label for="encaminhamento" class="form-label">
+                                    <i class="bi bi-arrow-right-circle"></i> Encaminhamento
+                                </label>
+                                <select class="form-select" id="encaminhamento" name="encaminhamento">
+                                    <option value="">Selecione o encaminhamento</option>
+                                    <?php if (isset($encaminhamentos)): ?>
+                                        <?php foreach ($encaminhamentos as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= old('encaminhamento') == $opcao ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Alta" <?= old('encaminhamento') == 'Alta' ? 'selected' : '' ?>>Alta</option>
+                                        <option value="Internação" <?= old('encaminhamento') == 'Internação' ? 'selected' : '' ?>>Internação</option>
+                                        <option value="Transferência" <?= old('encaminhamento') == 'Transferência' ? 'selected' : '' ?>>Transferência</option>
+                                        <option value="Especialista" <?= old('encaminhamento') == 'Especialista' ? 'selected' : '' ?>>Especialista</option>
+                                        <option value="Retorno" <?= old('encaminhamento') == 'Retorno' ? 'selected' : '' ?>>Retorno</option>
+                                        <option value="Óbito" <?= old('encaminhamento') == 'Óbito' ? 'selected' : '' ?>>Óbito</option>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Checkbox Óbito -->

@@ -91,6 +91,11 @@ class CreateAtendimentoTable extends Migration
                 'type' => 'datetime',
                 'null' => true,
             ],
+            'deleted_at' => [
+                'type' => 'datetime',
+                'null' => true,
+                'comment' => 'Soft delete timestamp',
+            ],
         ]);
 
         $this->forge->addKey('id_atendimento', true);

@@ -31,6 +31,35 @@
                         <h5 class="card-title mb-0">Dados do Atendimento</h5>
                     </div>
                     <div class="card-body">
+                        <!-- Exibir mensagens de validação -->
+                        <?php if (session()->has('validation')): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <h6><i class="bi bi-exclamation-triangle"></i> Erro de Validação</h6>
+                                <ul class="mb-0">
+                                    <?php foreach (session('validation')->getErrors() as $error): ?>
+                                        <li><?= esc($error) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Exibir mensagens de erro -->
+                        <?php if (session()->has('error')): ?>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-x-circle"></i> <?= session('error') ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Exibir mensagens de sucesso -->
+                        <?php if (session()->has('success')): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle"></i> <?= session('success') ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
                         <?= form_open('atendimentos/update/' . $atendimento['id_atendimento'], ['id' => 'formAtendimento', 'class' => 'needs-validation', 'novalidate' => '']) ?>
 
                         <div class="row">
@@ -39,7 +68,8 @@
                                 <label for="id_paciente" class="form-label">
                                     <i class="bi bi-person"></i> Paciente *
                                 </label>
-                                <select class="form-select" id="id_paciente" name="id_paciente" required>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_paciente') ? 'is-invalid' : '' ?>" 
+                                        id="id_paciente" name="id_paciente" required>
                                     <option value="">Selecione um paciente</option>
                                     <?php if (isset($pacientes)): ?>
                                         <?php foreach ($pacientes as $paciente): ?>
@@ -51,7 +81,7 @@
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Por favor, selecione um paciente.
+                                    <?= session('validation') && session('validation')->hasError('id_paciente') ? session('validation')->getError('id_paciente') : 'Por favor, selecione um paciente.' ?>
                                 </div>
                             </div>
 
@@ -60,7 +90,8 @@
                                 <label for="id_medico" class="form-label">
                                     <i class="bi bi-person-badge"></i> Médico *
                                 </label>
-                                <select class="form-select" id="id_medico" name="id_medico" required>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_medico') ? 'is-invalid' : '' ?>" 
+                                        id="id_medico" name="id_medico" required>
                                     <option value="">Selecione um médico</option>
                                     <?php if (isset($medicos)): ?>
                                         <?php foreach ($medicos as $medico): ?>
@@ -72,7 +103,7 @@
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Por favor, selecione um médico.
+                                    <?= session('validation') && session('validation')->hasError('id_medico') ? session('validation')->getError('id_medico') : 'Por favor, selecione um médico.' ?>
                                 </div>
                             </div>
                         </div>
@@ -83,10 +114,11 @@
                                 <label for="data_atendimento" class="form-label">
                                     <i class="bi bi-calendar"></i> Data/Hora do Atendimento *
                                 </label>
-                                <input type="datetime-local" class="form-control" id="data_atendimento" name="data_atendimento"
-                                    value="<?= old('data_atendimento', date('Y-m-d\TH:i', strtotime($atendimento['data_atendimento']))) ?>" required>
+                                <input type="datetime-local" class="form-control <?= session('validation') && session('validation')->hasError('data_atendimento') ? 'is-invalid' : '' ?>" 
+                                       id="data_atendimento" name="data_atendimento"
+                                       value="<?= old('data_atendimento', date('Y-m-d\TH:i', strtotime($atendimento['data_atendimento']))) ?>" required>
                                 <div class="invalid-feedback">
-                                    Por favor, informe a data e hora do atendimento.
+                                    <?= session('validation') && session('validation')->hasError('data_atendimento') ? session('validation')->getError('data_atendimento') : 'Por favor, informe a data e hora do atendimento.' ?>
                                 </div>
                             </div>
 
@@ -95,15 +127,31 @@
                                 <label for="classificacao_risco" class="form-label">
                                     <i class="bi bi-exclamation-triangle"></i> Classificação de Risco *
                                 </label>
-                                <select class="form-select" id="classificacao_risco" name="classificacao_risco" required>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('classificacao_risco') ? 'is-invalid' : '' ?>" 
+                                        id="classificacao_risco" name="classificacao_risco" required>
                                     <option value="">Selecione a classificação</option>
-                                    <option value="Verde" <?= ($atendimento['classificacao_risco'] == 'Verde' || old('classificacao_risco') == 'Verde') ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
-                                    <option value="Amarelo" <?= ($atendimento['classificacao_risco'] == 'Amarelo' || old('classificacao_risco') == 'Amarelo') ? 'selected' : '' ?>>Amarelo - Urgente</option>
-                                    <option value="Vermelho" <?= ($atendimento['classificacao_risco'] == 'Vermelho' || old('classificacao_risco') == 'Vermelho') ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
-                                    <option value="Azul" <?= ($atendimento['classificacao_risco'] == 'Azul' || old('classificacao_risco') == 'Azul') ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                    <?php if (isset($classificacoes)): ?>
+                                        <?php 
+                                        $descricoes = [
+                                            'Azul' => 'Azul - Não Urgente',
+                                            'Verde' => 'Verde - Pouco Urgente', 
+                                            'Amarelo' => 'Amarelo - Urgente',
+                                            'Vermelho' => 'Vermelho - Muito Urgente'
+                                        ];
+                                        foreach ($classificacoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= ($atendimento['classificacao_risco'] == $opcao || old('classificacao_risco') == $opcao) ? 'selected' : '' ?>>
+                                                <?= $descricoes[$opcao] ?? $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Verde" <?= ($atendimento['classificacao_risco'] == 'Verde' || old('classificacao_risco') == 'Verde') ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
+                                        <option value="Amarelo" <?= ($atendimento['classificacao_risco'] == 'Amarelo' || old('classificacao_risco') == 'Amarelo') ? 'selected' : '' ?>>Amarelo - Urgente</option>
+                                        <option value="Vermelho" <?= ($atendimento['classificacao_risco'] == 'Vermelho' || old('classificacao_risco') == 'Vermelho') ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
+                                        <option value="Azul" <?= ($atendimento['classificacao_risco'] == 'Azul' || old('classificacao_risco') == 'Azul') ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                    <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Por favor, selecione a classificação de risco.
+                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Por favor, selecione a classificação de risco.' ?>
                                 </div>
                             </div>
                         </div>
@@ -165,20 +213,57 @@
                                 rows="3" placeholder="Observações gerais..."><?= old('observacao', $atendimento['observacao']) ?></textarea>
                         </div>
 
-                        <!-- Encaminhamento -->
-                        <div class="mb-3">
-                            <label for="encaminhamento" class="form-label">
-                                <i class="bi bi-arrow-right-circle"></i> Encaminhamento
-                            </label>
-                            <select class="form-select" id="encaminhamento" name="encaminhamento">
-                                <option value="">Selecione o encaminhamento</option>
-                                <option value="Alta" <?= ($atendimento['encaminhamento'] == 'Alta' || old('encaminhamento') == 'Alta') ? 'selected' : '' ?>>Alta</option>
-                                <option value="Internação" <?= ($atendimento['encaminhamento'] == 'Internação' || old('encaminhamento') == 'Internação') ? 'selected' : '' ?>>Internação</option>
-                                <option value="Transferência" <?= ($atendimento['encaminhamento'] == 'Transferência' || old('encaminhamento') == 'Transferência') ? 'selected' : '' ?>>Transferência</option>
-                                <option value="Especialista" <?= ($atendimento['encaminhamento'] == 'Especialista' || old('encaminhamento') == 'Especialista') ? 'selected' : '' ?>>Especialista</option>
-                                <option value="Retorno" <?= ($atendimento['encaminhamento'] == 'Retorno' || old('encaminhamento') == 'Retorno') ? 'selected' : '' ?>>Retorno</option>
-                                <option value="Óbito" <?= ($atendimento['encaminhamento'] == 'Óbito' || old('encaminhamento') == 'Óbito') ? 'selected' : '' ?>>Óbito</option>
-                            </select>
+                        <!-- Status do Atendimento e Encaminhamento -->
+                        <div class="row">
+                            <!-- Status do Atendimento -->
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <i class="bi bi-activity"></i> Status do Atendimento *
+                                </label>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('status') ? 'is-invalid' : '' ?>" 
+                                        id="status" name="status" required>
+                                    <?php if (isset($status_opcoes)): ?>
+                                        <?php foreach ($status_opcoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= ($atendimento['status'] == $opcao || old('status') == $opcao) ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Em Andamento" <?= ($atendimento['status'] == 'Em Andamento' || old('status') == 'Em Andamento') ? 'selected' : '' ?>>Em Andamento</option>
+                                        <option value="Finalizado" <?= ($atendimento['status'] == 'Finalizado' || old('status') == 'Finalizado') ? 'selected' : '' ?>>Finalizado</option>
+                                        <option value="Cancelado" <?= ($atendimento['status'] == 'Cancelado' || old('status') == 'Cancelado') ? 'selected' : '' ?>>Cancelado</option>
+                                        <option value="Aguardando" <?= ($atendimento['status'] == 'Aguardando' || old('status') == 'Aguardando') ? 'selected' : '' ?>>Aguardando</option>
+                                        <option value="Suspenso" <?= ($atendimento['status'] == 'Suspenso' || old('status') == 'Suspenso') ? 'selected' : '' ?>>Suspenso</option>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">
+                                    <?= session('validation') && session('validation')->hasError('status') ? session('validation')->getError('status') : 'Por favor, selecione o status do atendimento.' ?>
+                                </div>
+                            </div>
+
+                            <!-- Encaminhamento -->
+                            <div class="col-md-6 mb-3">
+                                <label for="encaminhamento" class="form-label">
+                                    <i class="bi bi-arrow-right-circle"></i> Encaminhamento
+                                </label>
+                                <select class="form-select" id="encaminhamento" name="encaminhamento">
+                                    <option value="">Selecione o encaminhamento</option>
+                                    <?php if (isset($encaminhamentos)): ?>
+                                        <?php foreach ($encaminhamentos as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= ($atendimento['encaminhamento'] == $opcao || old('encaminhamento') == $opcao) ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Alta" <?= ($atendimento['encaminhamento'] == 'Alta' || old('encaminhamento') == 'Alta') ? 'selected' : '' ?>>Alta</option>
+                                        <option value="Internação" <?= ($atendimento['encaminhamento'] == 'Internação' || old('encaminhamento') == 'Internação') ? 'selected' : '' ?>>Internação</option>
+                                        <option value="Transferência" <?= ($atendimento['encaminhamento'] == 'Transferência' || old('encaminhamento') == 'Transferência') ? 'selected' : '' ?>>Transferência</option>
+                                        <option value="Especialista" <?= ($atendimento['encaminhamento'] == 'Especialista' || old('encaminhamento') == 'Especialista') ? 'selected' : '' ?>>Especialista</option>
+                                        <option value="Retorno" <?= ($atendimento['encaminhamento'] == 'Retorno' || old('encaminhamento') == 'Retorno') ? 'selected' : '' ?>>Retorno</option>
+                                        <option value="Óbito" <?= ($atendimento['encaminhamento'] == 'Óbito' || old('encaminhamento') == 'Óbito') ? 'selected' : '' ?>>Óbito</option>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Checkbox Óbito -->
