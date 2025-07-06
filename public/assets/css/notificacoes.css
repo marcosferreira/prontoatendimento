@@ -1,0 +1,235 @@
+    /* Estilos específicos para notificações */
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-content .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-content .stat-label {
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.7;
+    }
+
+    .stat-danger {
+        border-left: 4px solid #dc3545;
+    }
+
+    .stat-danger .stat-number {
+        color: #dc3545;
+    }
+
+    .stat-danger .stat-icon {
+        color: #dc3545;
+    }
+
+    .stat-critical {
+        border-left: 4px solid #6f42c1;
+    }
+
+    .stat-critical .stat-number {
+        color: #6f42c1;
+    }
+
+    .stat-critical .stat-icon {
+        color: #6f42c1;
+    }
+
+    .stat-warning {
+        border-left: 4px solid #fd7e14;
+    }
+
+    .stat-warning .stat-number {
+        color: #fd7e14;
+    }
+
+    .stat-warning .stat-icon {
+        color: #fd7e14;
+    }
+
+    .stat-info {
+        border-left: 4px solid #0dcaf0;
+    }
+
+    .stat-info .stat-number {
+        color: #0dcaf0;
+    }
+
+    .stat-info .stat-icon {
+        color: #0dcaf0;
+    }
+
+    /* Notificações */
+    .notification-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.25rem;
+        background: white;
+        transition: all 0.2s ease;
+    }
+
+    .notification-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .notification-critica {
+        border-left: 4px solid #dc3545;
+        background: linear-gradient(135deg, #fff5f5, #ffffff);
+    }
+
+    .notification-alta {
+        border-left: 4px solid #fd7e14;
+        background: linear-gradient(135deg, #fff8f0, #ffffff);
+    }
+
+    .notification-media {
+        border-left: 4px solid #ffc107;
+        background: linear-gradient(135deg, #fffdf0, #ffffff);
+    }
+
+    .notification-baixa {
+        border-left: 4px solid #198754;
+        background: linear-gradient(135deg, #f0fff4, #ffffff);
+    }
+
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+    }
+
+    .notification-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .notification-icon {
+        font-size: 1.25rem;
+    }
+
+    .notification-content {
+        margin-bottom: 1rem;
+    }
+
+    .notification-details {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .notification-meta {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    /* Cards responsivos */
+    @media (max-width: 768px) {
+        .stat-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .notification-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .notification-meta {
+            text-align: left;
+        }
+
+        .notification-actions {
+            flex-wrap: wrap;
+        }
+    }
+
+    /* Animações */
+    @keyframes pulse {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .notification-critica .notification-icon {
+        animation: pulse 2s infinite;
+        color: #dc3545;
+    }
+
+    .notification-alta .notification-icon {
+        color: #fd7e14;
+    }
+
+    .notification-media .notification-icon {
+        color: #ffc107;
+    }
+
+    .notification-baixa .notification-icon {
+        color: #198754;
+    }
+
+    /* Controle de tamanho dos gráficos Chart.js */
+    canvas {
+        max-height: 300px !important;
+        height: 300px !important;
+    }
+
+    #graficoSeveridade,
+    #graficoTipos {
+        max-height: 300px !important;
+        height: 300px !important;
+        max-width: 100% !important;
+    }
+
+    #graficoTendencia {
+        max-height: 100px !important;
+        height: 100px !important;
+        max-width: 100% !important;
+    }
+
+    /* Container dos gráficos */
+    .card-body canvas {
+        max-height: 300px !important;
+        height: 300px !important;
+    }

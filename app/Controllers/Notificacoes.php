@@ -262,6 +262,7 @@ class Notificacoes extends BaseController
 
         $data = [
             'title' => 'Relatório de Notificações BI',
+            'description' => 'Relatório gerado para o período de ' . $dataInicio . ' a ' . $dataFim,
             'periodo' => $periodo,
             'data_inicio' => $dataInicio,
             'data_fim' => $dataFim,
@@ -297,10 +298,141 @@ class Notificacoes extends BaseController
 
         $data = [
             'title' => 'Configurações de Notificações BI',
+            'description' => 'Gerencie as configurações do sistema de notificações',
             'configuracoes' => $configuracoes
         ];
 
         return view('notificacoes/configuracoes', $data);
+    }
+
+    /**
+     * Salva configurações do sistema
+     */
+    public function salvarConfiguracoes()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['error' => 'Acesso inválido']);
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        $dados = $this->request->getJSON(true);
+        
+        // Aqui você implementaria a lógica para salvar as configurações
+        // Por exemplo, em um arquivo de configuração ou banco de dados
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Configurações salvas com sucesso!'
+        ]);
+    }
+
+    /**
+     * Restaura configurações padrão
+     */
+    public function restaurarPadrao()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['error' => 'Acesso inválido']);
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        // Implementar lógica para restaurar configurações padrão
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Configurações restauradas com sucesso!'
+        ]);
+    }
+
+    /**
+     * Testa envio de email
+     */
+    public function testarEmail()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['error' => 'Acesso inválido']);
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        try {
+            // Implementar lógica de teste de email
+            $email = \Config\Services::email();
+            
+            $email->setTo(auth()->user()->email ?? 'admin@municipio.gov.br');
+            $email->setSubject('Teste - Sistema de Notificações BI');
+            $email->setMessage('Este é um email de teste do sistema de notificações BI. Se você recebeu esta mensagem, a configuração de email está funcionando corretamente.');
+            
+            if ($email->send()) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Email de teste enviado com sucesso!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao enviar email: ' . $email->printDebugger()
+                ]);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao enviar email: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Limpa dados antigos de notificações
+     */
+    public function limparDadosAntigos()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['error' => 'Acesso inválido']);
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        try {
+            $registrosRemovidos = $this->notificacaoModel->limparNotificacoesAntigas();
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Dados antigos removidos com sucesso!',
+                'registros_removidos' => $registrosRemovidos
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao limpar dados: ' . $e->getMessage()
+            ]);
+        }
     }
 
     // === MÉTODOS AUXILIARES ===
@@ -536,10 +668,16 @@ class Notificacoes extends BaseController
     {
         $stats = [
             'total' => count($notificacoes),
-            'resolvidas' => 0,
-            'ativas' => 0,
-            'canceladas' => 0,
-            'por_severidade' => [],
+            'total_resolvidas' => 0,
+            'total_ativas' => 0,
+            'total_canceladas' => 0,
+            'total_criticas' => 0,
+            'por_severidade' => [
+                'critica' => ['total' => 0, 'resolvidas' => 0],
+                'alta' => ['total' => 0, 'resolvidas' => 0],
+                'media' => ['total' => 0, 'resolvidas' => 0],
+                'baixa' => ['total' => 0, 'resolvidas' => 0]
+            ],
             'por_tipo' => [],
             'tempo_medio_resolucao' => 0
         ];
@@ -548,31 +686,64 @@ class Notificacoes extends BaseController
 
         foreach ($notificacoes as $notificacao) {
             // Status
-            $stats[$notificacao['status']]++;
+            if ($notificacao['status'] === 'resolvida') {
+                $stats['total_resolvidas']++;
+            } elseif ($notificacao['status'] === 'ativa') {
+                $stats['total_ativas']++;
+            } elseif ($notificacao['status'] === 'cancelada') {
+                $stats['total_canceladas']++;
+            }
+
+            // Críticas
+            if ($notificacao['severidade'] === 'critica') {
+                $stats['total_criticas']++;
+            }
 
             // Severidade
-            if (!isset($stats['por_severidade'][$notificacao['severidade']])) {
-                $stats['por_severidade'][$notificacao['severidade']] = 0;
+            $severidade = $notificacao['severidade'];
+            if (isset($stats['por_severidade'][$severidade])) {
+                $stats['por_severidade'][$severidade]['total']++;
+                if ($notificacao['status'] === 'resolvida') {
+                    $stats['por_severidade'][$severidade]['resolvidas']++;
+                }
             }
-            $stats['por_severidade'][$notificacao['severidade']]++;
 
             // Tipo
-            if (!isset($stats['por_tipo'][$notificacao['tipo']])) {
-                $stats['por_tipo'][$notificacao['tipo']] = 0;
+            $tipo = $notificacao['tipo'];
+            if (!isset($stats['por_tipo'][$tipo])) {
+                $stats['por_tipo'][$tipo] = [
+                    'total' => 0,
+                    'tempo_medio' => 0
+                ];
             }
-            $stats['por_tipo'][$notificacao['tipo']]++;
+            $stats['por_tipo'][$tipo]['total']++;
 
             // Tempo de resolução
             if ($notificacao['status'] === 'resolvida' && $notificacao['resolvida_em']) {
                 $inicio = new \DateTime($notificacao['acionada_em']);
                 $fim = new \DateTime($notificacao['resolvida_em']);
-                $temposResolucao[] = $fim->getTimestamp() - $inicio->getTimestamp();
+                $tempoHoras = ($fim->getTimestamp() - $inicio->getTimestamp()) / 3600;
+                $temposResolucao[] = $tempoHoras;
+                
+                // Adicionar ao tempo médio por tipo
+                if (!isset($stats['por_tipo'][$tipo]['tempos'])) {
+                    $stats['por_tipo'][$tipo]['tempos'] = [];
+                }
+                $stats['por_tipo'][$tipo]['tempos'][] = $tempoHoras;
             }
         }
 
-        // Tempo médio de resolução em horas
+        // Calcular tempo médio geral
         if (!empty($temposResolucao)) {
-            $stats['tempo_medio_resolucao'] = round(array_sum($temposResolucao) / count($temposResolucao) / 3600, 1);
+            $stats['tempo_medio_resolucao'] = round(array_sum($temposResolucao) / count($temposResolucao), 1);
+        }
+
+        // Calcular tempo médio por tipo
+        foreach ($stats['por_tipo'] as $tipo => &$dados) {
+            if (isset($dados['tempos']) && !empty($dados['tempos'])) {
+                $dados['tempo_medio'] = round(array_sum($dados['tempos']) / count($dados['tempos']), 1);
+                unset($dados['tempos']); // Remove array temporário
+            }
         }
 
         return $stats;

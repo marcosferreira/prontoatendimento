@@ -30,49 +30,66 @@ class AtendimentoExames extends BaseController
         $exame = $this->request->getGet('exame');
         $status = $this->request->getGet('status');
         
-        $builder = $this->atendimentoExameModel
-            ->select('atendimento_exames.*, 
-                     exames.nome as nome_exame, 
-                     exames.codigo as codigo_exame,
-                     exames.tipo as tipo_exame,
-                     atendimentos.data_atendimento,
-                     pacientes.nome as nome_paciente,
-                     pacientes.cpf')
-            ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-            ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-            ->orderBy('pam_atendimento_exames.data_solicitacao', 'DESC');
+        // Usar Query Builder direto para evitar problemas de casting com campos NULL
+        $db = \Config\Database::connect();
+        $builder = $db->table('atendimento_exames ae')
+            ->select('ae.*, 
+                     e.nome as nome_exame, 
+                     e.codigo as codigo_exame,
+                     e.tipo as tipo_exame,
+                     a.data_atendimento,
+                     p.nome as nome_paciente,
+                     p.cpf,
+                     ae.data_solicitacao as data_solicitacao_raw,
+                     ae.data_realizacao as data_realizacao_raw')
+            ->join('exames e', 'e.id_exame = ae.id_exame')
+            ->join('atendimentos a', 'a.id_atendimento = ae.id_atendimento')
+            ->join('pacientes p', 'p.id_paciente = a.id_paciente')
+            ->where('ae.deleted_at IS NULL')
+            ->orderBy('ae.data_solicitacao', 'DESC');
 
         if ($search) {
             $builder->groupStart()
-                   ->like('pacientes.nome', $search)
-                   ->orLike('exames.nome', $search)
-                   ->orLike('exames.codigo', $search)
+                   ->like('p.nome', $search)
+                   ->orLike('e.nome', $search)
+                   ->orLike('e.codigo', $search)
                    ->groupEnd();
         }
 
         if ($atendimento) {
-            $builder->where('atendimento_exames.id_atendimento', $atendimento);
+            $builder->where('ae.id_atendimento', $atendimento);
         }
 
         if ($exame) {
-            $builder->where('atendimento_exames.id_exame', $exame);
+            $builder->where('ae.id_exame', $exame);
         }
 
         if ($status) {
-            $builder->where('pam_atendimento_exames.status', $status);
+            $builder->where('ae.status', $status);
         }
 
-        $atendimentoExames = $builder->paginate(20);
-        $pager = $this->atendimentoExameModel->pager;
+        // Configurar paginação manual
+        $page = (int) ($this->request->getGet('page') ?? 1);
+        $perPage = 20;
+        $offset = ($page - 1) * $perPage;
 
-        // Estatísticas
+        // Contar total de registros
+        $totalRecords = $builder->countAllResults(false);
+
+        // Buscar registros paginados
+        $atendimentoExames = $builder->limit($perPage, $offset)->get()->getResultArray();
+
+        // Configurar paginação
+        $pager = \Config\Services::pager();
+        $pager->store('default', $page, $perPage, $totalRecords);
+
+        // Estatísticas usando consultas diretas para evitar problemas de casting
         $stats = [
-            'total' => $this->atendimentoExameModel->countAll(),
-            'solicitados' => $this->atendimentoExameModel->where('status', 'Solicitado')->countAllResults(),
-            'realizados' => $this->atendimentoExameModel->where('status', 'Realizado')->countAllResults(),
-            'cancelados' => $this->atendimentoExameModel->where('status', 'Cancelado')->countAllResults(),
-            'hoje' => $this->atendimentoExameModel->where('DATE(data_solicitacao)', date('Y-m-d'))->countAllResults()
+            'total' => $db->table('atendimento_exames')->where('deleted_at IS NULL')->countAllResults(),
+            'solicitados' => $db->table('atendimento_exames')->where('status', 'Solicitado')->where('deleted_at IS NULL')->countAllResults(),
+            'realizados' => $db->table('atendimento_exames')->where('status', 'Realizado')->where('deleted_at IS NULL')->countAllResults(),
+            'cancelados' => $db->table('atendimento_exames')->where('status', 'Cancelado')->where('deleted_at IS NULL')->countAllResults(),
+            'hoje' => $db->table('atendimento_exames')->where('DATE(data_solicitacao)', date('Y-m-d'))->where('deleted_at IS NULL')->countAllResults()
         ];
 
         $exames = $this->exameModel->orderBy('nome', 'ASC')->findAll();
@@ -260,7 +277,13 @@ class AtendimentoExames extends BaseController
      */
     public function edit($id)
     {
-        $atendimentoExame = $this->atendimentoExameModel->find($id);
+        // Usar consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames')
+                              ->where('id_atendimento_exame', $id)
+                              ->where('deleted_at IS NULL')
+                              ->get()
+                              ->getRowArray();
         
         if (!$atendimentoExame) {
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
@@ -289,7 +312,13 @@ class AtendimentoExames extends BaseController
      */
     public function update($id)
     {
-        $atendimentoExame = $this->atendimentoExameModel->find($id);
+        // Usar consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames')
+                              ->where('id_atendimento_exame', $id)
+                              ->where('deleted_at IS NULL')
+                              ->get()
+                              ->getRowArray();
         
         if (!$atendimentoExame) {
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
@@ -342,7 +371,13 @@ class AtendimentoExames extends BaseController
      */
     public function delete($id)
     {
-        $atendimentoExame = $this->atendimentoExameModel->find($id);
+        // Usar consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames')
+                              ->where('id_atendimento_exame', $id)
+                              ->where('deleted_at IS NULL')
+                              ->get()
+                              ->getRowArray();
         
         if (!$atendimentoExame) {
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
@@ -390,7 +425,13 @@ class AtendimentoExames extends BaseController
         $id = $this->request->getPost('id');
         $status = $this->request->getPost('status');
 
-        $atendimentoExame = $this->atendimentoExameModel->find($id);
+        // Usar consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames')
+                              ->where('id_atendimento_exame', $id)
+                              ->where('deleted_at IS NULL')
+                              ->get()
+                              ->getRowArray();
         
         if (!$atendimentoExame) {
             return $this->response->setJSON([
@@ -503,24 +544,31 @@ class AtendimentoExames extends BaseController
      */
     public function print($id)
     {
-        $atendimentoExame = $this->atendimentoExameModel
-            ->select('atendimento_exames.*, 
-                     exames.nome as nome_exame, 
-                     exames.codigo as codigo_exame,
-                     exames.tipo as tipo_exame,
-                     exames.descricao as descricao_exame,
-                     atendimentos.data_atendimento,
-                     pacientes.nome as nome_paciente,
-                     pacientes.cpf,
-                     pacientes.data_nascimento,
-                     pacientes.sexo,
-                     medicos.nome as nome_medico,
-                     medicos.crm')
-            ->join('exames', 'exames.id_exame = atendimento_exames.id_exame')
-            ->join('atendimentos', 'atendimentos.id_atendimento = atendimento_exames.id_atendimento')
-            ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-            ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
-            ->find($id);
+        // Usar consulta direta para evitar problemas com casting
+        $db = \Config\Database::connect();
+        $atendimentoExame = $db->table('atendimento_exames ae')
+            ->select('ae.*, 
+                     e.nome as nome_exame, 
+                     e.codigo as codigo_exame,
+                     e.tipo as tipo_exame,
+                     e.descricao as descricao_exame,
+                     a.data_atendimento,
+                     p.nome as nome_paciente,
+                     p.cpf,
+                     p.data_nascimento,
+                     p.sexo,
+                     m.nome as nome_medico,
+                     m.crm,
+                     ae.data_solicitacao as data_solicitacao_raw,
+                     ae.data_realizacao as data_realizacao_raw')
+            ->join('exames e', 'e.id_exame = ae.id_exame')
+            ->join('atendimentos a', 'a.id_atendimento = ae.id_atendimento')
+            ->join('pacientes p', 'p.id_paciente = a.id_paciente')
+            ->join('medicos m', 'm.id_medico = a.id_medico')
+            ->where('ae.id_atendimento_exame', $id)
+            ->where('ae.deleted_at IS NULL')
+            ->get()
+            ->getRowArray();
 
         if (!$atendimentoExame) {
             return redirect()->to('/atendimento-exames')->with('error', 'Registro não encontrado');
