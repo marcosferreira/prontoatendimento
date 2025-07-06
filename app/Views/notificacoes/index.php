@@ -19,7 +19,7 @@
             <div class="header">
                 <h1><i class="bi bi-bell-fill"></i> Central de Notificações BI</h1>
                 <p class="subtitle">Monitoramento Inteligente e Alertas do Sistema de Pronto Atendimento</p>
-                
+
                 <div class="header-actions">
                     <button type="button" class="btn btn-outline-primary" id="btnAtualizarDados">
                         <i class="bi bi-arrow-clockwise"></i> Atualizar
@@ -35,7 +35,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <div class="content-wrapper">
                 <!-- Flash Messages -->
                 <?php if (session()->getFlashdata('success')): ?>
@@ -181,7 +181,7 @@
                 </div>
 
                 <!-- Lista de Notificações -->
-                <div class="card">
+                <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title">Notificações Ativas</h5>
                         <div id="loadingNotificacoes" class="spinner-border spinner-border-sm d-none" role="status">
@@ -205,32 +205,32 @@
                                         <div class="col-md-8">
                                             <div class="d-flex align-items-start">
                                                 <div class="notification-icon me-3">
-                                                    <?php 
+                                                    <?php
                                                     $tipo = $notificacao['tipo'];
-                                                    include APPPATH . 'Views/notificacoes/partials/icon.php'; 
+                                                    include APPPATH . 'Views/notificacoes/partials/icon.php';
                                                     ?>
                                                 </div>
                                                 <div class="notification-content">
                                                     <h6 class="notification-title">
                                                         <?= esc($notificacao['titulo']) ?>
-                                                        <span class="badge bg-<?php 
-                                                            $severidade = $notificacao['severidade'];
-                                                            include APPPATH . 'Views/notificacoes/partials/badge_color.php'; 
-                                                        ?> ms-2">
+                                                        <span class="badge bg-<?php
+                                                                                $severidade = $notificacao['severidade'];
+                                                                                include APPPATH . 'Views/notificacoes/partials/badge_color.php';
+                                                                                ?> ms-2">
                                                             <?= ucfirst($notificacao['severidade']) ?>
                                                         </span>
                                                     </h6>
                                                     <p class="notification-description text-muted mb-2">
                                                         <?= esc($notificacao['descricao']) ?>
                                                     </p>
-                                                    
+
                                                     <!-- Parâmetros específicos do tipo -->
                                                     <?php if (!empty($notificacao['parametros'])): ?>
                                                         <div class="notification-params">
-                                                            <?php 
+                                                            <?php
                                                             $parametros = $notificacao['parametros'];
                                                             $tipo = $notificacao['tipo'];
-                                                            include APPPATH . 'Views/notificacoes/partials/parametros.php'; 
+                                                            include APPPATH . 'Views/notificacoes/partials/parametros.php';
                                                             ?>
                                                         </div>
                                                     <?php endif; ?>
@@ -240,30 +240,30 @@
                                         <div class="col-md-4">
                                             <div class="notification-meta text-end">
                                                 <small class="text-muted d-block">
-                                                    <i class="bi bi-clock"></i> 
+                                                    <i class="bi bi-clock"></i>
                                                     Ativa há <?= $notificacao['tempo_ativa'] ?>
                                                 </small>
                                                 <small class="text-muted d-block mb-2">
-                                                    <i class="bi bi-calendar"></i> 
+                                                    <i class="bi bi-calendar"></i>
                                                     <?= date('d/m/Y H:i', strtotime($notificacao['acionada_em'])) ?>
                                                 </small>
                                                 <span class="badge bg-<?= $notificacao['urgencia'] === 'maxima' ? 'danger' : ($notificacao['urgencia'] === 'alta' ? 'warning' : ($notificacao['urgencia'] === 'media' ? 'info' : 'success')) ?> mb-2">
                                                     Urgência: <?= ucfirst($notificacao['urgencia']) ?>
                                                 </span>
-                                                
+
                                                 <div class="notification-actions mt-2">
-                                                    <a href="<?= base_url('notificacoes/show/' . $notificacao['id']) ?>" 
-                                                       class="btn btn-sm btn-outline-primary">
+                                                    <a href="<?= base_url('notificacoes/show/' . $notificacao['id']) ?>"
+                                                        class="btn btn-sm btn-outline-primary">
                                                         <i class="bi bi-eye"></i> Detalhes
                                                     </a>
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-success"
-                                                            onclick="resolverNotificacao(<?= $notificacao['id'] ?>)">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-success"
+                                                        onclick="resolverNotificacao(<?= $notificacao['id'] ?>)">
                                                         <i class="bi bi-check"></i> Resolver
                                                     </button>
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-outline-danger"
-                                                            onclick="cancelarNotificacao(<?= $notificacao['id'] ?>)">
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-outline-danger"
+                                                        onclick="cancelarNotificacao(<?= $notificacao['id'] ?>)">
                                                         <i class="bi bi-x"></i> Cancelar
                                                     </button>
                                                 </div>
@@ -273,34 +273,42 @@
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                                <div class="stat-label">Críticas</div>
-                            </div>
-                            <div class="stat-icon">
-                                <i class="bi bi-shield-exclamation"></i>
-                            </div>
-                        </div>
+                        <div class="stat-label">Críticas</div>
                     </div>
-
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                        <div class="stat-card stat-warning">
-                            <div class="stat-content">
-                                <div class="stat-number"><?= $estatisticas['altas'] ?></div>
-                                <div class="stat-label">Alta Prioridade</div>
-                            </div>
-                            <div class="stat-icon">
-                                <i class="bi bi-exclamation-circle-fill"></i>
-                            </div>
-                        </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-shield-exclamation"></i>
                     </div>
+                </div>
 
-                    <div class="col-xl-3 col-lg-6 col-md-6 col-12 mb-3">
-                        <div class="stat-card stat-info">
-                            <div class="stat-content">
-                                <div class="stat-number"><?= count($estatisticas['tendencia_7_dias']) ?></div>
-                                <div class="stat-label">Dias com Alertas</div>
+
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title"> Estatísticas Gerais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
+                                <div class="stat-card stat-warning">
+                                    <div class="stat-content">
+                                        <div class="stat-number"><?= $estatisticas['altas'] ?></div>
+                                        <div class="stat-label">Alta Prioridade</div>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="stat-icon">
-                                <i class="bi bi-graph-up"></i>
+
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
+                                <div class="stat-card stat-info">
+                                    <div class="stat-content">
+                                        <div class="stat-number"><?= count($estatisticas['tendencia_7_dias']) ?></div>
+                                        <div class="stat-label">Dias com Alertas</div>
+                                    </div>
+                                    <div class="stat-icon">
+                                        <i class="bi bi-graph-up"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -473,7 +481,7 @@
                             <h5 class="mb-0"><i class="bi bi-graph-up"></i> Tendência dos Últimos 7 Dias</h5>
                         </div>
                         <div class="card-body">
-                            <canvas id="graficoTendencia" height="100"></canvas>
+                            <canvas id="graficoTendencia" height="300"></canvas>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -782,10 +790,10 @@
                 const ctxTendencia = canvasTendencia.getContext('2d');
 
                 // Definir dimensões fixas para evitar crescimento descontrolado
-                canvasTendencia.style.maxHeight = '100px';
-                canvasTendencia.style.height = '100px';
+                canvasTendencia.style.maxHeight = '300px';
+                canvasTendencia.style.height = '300px';
                 canvasTendencia.width = canvasTendencia.offsetWidth;
-                canvasTendencia.height = 100;
+                canvasTendencia.height = 300;
 
                 new Chart(ctxTendencia, {
                     type: 'line',

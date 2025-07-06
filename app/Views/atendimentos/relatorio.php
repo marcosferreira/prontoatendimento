@@ -50,9 +50,9 @@
                                         <option value="">Todos os médicos</option>
                                         <?php if (isset($medicos)): ?>
                                             <?php foreach ($medicos as $medico): ?>
-                                                <option value="<?= $medico->id_medico ?>"
-                                                    <?= ($filtros['medico'] ?? '') == $medico->id_medico ? 'selected' : '' ?>>
-                                                    <?= esc($medico->nome) ?>
+                                                <option value="<?= $medico['id_medico'] ?>"
+                                                    <?= ($filtros['medico'] ?? '') == $medico['id_medico'] ? 'selected' : '' ?>>
+                                                    <?= esc($medico['nome']) ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
