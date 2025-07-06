@@ -62,6 +62,17 @@ class Procedimentos extends BaseController
             'description' => 'Cadastrar Novo Procedimento'
         ];
 
+        // Verificar se é duplicação de procedimento existente
+        $duplicateId = $this->request->getGet('duplicate');
+        if ($duplicateId) {
+            $procedimento = $this->procedimentoModel->find($duplicateId);
+            if ($procedimento) {
+                $data['procedimento'] = $procedimento;
+                $data['title'] = 'Duplicar Procedimento';
+                $data['description'] = 'Criar novo procedimento baseado em: ' . $procedimento['nome'];
+            }
+        }
+
         return view('procedimentos/create', $data);
     }
 
