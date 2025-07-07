@@ -107,7 +107,7 @@
 
                 <!-- Gráficos -->
                 <div class="row mb-4">
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Distribuição por Severidade</h5>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4 mb-3">
+                    <div class="col-lg-6 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title">Tipos de Notificações</h5>
@@ -128,16 +128,15 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="col-lg-4 mb-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title">Tendência (7 dias)</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="graficoTendencia" width="300" height="300"></canvas>
-                            </div>
-                        </div>
+                <!-- Tendência -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Tendência (7 dias)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="graficoTendencia" width="300" height="300"></canvas>
                     </div>
                 </div>
 
@@ -273,218 +272,8 @@
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                        <div class="stat-label">Críticas</div>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="bi bi-shield-exclamation"></i>
                     </div>
                 </div>
-
-
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title"> Estatísticas Gerais</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
-                                <div class="stat-card stat-warning">
-                                    <div class="stat-content">
-                                        <div class="stat-number"><?= $estatisticas['altas'] ?></div>
-                                        <div class="stat-label">Alta Prioridade</div>
-                                    </div>
-                                    <div class="stat-icon">
-                                        <i class="bi bi-exclamation-circle-fill"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-6 col-lg-6 col-md-6 col-12 mb-3">
-                                <div class="stat-card stat-info">
-                                    <div class="stat-content">
-                                        <div class="stat-number"><?= count($estatisticas['tendencia_7_dias']) ?></div>
-                                        <div class="stat-label">Dias com Alertas</div>
-                                    </div>
-                                    <div class="stat-icon">
-                                        <i class="bi bi-graph-up"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Controles e Filtros -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <div class="d-flex gap-3 align-items-center">
-                                            <select id="filtroSeveridade" class="form-select form-select-sm" style="width: auto;">
-                                                <option value="">Todas as severidades</option>
-                                                <option value="critica">Crítica</option>
-                                                <option value="alta">Alta</option>
-                                                <option value="media">Média</option>
-                                                <option value="baixa">Baixa</option>
-                                            </select>
-
-                                            <select id="filtroTipo" class="form-select form-select-sm" style="width: auto;">
-                                                <option value="">Todos os tipos</option>
-                                                <option value="paciente_recorrente">Paciente Recorrente</option>
-                                                <option value="surto_sintomas">Surto de Sintomas</option>
-                                                <option value="alta_demanda">Alta Demanda</option>
-                                                <option value="estatistica_anomala">Anomalia Estatística</option>
-                                            </select>
-
-                                            <button id="btnFiltrar" class="btn btn-primary btn-sm">
-                                                <i class="bi bi-funnel"></i> Filtrar
-                                            </button>
-
-                                            <button id="btnLimparFiltros" class="btn btn-outline-secondary btn-sm">
-                                                <i class="bi bi-x-circle"></i> Limpar
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 text-end">
-                                        <div class="btn-group">
-                                            <button id="btnExecutarAnalise" class="btn btn-success btn-sm">
-                                                <i class="bi bi-play-circle"></i> Executar Análise
-                                            </button>
-                                            <button id="btnAtualizarDados" class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-arrow-clockwise"></i> Atualizar
-                                            </button>
-                                            <a href="<?= base_url('notificacoes/relatorio') ?>" class="btn btn-outline-info btn-sm">
-                                                <i class="bi bi-file-earmark-text"></i> Relatório
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gráficos -->
-                <div class="row mb-4">
-                    <div class="col-lg-6 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribuição por Severidade</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="graficoSeveridade" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-6 mb-3">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Notificações por Tipo</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="graficoTipos" height="300"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lista de Notificações -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-list-ul"></i> Notificações Ativas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="loadingNotificacoes" class="text-center py-4" style="display: none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Carregando...</span>
-                            </div>
-                        </div>
-
-                        <div id="listaNotificacoes">
-                            <?php if (empty($notificacoes)): ?>
-                                <div class="text-center py-5">
-                                    <i class="bi bi-check-circle-fill text-success display-1"></i>
-                                    <h4 class="mt-3">Nenhuma notificação ativa</h4>
-                                    <p class="text-muted">O sistema está funcionando normalmente. Execute uma análise para verificar novos alertas.</p>
-                                    <button id="btnExecutarAnaliseVazio" class="btn btn-primary">
-                                        <i class="bi bi-play-circle"></i> Executar Análise BI
-                                    </button>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($notificacoes as $index => $notificacao): ?>
-                                    <!-- Debug temporário -->
-                                    <?php if ($index === 0): ?>
-                                        <!-- DEBUG: Estrutura da primeira notificação -->
-                                        <?php /* var_dump($notificacao); */ ?>
-                                    <?php endif; ?>
-
-                                    <div class="notification-item notification-<?= $notificacao['severidade'] ?? 'baixa' ?> mb-3" data-id="<?= $notificacao['id'] ?? 0 ?>">
-                                        <div class="notification-header">
-                                            <div class="notification-title">
-                                                <span class="notification-icon">
-                                                    <?= $this->include('notificacoes/partials/icon', ['tipo' => $notificacao['tipo'] ?? 'default']) ?>
-                                                </span>
-                                                <strong><?= esc($notificacao['titulo'] ?? 'Sem título') ?></strong>
-                                                <span class="badge bg-<?= $this->include('notificacoes/partials/badge_color', ['severidade' => $notificacao['severidade'] ?? 'baixa']) ?>">
-                                                    <?= ucfirst($notificacao['severidade'] ?? 'baixa') ?>
-                                                </span>
-                                                <span class="badge bg-secondary"><?= ucfirst(str_replace('_', ' ', $notificacao['tipo'] ?? 'padrão')) ?></span>
-                                            </div>
-                                            <div class="notification-meta">
-                                                <small class="text-muted">
-                                                    <i class="bi bi-clock"></i> Ativa há <?= $notificacao['tempo_ativa'] ?? '0 min' ?>
-                                                    <?php if (!empty($notificacao['data_vencimento'])): ?>
-                                                        | <i class="bi bi-calendar-x"></i> Vence em <?= date('d/m/Y H:i', strtotime($notificacao['data_vencimento'])) ?>
-                                                    <?php endif; ?>
-                                                </small>
-                                            </div>
-                                        </div>
-
-                                        <div class="notification-content">
-                                            <p class="mb-2"><?= esc($notificacao['descricao'] ?? 'Sem descrição') ?></p>
-
-                                            <?php if (!empty($notificacao['parametros'])): ?>
-                                                <div class="notification-details">
-                                                    <?= $this->include('notificacoes/partials/parametros', [
-                                                        'parametros' => $notificacao['parametros'],
-                                                        'tipo' => $notificacao['tipo'] ?? 'default'
-                                                    ]) ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-
-                                        <div class="notification-actions">
-                                            <a href="<?= base_url('notificacoes/show/' . ($notificacao['id'] ?? 0)) ?>" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-eye"></i> Detalhes
-                                            </a>
-                                            <button class="btn btn-sm btn-success" onclick="resolverNotificacao(<?= $notificacao['id'] ?? 0 ?>)">
-                                                <i class="bi bi-check-circle"></i> Resolver
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="cancelarNotificacao(<?= $notificacao['id'] ?? 0 ?>)">
-                                                <i class="bi bi-x-circle"></i> Cancelar
-                                            </button>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tendência dos Últimos 7 Dias -->
-                <?php if (!empty($estatisticas['tendencia_7_dias'])): ?>
-                    <div class="card mt-4">
-                        <div class="card-header">
-                            <h5 class="mb-0"><i class="bi bi-graph-up"></i> Tendência dos Últimos 7 Dias</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="graficoTendencia" height="300"></canvas>
-                        </div>
-                    </div>
-                <?php endif; ?>
             </div>
 
             <?php echo $this->include('components/footer'); ?>
