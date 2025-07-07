@@ -32,37 +32,37 @@ if (!isset($tipo)) $tipo = 'default';
         </div>
         <div class="col-md-4">
             <small class="text-muted">Casos:</small><br>
-            <span class="badge bg-danger"><?= $parametros['total_casos'] ?></span>
+            <span class="badge bg-danger"><?= $parametros['total_casos'] ?? 0 ?></span>
         </div>
         <div class="col-md-4">
             <small class="text-muted">Período:</small><br>
-            <?= $parametros['periodo_dias'] ?> dias
+            <?= ($parametros['periodo_dias'] ?? 0) ?> dias
         </div>
         <div class="col-12">
             <small class="text-muted">Sintoma:</small><br>
-            <span class="text-warning"><?= esc($parametros['sintoma']) ?></span>
+            <span class="text-warning"><?= esc($parametros['sintoma'] ?? 'N/A') ?></span>
         </div>
         
     <?php elseif ($tipo === 'alta_demanda'): ?>
         <div class="col-md-3">
             <small class="text-muted">Data:</small><br>
-            <?= date('d/m/Y', strtotime($parametros['data'])) ?>
+            <?= isset($parametros['data']) ? date('d/m/Y', strtotime($parametros['data'])) : 'N/A' ?>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Horário:</small><br>
-            <?= $parametros['hora'] ?>:00h
+            <?= isset($parametros['hora']) ? $parametros['hora'] . ':00h' : 'N/A' ?>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Atendimentos:</small><br>
-            <span class="badge bg-warning"><?= $parametros['atendimentos'] ?></span>
+            <span class="badge bg-warning"><?= $parametros['atendimentos'] ?? 0 ?></span>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Críticos:</small><br>
-            <span class="badge bg-danger"><?= $parametros['casos_criticos'] ?></span>
+            <span class="badge bg-danger"><?= $parametros['casos_criticos'] ?? 0 ?></span>
         </div>
         <div class="col-12">
             <small class="text-muted">Aumento:</small>
-            <span class="text-danger">+<?= $parametros['percentual_aumento'] ?>% da média</span>
+            <span class="text-danger">+<?= $parametros['percentual_aumento'] ?? 0 ?>% da média</span>
         </div>
         
     <?php elseif ($tipo === 'estatistica_anomala'): ?>

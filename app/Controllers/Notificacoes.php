@@ -27,8 +27,14 @@ class Notificacoes extends BaseController
         
         // Processa dados para exibição
         foreach ($notificacoesAtivas as &$notificacao) {
-            $notificacao['parametros'] = json_decode($notificacao['parametros'], true);
-            $notificacao['metadata'] = json_decode($notificacao['metadata'], true);
+            // Decodificar e validar parâmetros
+            $parametros = json_decode($notificacao['parametros'], true);
+            $notificacao['parametros'] = is_array($parametros) ? $parametros : [];
+            
+            // Decodificar e validar metadata
+            $metadata = json_decode($notificacao['metadata'], true);
+            $notificacao['metadata'] = is_array($metadata) ? $metadata : [];
+            
             $notificacao['tempo_ativa'] = $this->calcularTempoAtiva($notificacao['acionada_em']);
             $notificacao['urgencia'] = $this->calcularUrgencia($notificacao);
         }
@@ -61,9 +67,12 @@ class Notificacoes extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Notificação não encontrada');
         }
 
-        // Decodifica dados JSON
-        $notificacao['parametros'] = json_decode($notificacao['parametros'], true);
-        $notificacao['metadata'] = json_decode($notificacao['metadata'], true);
+        // Decodifica dados JSON com validação
+        $parametros = json_decode($notificacao['parametros'], true);
+        $notificacao['parametros'] = is_array($parametros) ? $parametros : [];
+        
+        $metadata = json_decode($notificacao['metadata'], true);
+        $notificacao['metadata'] = is_array($metadata) ? $metadata : [];
         
         // Informações complementares baseadas no tipo
         $dadosComplementares = $this->buscarDadosComplementares($notificacao);
@@ -113,7 +122,8 @@ class Notificacoes extends BaseController
 
         // Processa dados
         foreach ($resultado as &$notificacao) {
-            $notificacao['parametros'] = json_decode($notificacao['parametros'], true);
+            $parametros = json_decode($notificacao['parametros'], true);
+            $notificacao['parametros'] = is_array($parametros) ? $parametros : [];
             $notificacao['tempo_ativa'] = $this->calcularTempoAtiva($notificacao['acionada_em']);
             $notificacao['urgencia'] = $this->calcularUrgencia($notificacao);
         }
@@ -254,8 +264,11 @@ class Notificacoes extends BaseController
 
         // Processa dados
         foreach ($notificacoes as &$notificacao) {
-            $notificacao['parametros'] = json_decode($notificacao['parametros'], true);
-            $notificacao['metadata'] = json_decode($notificacao['metadata'], true);
+            $parametros = json_decode($notificacao['parametros'], true);
+            $notificacao['parametros'] = is_array($parametros) ? $parametros : [];
+            
+            $metadata = json_decode($notificacao['metadata'], true);
+            $notificacao['metadata'] = is_array($metadata) ? $metadata : [];
         }
 
         $estatisticasPeriodo = $this->calcularEstatisticasPeriodo($notificacoes);
