@@ -16,5 +16,5 @@ jobs:
         host: ${{ secrets.HOST }} 
         user: ${{ secrets.USER }}
         password: ${{ secrets.PASS }}
-        localDir: "./"
-        remoteDir: "./prontoatendimento/"
+        localDir: "./app/"
+        remoteDir: "./prontoatendimento/app/"
