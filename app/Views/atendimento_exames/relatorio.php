@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        document.getElementById('chartTipos').style.height = '250px';
+        document.getElementById('chartTipos').style.maxHeight = '250px';
     <?php endif; ?>
 
     // Gráfico de exames mais solicitados
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-        document.getElementById('chartExames').style.height = '400px';
+        document.getElementById('chartExames').style.maxHeight = '400px';
     <?php endif; ?>
 });
 

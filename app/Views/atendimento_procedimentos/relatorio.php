@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Ajustar altura do canvas
-        document.getElementById('chartProcedimentos').style.height = '300px';
+        document.getElementById('chartProcedimentos').style.maxHeight = '400px';
     <?php endif; ?>
 });
 

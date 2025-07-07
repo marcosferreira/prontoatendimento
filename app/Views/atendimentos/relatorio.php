@@ -266,6 +266,9 @@
         // Gráfico de Classificação de Risco (Pie)
         if (classificacaoData.length > 0) {
             const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
+            // Configuração do gráfico de classificação
+            ctxClassificacao.canvas.height = 300; // Definindo altura do canvas
+            ctxClassificacao.canvas.style.maxHeight = '300px'; // Definindo altura máxima
             new Chart(ctxClassificacao, {
                 type: 'doughnut',
                 data: {
@@ -294,6 +297,10 @@
         // Gráfico Mensal (Line)
         if (mensalData.length > 0) {
             const ctxMensal = document.getElementById('chartMensal').getContext('2d');
+            // Configuração do gráfico mensal
+            ctxMensal.canvas.height = 300; // Definindo altura do canvas
+            ctxMensal.canvas.style.maxHeight = '300px'; // Definindo altura máxima
+            ctxMensal.canvas.style.width = '100%'; // Definindo largura do canvas
             new Chart(ctxMensal, {
                 type: 'line',
                 data: {
@@ -320,6 +327,10 @@
         // Gráfico de Médicos (Bar)
         if (medicosData.length > 0) {
             const ctxMedicos = document.getElementById('chartMedicos').getContext('2d');
+            // Configuração do gráfico de médicos
+            ctxMedicos.canvas.height = 300; // Definindo altura do canvas
+            ctxMedicos.canvas.style.maxHeight = '300px'; // Definindo altura máxima
+            ctxMedicos.canvas.style.width = '100%'; // Definindo largura do canvas
             new Chart(ctxMedicos, {
                 type: 'bar',
                 data: {
@@ -344,6 +355,10 @@
         // Gráfico de Encaminhamentos (Pie)
         if (encaminhamentosData.length > 0) {
             const ctxEncaminhamentos = document.getElementById('chartEncaminhamentos').getContext('2d');
+            // Configuração do gráfico de encaminhamentos
+            ctxEncaminhamentos.canvas.height = 300; // Definindo altura do canvas
+            ctxEncaminhamentos.canvas.style.maxHeight = '300px'; // Definindo altura máxima
+            ctxEncaminhamentos.canvas.style.width = '100%'; // Definindo largura do canvas
             new Chart(ctxEncaminhamentos, {
                 type: 'pie',
                 data: {
