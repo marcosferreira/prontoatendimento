@@ -256,135 +256,131 @@
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
         // Dados dos gráficos vindos do PHP
         const classificacaoData = <?= json_encode($graficos['classificacao'] ?? []) ?>;
         const mensalData = <?= json_encode($graficos['mensal'] ?? []) ?>;
         const medicosData = <?= json_encode($graficos['medicos'] ?? []) ?>;
         const encaminhamentosData = <?= json_encode($graficos['encaminhamentos'] ?? []) ?>;
 
-        // Gráfico de Classificação de Risco (Pie)
-        if (classificacaoData.length > 0) {
-            const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
-            // Configuração do gráfico de classificação
-            ctxClassificacao.canvas.height = 300; // Definindo altura do canvas
-            ctxClassificacao.canvas.style.maxHeight = '300px'; // Definindo altura máxima
-            new Chart(ctxClassificacao, {
-                type: 'doughnut',
-                data: {
-                    labels: classificacaoData.map(item => item.classificacao),
-                    datasets: [{
-                        data: classificacaoData.map(item => item.total),
-                        backgroundColor: [
-                            '#28a745', // Verde
-                            '#ffc107', // Amarelo
-                            '#dc3545', // Vermelho
-                            '#17a2b8' // Azul
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
+        console.log('Dados dos gráficos:', {
+            classificacao: classificacaoData,
+            mensal: mensalData,
+            medicos: medicosData,
+            encaminhamentos: encaminhamentosData
+        });
 
-        // Gráfico Mensal (Line)
-        if (mensalData.length > 0) {
-            const ctxMensal = document.getElementById('chartMensal').getContext('2d');
-            // Configuração do gráfico mensal
-            ctxMensal.canvas.height = 300; // Definindo altura do canvas
-            ctxMensal.canvas.style.maxHeight = '300px'; // Definindo altura máxima
-            ctxMensal.canvas.style.width = '100%'; // Definindo largura do canvas
-            new Chart(ctxMensal, {
-                type: 'line',
-                data: {
-                    labels: mensalData.map(item => item.mes),
-                    datasets: [{
-                        label: 'Atendimentos',
-                        data: mensalData.map(item => item.total),
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Gráfico de Classificação de Risco (Pie) - sempre criar, mesmo sem dados
+        const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
+        // Altura máxima do gráfico
+        document.getElementById('chartClassificacao').style.maxHeight = '300px';
+        
+        new Chart(ctxClassificacao, {
+            type: 'doughnut',
+            data: {
+                labels: classificacaoData.length > 0 ? classificacaoData.map(item => item.classificacao) : ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+                datasets: [{
+                    data: classificacaoData.length > 0 ? classificacaoData.map(item => item.total) : [0, 0, 0, 0],
+                    backgroundColor: [
+                        '#28a745', // Verde
+                        '#ffc107', // Amarelo
+                        '#dc3545', // Vermelho
+                        '#17a2b8' // Azul
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
                     }
                 }
-            });
-        }
+            }
+        });
 
-        // Gráfico de Médicos (Bar)
-        if (medicosData.length > 0) {
-            const ctxMedicos = document.getElementById('chartMedicos').getContext('2d');
-            // Configuração do gráfico de médicos
-            ctxMedicos.canvas.height = 300; // Definindo altura do canvas
-            ctxMedicos.canvas.style.maxHeight = '300px'; // Definindo altura máxima
-            ctxMedicos.canvas.style.width = '100%'; // Definindo largura do canvas
-            new Chart(ctxMedicos, {
-                type: 'bar',
-                data: {
-                    labels: medicosData.map(item => item.medico.split(' ')[0]), // Só primeiro nome
-                    datasets: [{
-                        label: 'Atendimentos',
-                        data: medicosData.map(item => item.total),
-                        backgroundColor: '#28a745'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        // Gráfico Mensal (Line) - sempre criar, mesmo sem dados
+        const ctxMensal = document.getElementById('chartMensal').getContext('2d');
+        // Altura máxima do gráfico
+        document.getElementById('chartMensal').style.maxHeight = '300px';
+        
+        new Chart(ctxMensal, {
+            type: 'line',
+            data: {
+                labels: mensalData.length > 0 ? mensalData.map(item => item.mes) : ['Jan', 'Fev', 'Mar'],
+                datasets: [{
+                    label: 'Atendimentos',
+                    data: mensalData.length > 0 ? mensalData.map(item => item.total) : [0, 0, 0],
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        }
+            }
+        });
 
-        // Gráfico de Encaminhamentos (Pie)
-        if (encaminhamentosData.length > 0) {
-            const ctxEncaminhamentos = document.getElementById('chartEncaminhamentos').getContext('2d');
-            // Configuração do gráfico de encaminhamentos
-            ctxEncaminhamentos.canvas.height = 300; // Definindo altura do canvas
-            ctxEncaminhamentos.canvas.style.maxHeight = '300px'; // Definindo altura máxima
-            ctxEncaminhamentos.canvas.style.width = '100%'; // Definindo largura do canvas
-            new Chart(ctxEncaminhamentos, {
-                type: 'pie',
-                data: {
-                    labels: encaminhamentosData.map(item => item.encaminhamento || 'Em Atendimento'),
-                    datasets: [{
-                        data: encaminhamentosData.map(item => item.total),
-                        backgroundColor: [
-                            '#007bff',
-                            '#28a745',
-                            '#ffc107',
-                            '#dc3545',
-                            '#6f42c1',
-                            '#fd7e14'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+        // Gráfico de Médicos (Bar) - sempre criar, mesmo sem dados
+        const ctxMedicos = document.getElementById('chartMedicos').getContext('2d');
+        // Altura máxima do gráfico
+        document.getElementById('chartMedicos').style.maxHeight = '300px';
+        
+        new Chart(ctxMedicos, {
+            type: 'bar',
+            data: {
+                labels: medicosData.length > 0 ? medicosData.map(item => item.medico.split(' ')[0]) : ['Médico 1', 'Médico 2'],
+                datasets: [{
+                    label: 'Atendimentos',
+                    data: medicosData.length > 0 ? medicosData.map(item => item.total) : [0, 0],
+                    backgroundColor: '#28a745'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
-            });
-        }
+            }
+        });
+
+        // Gráfico de Encaminhamentos (Pie) - sempre criar, mesmo sem dados
+        const ctxEncaminhamentos = document.getElementById('chartEncaminhamentos').getContext('2d');
+        // Altura máxima do gráfico
+        document.getElementById('chartEncaminhamentos').style.maxHeight = '300px';
+        
+        new Chart(ctxEncaminhamentos, {
+            type: 'pie',
+            data: {
+                labels: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.encaminhamento || 'Em Atendimento') : ['Em Atendimento', 'Alta'],
+                datasets: [{
+                    data: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.total) : [0, 0],
+                    backgroundColor: [
+                        '#007bff',
+                        '#28a745',
+                        '#ffc107',
+                        '#dc3545',
+                        '#6f42c1',
+                        '#fd7e14'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
 
         // Função para exportar relatório
         window.exportarRelatorio = function() {
@@ -405,12 +401,15 @@
         };
 
         // Auto-submit form when filters change
-        $('#filtrosRelatorio select, #filtrosRelatorio input[type="date"]').on('change', function() {
-            // Debounce para evitar muitas requisições
-            clearTimeout(window.filterTimeout);
-            window.filterTimeout = setTimeout(function() {
-                $('#filtrosRelatorio').submit();
-            }, 500);
+        const filterElements = document.querySelectorAll('#filtrosRelatorio select, #filtrosRelatorio input[type="date"]');
+        filterElements.forEach(element => {
+            element.addEventListener('change', function() {
+                // Debounce para evitar muitas requisições
+                clearTimeout(window.filterTimeout);
+                window.filterTimeout = setTimeout(function() {
+                    document.getElementById('filtrosRelatorio').submit();
+                }, 500);
+            });
         });
     });
 </script>

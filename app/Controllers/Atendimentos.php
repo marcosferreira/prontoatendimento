@@ -534,52 +534,133 @@ class Atendimentos extends BaseController
         $medico = $this->request->getGet('medico');
         $classificacao = $this->request->getGet('classificacao');
 
-        $query = $this->atendimentoModel->select('atendimentos.*, pacientes.nome as paciente_nome, medicos.nome as medico_nome')
-                                       ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
-                                       ->join('medicos', 'medicos.id_medico = atendimentos.id_medico')
-                                       ->where('DATE(pam_atendimentos.data_atendimento) >=', $data_inicio)
-                                       ->where('DATE(pam_atendimentos.data_atendimento) <=', $data_fim);
+        $query = $this->atendimentoModel->select('pam_atendimentos.*, pacientes.nome as paciente_nome, medicos.nome as medico_nome')
+            ->join('pacientes', 'pacientes.id_paciente = pam_atendimentos.id_paciente')
+            ->join('medicos', 'medicos.id_medico = pam_atendimentos.id_medico')
+            ->where('DATE(pam_atendimentos.data_atendimento) >=', $data_inicio)
+            ->where('DATE(pam_atendimentos.data_atendimento) <=', $data_fim);
 
         if ($medico) {
             $query = $query->where('pam_atendimentos.id_medico', $medico);
         }
-
         if ($classificacao) {
             $query = $query->where('pam_atendimentos.classificacao_risco', $classificacao);
         }
 
         $atendimentos = $query->orderBy('pam_atendimentos.data_atendimento', 'DESC')->findAll();
 
-        // Estatísticas do período
-        $stats = [
-            'total' => count($atendimentos),
-            'verde' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Verde')),
-            'amarelo' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Amarelo')),
-            'vermelho' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Vermelho')),
-            'azul' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Azul')),
-            'obitos' => count(array_filter($atendimentos, fn($a) => $a['obito'] == 1)),
-            'status' => [
-                'Em Andamento' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Em Andamento')),
-                'Finalizado' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Finalizado')),
-                'Cancelado' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Cancelado')),
-                'Aguardando' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Aguardando')),
-                'Suspenso' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Suspenso'))
-            ]
+        // Estatísticas para os cards
+        $estatisticas = [
+            'total_atendimentos' => count($atendimentos),
+            'atendimentos_concluidos' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Finalizado')),
+            'em_andamento' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Em Andamento')),
+            'casos_urgentes' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Vermelho')),
         ];
 
+        // Médicos para filtro
         $medicos = $this->medicoModel->where('status', 'Ativo')->orderBy('nome', 'ASC')->findAll();
+
+        // Filtros para view
+        $filtros = [
+            'data_inicio' => $data_inicio,
+            'data_fim' => $data_fim,
+            'medico' => $medico,
+            'classificacao' => $classificacao
+        ];
+
+        // Gráficos (exemplo simples, pode ser melhorado conforme necessidade)
+        $graficos = [
+            'classificacao' => [],
+            'mensal' => [],
+            'medicos' => [],
+            'encaminhamentos' => []
+        ];
+        // Classificação de risco
+        $classificacoes = ['Verde', 'Amarelo', 'Vermelho', 'Azul'];
+        foreach ($classificacoes as $c) {
+            $total = count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == $c));
+            $graficos['classificacao'][] = [
+                'classificacao' => $c,
+                'total' => $total
+            ];
+        }
+        // Mensal
+        $mensal = [];
+        foreach ($atendimentos as $a) {
+            $mes = date('Y-m', strtotime($a['data_atendimento']));
+            if (!isset($mensal[$mes])) $mensal[$mes] = 0;
+            $mensal[$mes]++;
+        }
+        foreach ($mensal as $mes => $total) {
+            $graficos['mensal'][] = [
+                'mes' => $mes,
+                'total' => $total
+            ];
+        }
+        // Médicos
+        $medicosGraf = [];
+        foreach ($atendimentos as $a) {
+            $nome = $a['medico_nome'] ?? 'Desconhecido';
+            if (!isset($medicosGraf[$nome])) $medicosGraf[$nome] = 0;
+            $medicosGraf[$nome]++;
+        }
+        foreach ($medicosGraf as $medicoNome => $total) {
+            $graficos['medicos'][] = [
+                'medico' => $medicoNome,
+                'total' => $total
+            ];
+        }
+        // Encaminhamentos
+        $encaminhamentosGraf = [];
+        foreach ($atendimentos as $a) {
+            $enc = $a['encaminhamento'] ?? 'Em Atendimento';
+            if (!isset($encaminhamentosGraf[$enc])) $encaminhamentosGraf[$enc] = 0;
+            $encaminhamentosGraf[$enc]++;
+        }
+        foreach ($encaminhamentosGraf as $enc => $total) {
+            $graficos['encaminhamentos'][] = [
+                'encaminhamento' => $enc,
+                'total' => $total
+            ];
+        }
+
+        // Tabela detalhada (exemplo: agrupando por mês)
+        $dadosTabela = [];
+        $tabelaTemp = [];
+        foreach ($atendimentos as $a) {
+            $periodo = date('Y-m', strtotime($a['data_atendimento']));
+            if (!isset($tabelaTemp[$periodo])) {
+                $tabelaTemp[$periodo] = [
+                    'periodo' => $periodo,
+                    'verde' => 0,
+                    'amarelo' => 0,
+                    'vermelho' => 0,
+                    'azul' => 0,
+                    'total' => 0
+                ];
+            }
+            $class = strtolower($a['classificacao_risco']);
+            if (isset($tabelaTemp[$periodo][$class])) {
+                $tabelaTemp[$periodo][$class]++;
+            }
+            $tabelaTemp[$periodo]['total']++;
+        }
+        foreach ($tabelaTemp as $linha) {
+            $urgentes = $linha['vermelho'];
+            $taxa_urgencia = $linha['total'] > 0 ? ($urgentes / $linha['total']) * 100 : 0;
+            $linha['taxa_urgencia'] = $taxa_urgencia;
+            $dadosTabela[] = $linha;
+        }
 
         $data = [
             'title' => 'Relatório de Atendimentos',
             'description' => "Período: {$data_inicio} a {$data_fim}",
             'atendimentos' => $atendimentos,
-            'stats' => $stats,
+            'estatisticas' => $estatisticas,
             'medicos' => $medicos,
-            'data_inicio' => $data_inicio,
-            'data_fim' => $data_fim,
-            'medico_filtro' => $medico,
-            'classificacao_filtro' => $classificacao,
-            'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul']
+            'filtros' => $filtros,
+            'graficos' => $graficos,
+            'dadosTabela' => $dadosTabela
         ];
 
         return view('atendimentos/relatorio', $data);
