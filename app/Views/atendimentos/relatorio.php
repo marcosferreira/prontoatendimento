@@ -397,7 +397,7 @@
             params.append('export', '1');
 
             // Abrir URL de exportação
-            window.open(`<?= base_url('atendimentos/export') ?>?${params.toString()}`, '_blank');
+            window.location.href = `<?= base_url('atendimentos/export') ?>?${params.toString()}`;
         };
 
         // Auto-submit form when filters change

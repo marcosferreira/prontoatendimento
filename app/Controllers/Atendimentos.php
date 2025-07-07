@@ -665,4 +665,117 @@ class Atendimentos extends BaseController
 
         return view('atendimentos/relatorio', $data);
     }
+
+    /**
+     * Exporta relatório de atendimentos para Excel
+     */
+    public function export()
+    {
+        // Verificar se é uma requisição de exportação
+        if (!$this->request->getGet('export')) {
+            return redirect()->to('/atendimentos/relatorio')->with('error', 'Requisição de exportação inválida.');
+        }
+
+        $data_inicio = $this->request->getGet('data_inicio') ?? date('Y-m-01');
+        $data_fim = $this->request->getGet('data_fim') ?? date('Y-m-d');
+        $medico = $this->request->getGet('medico');
+        $classificacao = $this->request->getGet('classificacao');
+
+        try {
+            $query = $this->atendimentoModel->select('pam_atendimentos.*, pacientes.nome as paciente_nome, pacientes.cpf, medicos.nome as medico_nome, medicos.crm')
+                ->join('pacientes', 'pacientes.id_paciente = pam_atendimentos.id_paciente')
+                ->join('medicos', 'medicos.id_medico = pam_atendimentos.id_medico')
+                ->where('DATE(pam_atendimentos.data_atendimento) >=', $data_inicio)
+                ->where('DATE(pam_atendimentos.data_atendimento) <=', $data_fim);
+
+            if ($medico) {
+                $query = $query->where('pam_atendimentos.id_medico', $medico);
+            }
+            if ($classificacao) {
+                $query = $query->where('pam_atendimentos.classificacao_risco', $classificacao);
+            }
+
+            $atendimentos = $query->orderBy('pam_atendimentos.data_atendimento', 'DESC')->findAll();
+
+            // Gerar nome do arquivo com informações dos filtros
+            $filename = 'relatorio_atendimentos_' . $data_inicio . '_a_' . $data_fim;
+            if ($medico) {
+                $medico_info = $this->medicoModel->find($medico);
+                $filename .= '_' . str_replace(' ', '_', $medico_info['nome'] ?? 'medico');
+            }
+            if ($classificacao) {
+                $filename .= '_' . strtolower($classificacao);
+            }
+            $filename .= '_' . date('Y-m-d_H-i-s') . '.csv';
+            
+            // Preparar dados CSV
+            $csvData = [];
+            
+            // Cabeçalhos
+            $csvData[] = [
+                'ID',
+                'Data/Hora',
+                'Paciente',
+                'CPF',
+                'Médico',
+                'CRM',
+                'Classificação de Risco',
+                'Status',
+                'Encaminhamento',
+                'Óbito',
+                'Pressão Arterial',
+                'Temperatura (°C)',
+                'HGT/Glicemia (mg/dL)',
+                'Hipótese Diagnóstico',
+                'Consulta Enfermagem',
+                'Observações'
+            ];
+
+            // Dados
+            foreach ($atendimentos as $atendimento) {
+                $csvData[] = [
+                    $atendimento['id_atendimento'],
+                    date('d/m/Y H:i', strtotime($atendimento['data_atendimento'])),
+                    $atendimento['paciente_nome'],
+                    $atendimento['cpf'],
+                    $atendimento['medico_nome'],
+                    $atendimento['crm'],
+                    $atendimento['classificacao_risco'],
+                    $atendimento['status'] ?? 'Em Andamento',
+                    $atendimento['encaminhamento'] ?? 'Não informado',
+                    $atendimento['obito'] ? 'Sim' : 'Não',
+                    $atendimento['pressao_arterial'] ?? 'Não informado',
+                    $atendimento['temperatura'] ?? 'Não informado',
+                    $atendimento['hgt_glicemia'] ?? 'Não informado',
+                    $atendimento['hipotese_diagnostico'] ?? 'Não informado',
+                    $atendimento['consulta_enfermagem'] ?? 'Não informado',
+                    $atendimento['observacao'] ?? 'Nenhuma'
+                ];
+            }
+
+            // Criar conteúdo CSV
+            $csvContent = '';
+            foreach ($csvData as $row) {
+                $csvContent .= implode(';', array_map(function($field) {
+                    return '"' . str_replace('"', '""', $field) . '"';
+                }, $row)) . "\n";
+            }
+
+            // Adicionar BOM para UTF-8
+            $csvContent = chr(0xEF) . chr(0xBB) . chr(0xBF) . $csvContent;
+
+            // Retornar resposta como download
+            return $this->response
+                ->setHeader('Content-Type', 'application/csv; charset=utf-8')
+                ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->setHeader('Pragma', 'no-cache')
+                ->setHeader('Expires', '0')
+                ->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+                ->setBody($csvContent);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao exportar relatório: ' . $e->getMessage());
+            return redirect()->to('/atendimentos/relatorio')->with('error', 'Erro ao exportar relatório: ' . $e->getMessage());
+        }
+    }
 }
