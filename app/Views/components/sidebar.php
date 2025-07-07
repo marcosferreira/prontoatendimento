@@ -4,7 +4,7 @@
             <img src="<?php echo base_url('assets/images/logo-white.svg'); ?>" alt="SisPAM Logo" class="sidebar-logo-img">
             <div>
                 <h3 class="sidebar-logo-text">SisPAM</h3>
-                <p class="sidebar-subtitle">Pronto Atendimento</p>
+                <p class="sidebar-subtitle">Pronto Atendimento Municipal</p>
             </div>
         </a>
     </div>
