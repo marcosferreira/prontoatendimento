@@ -17,7 +17,7 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="m-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/atendimento-exames">Exames</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-exames') ?>">Exames</a></li>
                     <li class="breadcrumb-item active">Relatório</li>
                 </ol>
             </nav>
@@ -28,7 +28,7 @@
                     <h5 class="card-title mb-0"><i class="bi bi-funnel"></i> Filtros do Relatório</h5>
                 </div>
                 <div class="card-body">
-                    <form method="GET" action="/atendimento-exames/relatorio" class="row g-3">
+                    <form method="GET" action="<?= base_url('atendimento-exames/relatorio') ?>" class="row g-3">
                         <div class="col-md-3">
                             <label for="periodo" class="form-label">Período</label>
                             <select class="form-select" id="periodo" name="periodo">
@@ -55,7 +55,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-search"></i> Gerar Relatório
                                 </button>
-                                <a href="/atendimento-exames/relatorio" class="btn btn-outline-secondary">
+                                <a href="<?= base_url('atendimento-exames/relatorio') ?>" class="btn btn-outline-secondary">
                                     <i class="bi bi-arrow-clockwise"></i> Limpar
                                 </a>
                             </div>
@@ -237,7 +237,7 @@
 
             <!-- Actions -->
             <div class="form-actions m-4">
-                <a href="/atendimento-exames" class="btn btn-secondary">
+                <a href="<?= base_url('atendimento-exames') ?>" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar à Lista
                 </a>
                 <button class="btn btn-success" onclick="exportToExcel()">

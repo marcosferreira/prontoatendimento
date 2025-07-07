@@ -17,8 +17,8 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="m-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/atendimento-exames">Exames</a></li>
-                    <li class="breadcrumb-item"><a href="/atendimentos/show/<?= $atendimentoExame['id_atendimento'] ?>">Atendimento #<?= $atendimentoExame['id_atendimento'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-exames') ?>">Exames</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimentoExame['id_atendimento']) ?>">Atendimento #<?= $atendimentoExame['id_atendimento'] ?></a></li>
                     <li class="breadcrumb-item active">Exame #<?= $atendimentoExame['id_atendimento_exame'] ?></li>
                 </ol>
             </nav>
@@ -27,15 +27,15 @@
             <div class="action-bar">
                 <div class="action-left m-4"></div>
                 <div class="action-right m-4">
-                    <a href="/atendimento-exames/print/<?= $atendimentoExame['id_atendimento_exame'] ?>" 
+                    <a href="<?= base_url('atendimento-exames/print/' . $atendimentoExame['id_atendimento_exame']) ?>" 
                        class="btn btn-info" target="_blank">
                         <i class="bi bi-printer"></i> Imprimir Solicitação
                     </a>
-                    <a href="/atendimento-exames/edit/<?= $atendimentoExame['id_atendimento_exame'] ?>" 
+                    <a href="<?= base_url('atendimento-exames/edit/' . $atendimentoExame['id_atendimento_exame']) ?>" 
                        class="btn btn-warning">
                         <i class="bi bi-pencil"></i> Editar
                     </a>
-                    <a href="/atendimentos/show/<?= $atendimentoExame['id_atendimento'] ?>" 
+                    <a href="<?= base_url('atendimentos/show/' . $atendimentoExame['id_atendimento']) ?>" 
                        class="btn btn-outline-info">
                         <i class="bi bi-file-medical"></i> Ver Atendimento
                     </a>
@@ -218,13 +218,13 @@
 
             <!-- Actions Footer -->
             <div class="form-actions m-4">
-                <a href="/atendimento-exames" class="btn btn-secondary">
+                <a href="<?= base_url('atendimento-exames') ?>" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Voltar à Lista
                 </a>
-                <a href="/atendimentos/show/<?= $atendimentoExame['id_atendimento'] ?>" class="btn btn-outline-info">
+                <a href="<?= base_url('atendimentos/show/' . $atendimentoExame['id_atendimento']) ?>" class="btn btn-outline-info">
                     <i class="bi bi-file-medical"></i> Ver Atendimento Completo
                 </a>
-                <a href="/atendimento-exames/print/<?= $atendimentoExame['id_atendimento_exame'] ?>" 
+                <a href="<?= base_url('atendimento-exames/print/' . $atendimentoExame['id_atendimento_exame']) ?>" 
                    class="btn btn-outline-primary" target="_blank">
                     <i class="bi bi-printer"></i> Imprimir Solicitação
                 </a>
@@ -347,7 +347,7 @@ document.getElementById('confirmDelete').addEventListener('click', function() {
     if (deleteId) {
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/atendimento-exames/delete/' + deleteId;
+        form.action = '<?= base_url('atendimento-exames/delete/') ?>' + deleteId;
         
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (csrfToken) {

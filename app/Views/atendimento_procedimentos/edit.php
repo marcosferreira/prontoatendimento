@@ -17,9 +17,9 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="m-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/atendimento-procedimentos">Procedimentos</a></li>
-                    <li class="breadcrumb-item"><a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
-                    <li class="breadcrumb-item"><a href="/atendimento-procedimentos/show/<?= $atendimentoProcedimento['id_atendimento_procedimento'] ?>">Procedimento #<?= $atendimentoProcedimento['id_atendimento_procedimento'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-procedimentos') ?>">Procedimentos</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-procedimentos/show/' . $atendimentoProcedimento['id_atendimento_procedimento']) ?>">Procedimento #<?= $atendimentoProcedimento['id_atendimento_procedimento'] ?></a></li>
                     <li class="breadcrumb-item active">Editar</li>
                 </ol>
             </nav>
@@ -45,7 +45,7 @@
 
             <!-- Formulário -->
             <div class="form-container m-4">
-                <form id="procedimentoForm" action="/atendimento-procedimentos/update/<?= $atendimentoProcedimento['id_atendimento_procedimento'] ?>" method="POST">
+                <form id="procedimentoForm" action="<?= base_url('atendimento-procedimentos/update/' . $atendimentoProcedimento['id_atendimento_procedimento']) ?>" method="POST">
                     <?= csrf_field() ?>
 
                     <div class="row">
@@ -97,10 +97,10 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i> Salvar Alterações
                         </button>
-                        <a href="/atendimento-procedimentos/show/<?= $atendimentoProcedimento['id_atendimento_procedimento'] ?>" class="btn btn-secondary">
+                        <a href="<?= base_url('atendimento-procedimentos/show/' . $atendimentoProcedimento['id_atendimento_procedimento']) ?>" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancelar
                         </a>
-                        <a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>" class="btn btn-outline-info">
+                        <a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>" class="btn btn-outline-info">
                             <i class="bi bi-file-medical"></i> Ver Atendimento
                         </a>
                     </div>

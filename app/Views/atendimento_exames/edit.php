@@ -17,9 +17,9 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="m-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/atendimento-exames">Exames</a></li>
-                    <li class="breadcrumb-item"><a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
-                    <li class="breadcrumb-item"><a href="/atendimento-exames/show/<?= $atendimentoExame['id_atendimento_exame'] ?>">Exame #<?= $atendimentoExame['id_atendimento_exame'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-exames') ?>">Exames</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimento-exames/show/' . $atendimentoExame['id_atendimento_exame']) ?>">Exame #<?= $atendimentoExame['id_atendimento_exame'] ?></a></li>
                     <li class="breadcrumb-item active">Editar</li>
                 </ol>
             </nav>
@@ -45,7 +45,7 @@
 
             <!-- Formulário -->
             <div class="form-container m-4">
-                <form id="exameForm" action="/atendimento-exames/update/<?= $atendimentoExame['id_atendimento_exame'] ?>" method="POST">
+                <form id="exameForm" action="<?= base_url('atendimento-exames/update/' . $atendimentoExame['id_atendimento_exame']) ?>" method="POST">
                     <?= csrf_field() ?>
 
                     <div class="row">
@@ -142,10 +142,10 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i> Salvar Alterações
                         </button>
-                        <a href="/atendimento-exames/show/<?= $atendimentoExame['id_atendimento_exame'] ?>" class="btn btn-secondary">
+                        <a href="<?= base_url('atendimento-exames/show/' . $atendimentoExame['id_atendimento_exame']) ?>" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancelar
                         </a>
-                        <a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>" class="btn btn-outline-info">
+                        <a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>" class="btn btn-outline-info">
                             <i class="bi bi-file-medical"></i> Ver Atendimento
                         </a>
                     </div>

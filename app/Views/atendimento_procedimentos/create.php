@@ -17,8 +17,8 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb" class="m-4">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/atendimentos">Atendimentos</a></li>
-                    <li class="breadcrumb-item"><a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos') ?>">Atendimentos</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>">Atendimento #<?= $atendimento['id_atendimento'] ?></a></li>
                     <li class="breadcrumb-item active">Adicionar Procedimento</li>
                 </ol>
             </nav>
@@ -44,7 +44,7 @@
 
             <!-- Formulário -->
             <div class="form-container m-4">
-                <form id="procedimentoForm" action="/atendimento-procedimentos/store" method="POST">
+                <form id="procedimentoForm" action="<?= base_url('atendimento-procedimentos/store') ?>" method="POST">
                     <?= csrf_field() ?>
                     <input type="hidden" name="id_atendimento" value="<?= $atendimento['id_atendimento'] ?>">
 
@@ -105,7 +105,7 @@
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i> Adicionar Procedimento
                         </button>
-                        <a href="/atendimentos/show/<?= $atendimento['id_atendimento'] ?>" class="btn btn-secondary">
+                        <a href="<?= base_url('atendimentos/show/' . $atendimento['id_atendimento']) ?>" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Voltar
                         </a>
                     </div>

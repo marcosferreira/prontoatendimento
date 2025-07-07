@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div class="action-right m-4">
-                    <a href="/atendimento-exames/relatorio" class="btn btn-info me-2">
+                    <a href="<?= base_url('atendimento-exames/relatorio') ?>" class="btn btn-info me-2">
                         <i class="bi bi-bar-chart"></i> Relatórios
                     </a>
                 </div>
@@ -177,19 +177,19 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="/atendimento-exames/show/<?= $item['id_atendimento_exame'] ?>" 
+                                                <a href="<?= base_url('atendimento-exames/show/' . $item['id_atendimento_exame']) ?>" 
                                                    class="btn btn-sm btn-outline-primary" title="Visualizar">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="/atendimentos/show/<?= $item['id_atendimento'] ?>" 
+                                                <a href="<?= base_url('atendimentos/show/' . $item['id_atendimento']) ?>" 
                                                    class="btn btn-sm btn-outline-info" title="Ver Atendimento">
                                                     <i class="bi bi-file-medical"></i>
                                                 </a>
-                                                <a href="/atendimento-exames/print/<?= $item['id_atendimento_exame'] ?>" 
+                                                <a href="<?= base_url('atendimento-exames/print/' . $item['id_atendimento_exame']) ?>" 
                                                    class="btn btn-sm btn-outline-secondary" title="Imprimir Solicitação" target="_blank">
                                                     <i class="bi bi-printer"></i>
                                                 </a>
-                                                <a href="/atendimento-exames/edit/<?= $item['id_atendimento_exame'] ?>" 
+                                                <a href="<?= base_url('atendimento-exames/edit/' . $item['id_atendimento_exame']) ?>" 
                                                    class="btn btn-sm btn-outline-warning" title="Editar">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
@@ -274,7 +274,7 @@ function applyFilters() {
     const exame = document.getElementById('filterExame').value;
     const status = document.getElementById('filterStatus').value;
     
-    let url = '/atendimento-exames?';
+    let url = '<?= base_url('atendimento-exames') ?>?';
     const params = [];
     
     if (search) params.push('search=' + encodeURIComponent(search));
@@ -286,7 +286,7 @@ function applyFilters() {
 }
 
 function clearFilters() {
-    window.location.href = '/atendimento-exames';
+    window.location.href = '<?= base_url('atendimento-exames') ?>';
 }
 
 function updateStatus(id, status, selectElement) {
@@ -368,7 +368,7 @@ document.getElementById('confirmDelete').addEventListener('click', function() {
         // Criar form para envio via POST
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '/atendimento-exames/delete/' + deleteId;
+        form.action = '<?= base_url('atendimento-exames/delete/') ?>' + deleteId;
         
         // Adicionar token CSRF se necessário
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
