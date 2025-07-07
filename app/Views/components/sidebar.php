@@ -69,7 +69,7 @@
                     $notificacaoModel = new \App\Models\NotificacaoModel();
                     $criticas = $notificacaoModel->where('status', 'ativa')->where('severidade', 'critica')->countAllResults();
                     if ($criticas > 0): ?>
-                        <span class="nav-badge"><?= min($criticas, 99) ?></span>
+                        <span class=" badge rounded-pill bg-danger"><?= min($criticas, 99) ?></span>
                     <?php endif;
                 } ?>
             </a>
