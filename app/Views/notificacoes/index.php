@@ -237,18 +237,20 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="notification-meta text-end">
-                                                <small class="text-muted d-block">
-                                                    <i class="bi bi-clock"></i>
-                                                    Ativa há <?= $notificacao['tempo_ativa'] ?>
-                                                </small>
-                                                <small class="text-muted d-block mb-2">
-                                                    <i class="bi bi-calendar"></i>
-                                                    <?= date('d/m/Y H:i', strtotime($notificacao['acionada_em'])) ?>
-                                                </small>
-                                                <span class="badge bg-<?= $notificacao['urgencia'] === 'maxima' ? 'danger' : ($notificacao['urgencia'] === 'alta' ? 'warning' : ($notificacao['urgencia'] === 'media' ? 'info' : 'success')) ?> mb-2">
-                                                    Urgência: <?= ucfirst($notificacao['urgencia']) ?>
-                                                </span>
+                                            <div class="notification-meta h-100 d-flex flex-column align-items-end justify-content-between text-end">
+                                                <div class="card-date-time">
+                                                    <small class="text-muted d-block">
+                                                        <i class="bi bi-clock"></i>
+                                                        Ativa há <?= $notificacao['tempo_ativa'] ?>
+                                                    </small>
+                                                    <small class="text-muted d-block mb-2">
+                                                        <i class="bi bi-calendar"></i>
+                                                        <?= date('d/m/Y H:i', strtotime($notificacao['acionada_em'])) ?>
+                                                    </small>
+                                                    <span class="badge bg-<?= $notificacao['urgencia'] === 'maxima' ? 'danger' : ($notificacao['urgencia'] === 'alta' ? 'warning' : ($notificacao['urgencia'] === 'media' ? 'info' : 'success')) ?> mb-2">
+                                                        Urgência: <?= ucfirst($notificacao['urgencia']) ?>
+                                                    </span>
+                                                </div>
 
                                                 <div class="notification-actions mt-2">
                                                     <a href="<?= base_url('notificacoes/show/' . $notificacao['id']) ?>"
@@ -762,16 +764,20 @@
         fetch(`<?= base_url("notificacoes/resolver") ?>/${notificacaoAtual}`, {
                 method: 'POST',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: `observacao=${encodeURIComponent(observacao)}`
+                body: JSON.stringify({
+                    observacao: observacao
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     showAlert('success', data.message);
-                    document.querySelector(`[data-id="${notificacaoAtual}"]`).remove();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                     bootstrap.Modal.getInstance(document.getElementById('modalResolver')).hide();
                 } else {
                     showAlert('error', data.message);
@@ -779,31 +785,35 @@
             })
             .catch(error => {
                 console.error('Erro:', error);
-                showAlert('error', 'Erro de comunicação com o servidor');
+                showAlert('error', 'Erro ao resolver notificação');
             });
     }
 
     function confirmarCancelamento() {
         const motivo = document.getElementById('motivoCancelamento').value;
 
-        if (!motivo) {
-            showAlert('warning', 'Selecione o motivo do cancelamento');
+        if (!motivo.trim()) {
+            showAlert('warning', 'Informe o motivo do cancelamento');
             return;
         }
 
         fetch(`<?= base_url("notificacoes/cancelar") ?>/${notificacaoAtual}`, {
                 method: 'POST',
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: `motivo=${encodeURIComponent(motivo)}`
+                body: JSON.stringify({
+                    motivo: motivo
+                })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     showAlert('success', data.message);
-                    document.querySelector(`[data-id="${notificacaoAtual}"]`).remove();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                     bootstrap.Modal.getInstance(document.getElementById('modalCancelar')).hide();
                 } else {
                     showAlert('error', data.message);
@@ -811,7 +821,7 @@
             })
             .catch(error => {
                 console.error('Erro:', error);
-                showAlert('error', 'Erro de comunicação com o servidor');
+                showAlert('error', 'Erro ao cancelar notificação');
             });
     }
 

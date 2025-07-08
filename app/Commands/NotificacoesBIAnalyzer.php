@@ -59,6 +59,12 @@ class NotificacoesBIAnalyzer extends BaseCommand
                     CLI::write('✅ Análise concluída com sucesso!', 'green');
                     CLI::write("📊 {$resultado['notificacoes_criadas']} notificações criadas", 'cyan');
                     
+                    // Exibe informações sobre dependências
+                    $this->exibirInformacoesDependencias($resultado['dependencias']);
+                    
+                    // Exibe detalhes das análises executadas
+                    $this->exibirDetalhesAnalises($resultado['analises_detalhadas']);
+                    
                     // Exibe resumo detalhado
                     $this->exibirResumoAnalise();
                 }
@@ -68,6 +74,9 @@ class NotificacoesBIAnalyzer extends BaseCommand
                 
             } else {
                 CLI::write('❌ Erro na análise: ' . $resultado['error'], 'red');
+                if (isset($resultado['dependencias'])) {
+                    $this->exibirInformacoesDependencias($resultado['dependencias']);
+                }
                 $this->registrarResultadoAnalise(false, 0, $resultado['error']);
                 return EXIT_ERROR;
             }
@@ -152,6 +161,69 @@ class NotificacoesBIAnalyzer extends BaseCommand
             
             if (count($criticas) > 3) {
                 CLI::write("... e mais " . (count($criticas) - 3) . " notificações críticas", 'red');
+            }
+        }
+    }
+
+    /**
+     * Exibe informações sobre dependências de tabelas
+     */
+    protected function exibirInformacoesDependencias(array $dependencias): void
+    {
+        CLI::newLine();
+        CLI::write('🔍 VERIFICAÇÃO DE DEPENDÊNCIAS:', 'yellow');
+        CLI::write('─────────────────────────────────', 'yellow');
+        
+        $tabelas = ['notificacoes', 'atendimentos', 'pacientes', 'bairros', 'logradouros'];
+        
+        foreach ($tabelas as $tabela) {
+            $existe = $dependencias[$tabela] ?? false;
+            $status = $existe ? '✅' : '❌';
+            $cor = $existe ? 'green' : 'red';
+            CLI::write("  {$status} {$tabela}", $cor);
+        }
+        
+        if (!$dependencias['todas_ok']) {
+            CLI::newLine();
+            CLI::write('⚠️  AVISO: Algumas tabelas não foram encontradas:', 'yellow');
+            foreach ($dependencias['faltando'] as $tabela) {
+                CLI::write("   • {$tabela}", 'red');
+            }
+            CLI::write('   As análises que dependem dessas tabelas serão ignoradas.', 'yellow');
+        } else {
+            CLI::write('✅ Todas as dependências estão disponíveis!', 'green');
+        }
+    }
+
+    /**
+     * Exibe detalhes das análises executadas
+     */
+    protected function exibirDetalhesAnalises(array $analises): void
+    {
+        CLI::newLine();
+        CLI::write('📋 DETALHES DAS ANÁLISES:', 'yellow');
+        CLI::write('─────────────────────────', 'yellow');
+        
+        $tiposAnalise = [
+            'pacientes_recorrentes' => 'Pacientes Recorrentes',
+            'surtos_sintomas' => 'Surtos de Sintomas',
+            'alta_demanda' => 'Alta Demanda',
+            'anomalias' => 'Anomalias Estatísticas',
+            'classificacao_risco' => 'Classificação de Risco',
+            'demonstracao' => 'Notificações de Demonstração'
+        ];
+        
+        foreach ($tiposAnalise as $tipo => $nome) {
+            if (isset($analises[$tipo])) {
+                $analise = $analises[$tipo];
+                
+                if ($analise['executada']) {
+                    $notifs = $analise['notificacoes'] ?? 0;
+                    CLI::write("  ✅ {$nome}: {$notifs} notificações", 'green');
+                } else {
+                    $erro = $analise['erro'] ?? 'Erro desconhecido';
+                    CLI::write("  ❌ {$nome}: {$erro}", 'red');
+                }
             }
         }
     }

@@ -79,11 +79,21 @@ class AuditoriaModel extends Model
         $request = \Config\Services::request();
         
         if (!isset($data['data']['ip_address'])) {
-            $data['data']['ip_address'] = $request->getIPAddress();
+            // Verifica se é uma requisição HTTP antes de tentar obter o IP
+            if (method_exists($request, 'getIPAddress')) {
+                $data['data']['ip_address'] = $request->getIPAddress();
+            } else {
+                $data['data']['ip_address'] = '127.0.0.1'; // IP padrão para CLI
+            }
         }
         
         if (!isset($data['data']['user_agent'])) {
-            $data['data']['user_agent'] = $request->getUserAgent()->getAgentString();
+            // Verifica se é uma requisição HTTP antes de tentar obter o User Agent
+            if (method_exists($request, 'getUserAgent') && $request->getUserAgent()) {
+                $data['data']['user_agent'] = $request->getUserAgent()->getAgentString();
+            } else {
+                $data['data']['user_agent'] = 'CLI/Sistema'; // User agent padrão para CLI
+            }
         }
 
         return $data;

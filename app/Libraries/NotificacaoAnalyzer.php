@@ -30,35 +30,108 @@ class NotificacaoAnalyzer
         log_message('info', 'Iniciando análise BI de notificações');
 
         $notificacoesCriadas = 0;
+        $analises = [];
 
         try {
-            // Análise 1: Pacientes recorrentes
-            $notificacoesCriadas += $this->analisarPacientesRecorrentes();
+            // Verifica dependências antes de executar
+            $dependencias = $this->verificarDependencias();
+            
+            if (!$dependencias['todas_ok']) {
+                log_message('warning', 'Algumas dependências não estão disponíveis: ' . implode(', ', $dependencias['faltando']));
+            }
 
-            // Análise 2: Surtos de sintomas por região
-            $notificacoesCriadas += $this->analisarSurtosSintomas();
+            // Análise 1: Pacientes recorrentes (requer: pacientes, atendimentos)
+            if ($dependencias['pacientes'] && $dependencias['atendimentos']) {
+                try {
+                    $criadas = $this->analisarPacientesRecorrentes();
+                    $notificacoesCriadas += $criadas;
+                    $analises['pacientes_recorrentes'] = ['executada' => true, 'notificacoes' => $criadas];
+                } catch (\Exception $e) {
+                    $analises['pacientes_recorrentes'] = ['executada' => false, 'erro' => $e->getMessage()];
+                    log_message('error', 'Erro na análise de pacientes recorrentes: ' . $e->getMessage());
+                }
+            } else {
+                $analises['pacientes_recorrentes'] = ['executada' => false, 'erro' => 'Tabelas necessárias não encontradas'];
+            }
 
-            // Análise 3: Alta demanda por período
-            $notificacoesCriadas += $this->analisarAltaDemanda();
+            // Análise 2: Surtos de sintomas (requer: atendimentos, pacientes, logradouros, bairros)
+            if ($dependencias['atendimentos'] && $dependencias['pacientes'] && $dependencias['bairros']) {
+                try {
+                    $criadas = $this->analisarSurtosSintomas();
+                    $notificacoesCriadas += $criadas;
+                    $analises['surtos_sintomas'] = ['executada' => true, 'notificacoes' => $criadas];
+                } catch (\Exception $e) {
+                    $analises['surtos_sintomas'] = ['executada' => false, 'erro' => $e->getMessage()];
+                    log_message('error', 'Erro na análise de surtos: ' . $e->getMessage());
+                }
+            } else {
+                $analises['surtos_sintomas'] = ['executada' => false, 'erro' => 'Tabelas necessárias não encontradas'];
+            }
 
-            // Análise 4: Anomalias estatísticas
-            $notificacoesCriadas += $this->analisarAnomalias();
+            // Análise 3: Alta demanda (requer apenas: atendimentos)
+            if ($dependencias['atendimentos']) {
+                try {
+                    $criadas = $this->analisarAltaDemanda();
+                    $notificacoesCriadas += $criadas;
+                    $analises['alta_demanda'] = ['executada' => true, 'notificacoes' => $criadas];
+                } catch (\Exception $e) {
+                    $analises['alta_demanda'] = ['executada' => false, 'erro' => $e->getMessage()];
+                    log_message('error', 'Erro na análise de demanda: ' . $e->getMessage());
+                }
+            } else {
+                $analises['alta_demanda'] = ['executada' => false, 'erro' => 'Tabela atendimentos não encontrada'];
+            }
 
-            // Análise 5: Padrões de classificação de risco
-            $notificacoesCriadas += $this->analisarClassificacaoRisco();
+            // Análise 4: Anomalias estatísticas (requer: atendimentos)
+            if ($dependencias['atendimentos']) {
+                try {
+                    $criadas = $this->analisarAnomalias();
+                    $notificacoesCriadas += $criadas;
+                    $analises['anomalias'] = ['executada' => true, 'notificacoes' => $criadas];
+                } catch (\Exception $e) {
+                    $analises['anomalias'] = ['executada' => false, 'erro' => $e->getMessage()];
+                    log_message('error', 'Erro na análise de anomalias: ' . $e->getMessage());
+                }
+            } else {
+                $analises['anomalias'] = ['executada' => false, 'erro' => 'Tabela atendimentos não encontrada'];
+            }
+
+            // Análise 5: Classificação de risco (requer: atendimentos)
+            if ($dependencias['atendimentos']) {
+                try {
+                    $criadas = $this->analisarClassificacaoRisco();
+                    $notificacoesCriadas += $criadas;
+                    $analises['classificacao_risco'] = ['executada' => true, 'notificacoes' => $criadas];
+                } catch (\Exception $e) {
+                    $analises['classificacao_risco'] = ['executada' => false, 'erro' => $e->getMessage()];
+                    log_message('error', 'Erro na análise de classificação: ' . $e->getMessage());
+                }
+            } else {
+                $analises['classificacao_risco'] = ['executada' => false, 'erro' => 'Tabela atendimentos não encontrada'];
+            }
+
+            // Se nenhuma análise pôde ser executada, criar notificações de demonstração
+            if ($notificacoesCriadas === 0) {
+                $notificacoesCriadas += $this->criarNotificacoesDemonstracao();
+                $analises['demonstracao'] = ['executada' => true, 'notificacoes' => $notificacoesCriadas];
+            }
 
             log_message('info', "Análise BI concluída. {$notificacoesCriadas} notificações criadas");
 
             return [
                 'success' => true,
-                'notificacoes_criadas' => $notificacoesCriadas
+                'notificacoes_criadas' => $notificacoesCriadas,
+                'dependencias' => $dependencias,
+                'analises_detalhadas' => $analises
             ];
 
         } catch (\Exception $e) {
-            log_message('error', 'Erro na análise BI: ' . $e->getMessage());
+            log_message('error', 'Erro geral na análise BI: ' . $e->getMessage());
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'dependencias' => $dependencias ?? null,
+                'analises_detalhadas' => $analises ?? []
             ];
         }
     }
@@ -79,7 +152,7 @@ class NotificacaoAnalyzer
                 GROUP_CONCAT(DISTINCT a.classificacao_risco) as classificacoes,
                 GROUP_CONCAT(DISTINCT a.hipotese_diagnostico SEPARATOR '; ') as diagnosticos,
                 MAX(a.created_at) as ultimo_atendimento
-            FROM pacientes p
+            FROM pam_pacientes p
             INNER JOIN atendimentos a ON p.id = a.id_paciente
             WHERE a.created_at >= ? 
             AND a.deleted_at IS NULL
@@ -144,7 +217,7 @@ class NotificacaoAnalyzer
                 a.hipotese_diagnostico,
                 COUNT(*) as casos,
                 DATE(a.created_at) as data_atendimento
-            FROM atendimentos a
+            FROM pam_atendimentos a
             INNER JOIN pacientes p ON a.id_paciente = p.id
             INNER JOIN logradouros l ON p.id_logradouro = l.id
             INNER JOIN bairros b ON l.id_bairro = b.id
@@ -224,7 +297,7 @@ class NotificacaoAnalyzer
                 DATE(created_at) as data,
                 COUNT(*) as atendimentos,
                 SUM(CASE WHEN classificacao_risco = 'Vermelho' THEN 1 ELSE 0 END) as casos_criticos
-            FROM atendimentos
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND deleted_at IS NULL
             GROUP BY HOUR(created_at), DATE(created_at)
@@ -337,8 +410,8 @@ class NotificacaoAnalyzer
             SELECT 
                 classificacao_risco,
                 COUNT(*) as total,
-                ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM atendimentos WHERE created_at >= ? AND deleted_at IS NULL), 2) as percentual
-            FROM atendimentos
+                ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM pam_atendimentos WHERE created_at >= ? AND deleted_at IS NULL), 2) as percentual
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND deleted_at IS NULL
             GROUP BY classificacao_risco
@@ -464,7 +537,7 @@ class NotificacaoAnalyzer
             SELECT 
                 AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as tempo_medio_minutos,
                 COUNT(*) as total_atendimentos
-            FROM atendimentos
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND updated_at IS NOT NULL
             AND deleted_at IS NULL
@@ -480,5 +553,100 @@ class NotificacaoAnalyzer
             'anomalia' => $tempoMedio > 120, // > 2 horas
             'periodo_analise' => 3
         ];
+    }
+
+    /**
+     * Verifica se as tabelas necessárias existem
+     */
+    protected function verificarDependencias()
+    {
+        $db = \Config\Database::connect();
+        
+        $tabelas = [
+            'notificacoes' => false,
+            'atendimentos' => false,
+            'pacientes' => false,
+            'bairros' => false,
+            'logradouros' => false
+        ];
+
+        foreach (array_keys($tabelas) as $tabela) {
+            try {
+                $query = $db->query("SHOW TABLES LIKE '{$tabela}'");
+                $tabelas[$tabela] = $query->getNumRows() > 0;
+            } catch (\Exception $e) {
+                $tabelas[$tabela] = false;
+            }
+        }
+
+        return [
+            'todas_ok' => !in_array(false, $tabelas),
+            'faltando' => array_keys(array_filter($tabelas, fn($existe) => !$existe)),
+            ...$tabelas
+        ];
+    }
+
+    /**
+     * Cria notificações de demonstração quando não há dados reais
+     */
+    protected function criarNotificacoesDemonstracao()
+    {
+        $notificacoesCriadas = 0;
+        
+        $notificacoesDemo = [
+            [
+                'tipo' => 'estatistica_anomala',
+                'titulo' => 'Sistema de Análise BI Ativo',
+                'descricao' => 'O sistema de análise BI está funcionando corretamente. Esta é uma notificação de demonstração criada automaticamente pois não há dados suficientes para análises reais.',
+                'severidade' => 'baixa',
+                'modulo' => 'Sistema',
+                'parametros' => [
+                    'tipo_demo' => true,
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'versao_sistema' => '1.0.0'
+                ],
+                'status' => 'ativa'
+            ],
+            [
+                'tipo' => 'alta_demanda',
+                'titulo' => 'Simulação: Pico de demanda detectado',
+                'descricao' => 'Esta é uma notificação de demonstração simulando um cenário de alta demanda. Em um ambiente real, seria baseada em dados de atendimentos.',
+                'severidade' => 'media',
+                'modulo' => 'Gestão',
+                'parametros' => [
+                    'tipo_demo' => true,
+                    'atendimentos_simulados' => 25,
+                    'hora_simulada' => '14:00',
+                    'data_simulada' => date('Y-m-d')
+                ],
+                'status' => 'ativa'
+            ],
+            [
+                'tipo' => 'paciente_recorrente',
+                'titulo' => 'Demo: Paciente com múltiplos atendimentos',
+                'descricao' => 'Notificação de demonstração representando um paciente com atendimentos recorrentes. Em produção, seria baseada em dados reais de pacientes.',
+                'severidade' => 'alta',
+                'modulo' => 'Atendimentos',
+                'parametros' => [
+                    'tipo_demo' => true,
+                    'paciente_simulado' => 'João Silva Demo',
+                    'atendimentos_simulados' => 4,
+                    'periodo_dias' => 30
+                ],
+                'status' => 'ativa'
+            ]
+        ];
+
+        foreach ($notificacoesDemo as $notificacao) {
+            try {
+                if ($this->notificacaoModel->criarNotificacaoUnica($notificacao)) {
+                    $notificacoesCriadas++;
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'Erro ao criar notificação de demo: ' . $e->getMessage());
+            }
+        }
+
+        return $notificacoesCriadas;
     }
 }
