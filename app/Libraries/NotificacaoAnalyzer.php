@@ -152,7 +152,7 @@ class NotificacaoAnalyzer
                 GROUP_CONCAT(DISTINCT a.classificacao_risco) as classificacoes,
                 GROUP_CONCAT(DISTINCT a.hipotese_diagnostico SEPARATOR '; ') as diagnosticos,
                 MAX(a.created_at) as ultimo_atendimento
-            FROM pacientes p
+            FROM pam_pacientes p
             INNER JOIN atendimentos a ON p.id = a.id_paciente
             WHERE a.created_at >= ? 
             AND a.deleted_at IS NULL
@@ -217,7 +217,7 @@ class NotificacaoAnalyzer
                 a.hipotese_diagnostico,
                 COUNT(*) as casos,
                 DATE(a.created_at) as data_atendimento
-            FROM atendimentos a
+            FROM pam_atendimentos a
             INNER JOIN pacientes p ON a.id_paciente = p.id
             INNER JOIN logradouros l ON p.id_logradouro = l.id
             INNER JOIN bairros b ON l.id_bairro = b.id
@@ -297,7 +297,7 @@ class NotificacaoAnalyzer
                 DATE(created_at) as data,
                 COUNT(*) as atendimentos,
                 SUM(CASE WHEN classificacao_risco = 'Vermelho' THEN 1 ELSE 0 END) as casos_criticos
-            FROM atendimentos
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND deleted_at IS NULL
             GROUP BY HOUR(created_at), DATE(created_at)
@@ -410,8 +410,8 @@ class NotificacaoAnalyzer
             SELECT 
                 classificacao_risco,
                 COUNT(*) as total,
-                ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM atendimentos WHERE created_at >= ? AND deleted_at IS NULL), 2) as percentual
-            FROM atendimentos
+                ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM pam_atendimentos WHERE created_at >= ? AND deleted_at IS NULL), 2) as percentual
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND deleted_at IS NULL
             GROUP BY classificacao_risco
@@ -537,7 +537,7 @@ class NotificacaoAnalyzer
             SELECT 
                 AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as tempo_medio_minutos,
                 COUNT(*) as total_atendimentos
-            FROM atendimentos
+            FROM pam_atendimentos
             WHERE created_at >= ?
             AND updated_at IS NOT NULL
             AND deleted_at IS NULL
