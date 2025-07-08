@@ -75,7 +75,9 @@ class Medicos extends BaseController
         $rules = [
             'nome' => 'required|min_length[3]|max_length[255]',
             'crm' => 'required|min_length[4]|max_length[20]|is_unique[medicos.crm]',
-            'especialidade' => 'permit_empty|max_length[100]',
+            'especialidade' => 'required|max_length[100]',
+            'telefone' => 'permit_empty|max_length[20]',
+            'email' => 'permit_empty|valid_email|max_length[255]',
             'status' => 'required|in_list[Ativo,Inativo]'
         ];
 
@@ -92,7 +94,15 @@ class Medicos extends BaseController
                 'is_unique' => 'Este CRM já está cadastrado'
             ],
             'especialidade' => [
+                'required' => 'A especialidade é obrigatória',
                 'max_length' => 'A especialidade deve ter no máximo 100 caracteres'
+            ],
+            'telefone' => [
+                'max_length' => 'O telefone deve ter no máximo 20 caracteres'
+            ],
+            'email' => [
+                'valid_email' => 'O e-mail deve ter um formato válido',
+                'max_length' => 'O e-mail deve ter no máximo 255 caracteres'
             ],
             'status' => [
                 'required' => 'O status é obrigatório',
@@ -101,6 +111,14 @@ class Medicos extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
+            // Se é uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro de validação',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
@@ -108,12 +126,32 @@ class Medicos extends BaseController
             'nome' => $this->request->getPost('nome'),
             'crm' => $this->request->getPost('crm'),
             'especialidade' => $this->request->getPost('especialidade'),
+            'telefone' => $this->request->getPost('telefone'),
+            'email' => $this->request->getPost('email'),
             'status' => $this->request->getPost('status')
         ];
 
         if ($this->medicoModel->save($data)) {
+            // Se é uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                $medicoId = $this->medicoModel->getInsertID();
+                $medicoSalvo = $this->medicoModel->find($medicoId);
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Médico cadastrado com sucesso!',
+                    'medico' => $medicoSalvo
+                ]);
+            }
             return redirect()->to('/medicos')->with('success', 'Médico cadastrado com sucesso!');
         } else {
+            // Se é uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao cadastrar médico'
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Erro ao cadastrar médico.');
         }
     }

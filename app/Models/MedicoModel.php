@@ -16,6 +16,8 @@ class MedicoModel extends Model
         'nome',
         'crm',
         'especialidade',
+        'telefone',
+        'email',
         'status'
     ];
 
@@ -37,6 +39,8 @@ class MedicoModel extends Model
         'nome' => 'required|max_length[255]',
         'crm' => 'required|is_unique[medicos.crm]|max_length[20]',
         'especialidade' => 'max_length[100]',
+        'telefone' => 'permit_empty|max_length[20]',
+        'email' => 'permit_empty|valid_email|max_length[255]',
         'status' => 'in_list[Ativo,Inativo]'
     ];
     
@@ -52,6 +56,13 @@ class MedicoModel extends Model
         ],
         'especialidade' => [
             'max_length' => 'A especialidade deve ter no máximo 100 caracteres'
+        ],
+        'telefone' => [
+            'max_length' => 'O telefone deve ter no máximo 20 caracteres'
+        ],
+        'email' => [
+            'valid_email' => 'O e-mail deve ter um formato válido',
+            'max_length' => 'O e-mail deve ter no máximo 255 caracteres'
         ],
         'status' => [
             'in_list' => 'Status deve ser Ativo ou Inativo'

@@ -106,20 +106,29 @@
                                 <label for="id_medico" class="form-label">
                                     <i class="bi bi-person-badge"></i> Médico *
                                 </label>
-                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_medico') ? 'is-invalid' : '' ?>" 
-                                        id="id_medico" name="id_medico" required data-placeholder="Selecione um médico">
-                                    <option value="">Selecione um médico</option>
-                                    <?php if (isset($medicos)): ?>
-                                        <?php foreach ($medicos as $medico): ?>
-                                            <option value="<?= $medico['id_medico'] ?>" <?= old('id_medico') == $medico['id_medico'] ? 'selected' : '' ?>>
-                                                <?= esc($medico['nome']) ?> - CRM: <?= $medico['crm'] ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+                                <div class="input-group">
+                                    <select class="form-select <?= session('validation') && session('validation')->hasError('id_medico') ? 'is-invalid' : '' ?>" 
+                                            id="id_medico" name="id_medico" required data-placeholder="Selecione um médico">
+                                        <option value="">Selecione um médico</option>
+                                        <?php if (isset($medicos)): ?>
+                                            <?php foreach ($medicos as $medico): ?>
+                                                <option value="<?= $medico['id_medico'] ?>" <?= old('id_medico') == $medico['id_medico'] ? 'selected' : '' ?>>
+                                                    <?= esc($medico['nome']) ?> - CRM: <?= $medico['crm'] ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#novoMedicoModal" title="Cadastrar novo médico">
+                                        <i class="bi bi-person-plus"></i>
+                                    </button>
+                                </div>
                                 <div class="invalid-feedback">
                                     <?= session('validation') && session('validation')->hasError('id_medico') ? session('validation')->getError('id_medico') : 'Por favor, selecione um médico.' ?>
                                 </div>
+                                <!-- Button to unlock medico selection (only shown when locked) -->
+                                <button type="button" id="unlock_medico" class="btn btn-sm btn-outline-warning mt-1" style="display: none;" title="Permitir alteração do médico">
+                                    <i class="bi bi-unlock"></i> Alterar Médico
+                                </button>
                             </div>
                         </div>
 
@@ -575,6 +584,131 @@
     </div>
 </div>
 
+<!-- Modal Novo Médico -->
+<div class="modal fade" id="novoMedicoModal" tabindex="-1" aria-labelledby="novoMedicoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="novoMedicoModalLabel">
+                    <i class="bi bi-person-badge"></i> Novo Médico
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNovoMedicoModal" action="<?= base_url('medicos/store') ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="return_to_atendimento" value="1">
+                    
+                    <!-- Dados Profissionais -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-person-badge"></i> Dados Profissionais
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="medico_nome" class="form-label">
+                                        Nome Completo <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="medico_nome"
+                                        name="nome"
+                                        required
+                                        placeholder="Digite o nome completo do médico">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="medico_crm" class="form-label">
+                                        CRM <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="medico_crm"
+                                        name="crm"
+                                        required
+                                        placeholder="000000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="medico_especialidade" class="form-label">
+                                        Especialidade <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="medico_especialidade"
+                                        name="especialidade"
+                                        required
+                                        placeholder="Ex: Clínica Médica, Cardiologia, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="medico_telefone" class="form-label">Telefone</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="medico_telefone"
+                                        name="telefone"
+                                        placeholder="(00) 0000-0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="medico_email" class="form-label">E-mail</label>
+                                    <input type="email"
+                                        class="form-control"
+                                        id="medico_email"
+                                        name="email"
+                                        placeholder="medico@exemplo.com">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-activity"></i> Status
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="medico_status" class="form-label">
+                                        Status <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="medico_status" name="status" required>
+                                        <option value="Ativo" selected>Ativo</option>
+                                        <option value="Inativo">Inativo</option>
+                                        <option value="Suspenso">Suspenso</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="submit" form="formNovoMedicoModal" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Salvar Médico
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -636,7 +770,28 @@
             // Pre-select doctor if medico parameter exists
             const medicoId = urlParams.get('medico');
             if (medicoId) {
-                document.getElementById('id_medico').value = medicoId;
+                const medicoSelect = document.getElementById('id_medico');
+                const unlockButton = document.getElementById('unlock_medico');
+
+                // Set the value
+                medicoSelect.value = medicoId;
+
+                // Disable the medico select to prevent manual changes
+                medicoSelect.disabled = true;
+
+                // Add visual indication that field is locked
+                const label = medicoSelect.closest('.mb-3').querySelector('label');
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-info text-white ms-1';
+                badge.innerHTML = '<i class="bi bi-lock"></i> Pré-selecionado';
+                label.appendChild(badge);
+
+                // Show unlock button
+                unlockButton.style.display = 'inline-block';
+            } else {
+                // If no medico parameter, ensure field is enabled
+                const medicoSelect = document.getElementById('id_medico');
+                medicoSelect.disabled = false;
             }
 
             // Pre-select risk classification if classificacao parameter exists
@@ -660,9 +815,11 @@
             Array.prototype.filter.call(forms, function(form) {
                 form.addEventListener('submit', function(event) {
                     const pacienteSelect = document.getElementById('id_paciente');
+                    const medicoSelect = document.getElementById('id_medico');
                     const dataInput = document.getElementById('data_atendimento');
                     const urlParams = new URLSearchParams(window.location.search);
                     const pacienteFromUrl = urlParams.get('paciente');
+                    const medicoFromUrl = urlParams.get('medico');
                     
                     // Garantir que a data esteja no formato correto antes do envio
                     if (dataInput && dataInput.value) {
@@ -675,18 +832,30 @@
                         pacienteSelect.value = pacienteFromUrl;
                     }
 
+                    // If medico was pre-selected and select is disabled, temporarily enable it for submission
+                    if (medicoSelect.disabled && medicoFromUrl) {
+                        medicoSelect.disabled = false;
+                        medicoSelect.value = medicoFromUrl;
+                    }
+
                     if (form.checkValidity() === false) {
                         event.preventDefault();
                         event.stopPropagation();
                         
-                        // Re-disable the select if validation fails and patient was pre-selected
+                        // Re-disable the selects if validation fails and they were pre-selected
                         if (pacienteFromUrl && !pacienteSelect.value) {
                             pacienteSelect.disabled = true;
                         }
+                        if (medicoFromUrl && !medicoSelect.value) {
+                            medicoSelect.disabled = true;
+                        }
                     } else {
-                        // Form is valid, ensure the select stays enabled for submission
+                        // Form is valid, ensure the selects stay enabled for submission
                         if (pacienteFromUrl) {
                             pacienteSelect.disabled = false;
+                        }
+                        if (medicoFromUrl) {
+                            medicoSelect.disabled = false;
                         }
                     }
                     form.classList.add('was-validated');
@@ -789,14 +958,83 @@
             }, 3000);
         });
 
+        // Handle unlock medico button
+        document.getElementById('unlock_medico').addEventListener('click', function() {
+            const medicoSelect = document.getElementById('id_medico');
+            const medicoContainer = medicoSelect.closest('.mb-3');
+
+            // Enable the medico select
+            medicoSelect.disabled = false;
+
+            // Remove the locked badge
+            const badge = medicoContainer.querySelector('.badge');
+            if (badge) {
+                badge.remove();
+            }
+
+            // Hide the unlock button
+            this.style.display = 'none';
+
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show mt-2';
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.innerHTML = `
+            <i class="bi bi-check-circle"></i> Agora você pode alterar o médico selecionado.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+            medicoContainer.appendChild(alertDiv);
+
+            // Auto-dismiss the alert after 3 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        if (alertDiv.parentNode) {
+                            alertDiv.remove();
+                        }
+                    }, 300);
+                }
+            }, 3000);
+        });
+
         // Modal Novo Paciente Functions
         const novoPacienteModal = document.getElementById('novoPacienteModal');
         const formNovoPacienteModal = document.getElementById('formNovoPacienteModal');
 
+        // Adicionar event listener ao botão de submit da modal
+        const modalSubmitBtn = document.querySelector('button[form="formNovoPacienteModal"][type="submit"]');
+        if (modalSubmitBtn) {
+            modalSubmitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Botão de submit clicado!');
+                
+                // Disparar o evento de submit no formulário
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                formNovoPacienteModal.dispatchEvent(submitEvent);
+            });
+        }
+
         // Configurar máscaras e validações quando o modal for aberto
         novoPacienteModal.addEventListener('shown.bs.modal', function() {
+            console.log('Modal aberta!');
+            
+            // Verificar se todos os elementos necessários existem
+            const elementos = {
+                'modal_nome': document.getElementById('modal_nome'),
+                'modal_cpf': document.getElementById('modal_cpf'),
+                'modal_data_nascimento': document.getElementById('modal_data_nascimento'),
+                'modal_sexo': document.getElementById('modal_sexo'),
+                'formNovoPacienteModal': document.getElementById('formNovoPacienteModal'),
+                'submitBtn': document.querySelector('button[form="formNovoPacienteModal"][type="submit"]')
+            };
+            
+            console.log('Elementos encontrados:', elementos);
+            
             // Focar no primeiro campo
-            document.getElementById('modal_nome').focus();
+            if (elementos.modal_nome) {
+                elementos.modal_nome.focus();
+            }
 
             // Aplicar máscaras
             applyMask('modal_cpf', '000.000.000-00');
@@ -875,16 +1113,44 @@
         formNovoPacienteModal.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Validar CPF
+            console.log('Submit do formulário da modal disparado!');
+            
+            // Validar campos obrigatórios primeiro
+            const nome = document.getElementById('modal_nome').value.trim();
             const cpf = document.getElementById('modal_cpf').value.replace(/\D/g, '');
+            const dataNascimento = document.getElementById('modal_data_nascimento').value;
+            const sexo = document.getElementById('modal_sexo').value;
+            
+            // Verificar campos obrigatórios
+            if (!nome) {
+                alert('Nome é obrigatório.');
+                document.getElementById('modal_nome').focus();
+                return;
+            }
+            
+            if (!dataNascimento) {
+                alert('Data de nascimento é obrigatória.');
+                document.getElementById('modal_data_nascimento').focus();
+                return;
+            }
+            
+            if (!sexo) {
+                alert('Sexo é obrigatório.');
+                document.getElementById('modal_sexo').focus();
+                return;
+            }
+            
+            // Validar CPF
             if (cpf.length !== 11 || !validarCPF(cpf)) {
                 alert('CPF inválido. Por favor, verifique.');
                 document.getElementById('modal_cpf').focus();
                 return;
             }
 
-            // Mostrar loading
-            const submitBtn = this.querySelector('button[type="submit"]');
+            console.log('Validações passaram, enviando requisição...');
+
+            // Mostrar loading - buscar o botão que está no modal-footer
+            const submitBtn = document.querySelector('button[form="formNovoPacienteModal"][type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
             submitBtn.disabled = true;
@@ -918,6 +1184,133 @@
                     showAlert('success', 'Paciente cadastrado com sucesso e selecionado!');
                 } else {
                     showAlert('danger', data.message || 'Erro ao cadastrar paciente');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('danger', 'Erro de comunicação com o servidor');
+            })
+            .finally(() => {
+                // Restaurar botão
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Modal Novo Médico Functions
+        const novoMedicoModal = document.getElementById('novoMedicoModal');
+        const formNovoMedicoModal = document.getElementById('formNovoMedicoModal');
+
+        // Adicionar event listener ao botão de submit da modal médico
+        const modalMedicoSubmitBtn = document.querySelector('button[form="formNovoMedicoModal"][type="submit"]');
+        if (modalMedicoSubmitBtn) {
+            modalMedicoSubmitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Botão de submit do médico clicado!');
+                
+                // Disparar o evento de submit no formulário
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                formNovoMedicoModal.dispatchEvent(submitEvent);
+            });
+        }
+
+        // Configurar máscaras e validações quando o modal médico for aberto
+        novoMedicoModal.addEventListener('shown.bs.modal', function() {
+            console.log('Modal médico aberta!');
+            
+            // Verificar se todos os elementos necessários existem
+            const elementos = {
+                'medico_nome': document.getElementById('medico_nome'),
+                'medico_crm': document.getElementById('medico_crm'),
+                'medico_especialidade': document.getElementById('medico_especialidade'),
+                'formNovoMedicoModal': document.getElementById('formNovoMedicoModal'),
+                'submitBtn': document.querySelector('button[form="formNovoMedicoModal"][type="submit"]')
+            };
+            
+            console.log('Elementos médico encontrados:', elementos);
+            
+            // Focar no primeiro campo
+            if (elementos.medico_nome) {
+                elementos.medico_nome.focus();
+            }
+
+            // Aplicar máscara no telefone
+            applyMask('medico_telefone', '(00) 0000-0000');
+        });
+
+        // Limpar formulário quando modal médico for fechada
+        novoMedicoModal.addEventListener('hidden.bs.modal', function() {
+            formNovoMedicoModal.reset();
+            formNovoMedicoModal.classList.remove('was-validated');
+        });
+
+        // Submeter formulário da modal médico
+        formNovoMedicoModal.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            console.log('Submit do formulário da modal médico disparado!');
+            
+            // Validar campos obrigatórios primeiro
+            const nome = document.getElementById('medico_nome').value.trim();
+            const crm = document.getElementById('medico_crm').value.trim();
+            const especialidade = document.getElementById('medico_especialidade').value.trim();
+            
+            // Verificar campos obrigatórios
+            if (!nome) {
+                alert('Nome é obrigatório.');
+                document.getElementById('medico_nome').focus();
+                return;
+            }
+            
+            if (!crm) {
+                alert('CRM é obrigatório.');
+                document.getElementById('medico_crm').focus();
+                return;
+            }
+            
+            if (!especialidade) {
+                alert('Especialidade é obrigatória.');
+                document.getElementById('medico_especialidade').focus();
+                return;
+            }
+
+            console.log('Validações do médico passaram, enviando requisição...');
+
+            // Mostrar loading - buscar o botão que está no modal-footer
+            const submitBtn = document.querySelector('button[form="formNovoMedicoModal"][type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+            submitBtn.disabled = true;
+
+            // Submeter via AJAX
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Adicionar novo médico ao select
+                    const medicoSelect = document.getElementById('id_medico');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.medico.id_medico;
+                    newOption.textContent = `${data.medico.nome} - CRM: ${data.medico.crm}`;
+                    newOption.selected = true;
+                    medicoSelect.appendChild(newOption);
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(novoMedicoModal);
+                    modal.hide();
+                    
+                    // Mostrar mensagem de sucesso
+                    showAlert('success', 'Médico cadastrado com sucesso e selecionado!');
+                } else {
+                    showAlert('danger', data.message || 'Erro ao cadastrar médico');
                 }
             })
             .catch(error => {
@@ -991,9 +1384,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
             
-            // Inserir no topo do formulário
+            // Se estamos na modal, inserir na modal, senão no formulário principal
+            const modalBody = document.querySelector('#novoPacienteModal .modal-body');
             const form = document.getElementById('formAtendimento');
-            form.insertBefore(alertDiv, form.firstChild);
+            
+            if (modalBody && novoPacienteModal.classList.contains('show')) {
+                // Modal está aberta, inserir alerta na modal
+                modalBody.insertBefore(alertDiv, modalBody.firstChild);
+            } else if (form) {
+                // Inserir no formulário principal
+                form.insertBefore(alertDiv, form.firstChild);
+            }
             
             // Auto-remover após 5 segundos
             setTimeout(() => {
