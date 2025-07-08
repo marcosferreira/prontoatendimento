@@ -614,41 +614,158 @@ class Notificacoes extends BaseController
         switch ($notificacao['tipo']) {
             case 'paciente_recorrente':
                 $acoes = [
-                    'Agendar consulta especializada',
-                    'Revisar histórico médico completo',
-                    'Avaliar necessidade de exames complementares',
-                    'Considerar encaminhamento para especialista',
-                    'Implementar plano de cuidado contínuo'
+                    [
+                        'titulo' => 'Agendar consulta especializada',
+                        'descricao' => 'Encaminhar o paciente para uma consulta com especialista adequado.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Revisar histórico médico completo',
+                        'descricao' => 'Analisar todo o histórico de atendimentos e exames do paciente.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Avaliar necessidade de exames complementares',
+                        'descricao' => 'Solicitar exames adicionais para investigação detalhada.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Considerar encaminhamento para especialista',
+                        'descricao' => 'Avaliar a necessidade de acompanhamento especializado.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Implementar plano de cuidado contínuo',
+                        'descricao' => 'Estabelecer protocolo de acompanhamento regular.',
+                        'link' => null,
+                        'texto_link' => null
+                    ]
                 ];
                 break;
 
             case 'surto_sintomas':
                 $acoes = [
-                    'Notificar vigilância epidemiológica',
-                    'Investigar fonte comum de exposição',
-                    'Implementar medidas de controle',
-                    'Orientar população do bairro',
-                    'Intensificar monitoramento da região'
+                    [
+                        'titulo' => 'Notificar vigilância epidemiológica',
+                        'descricao' => 'Comunicar imediatamente as autoridades de vigilância epidemiológica.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Investigar fonte comum de exposição',
+                        'descricao' => 'Identificar possíveis fontes de contaminação ou exposição.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Implementar medidas de controle',
+                        'descricao' => 'Estabelecer medidas de prevenção e controle na região.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Orientar população do bairro',
+                        'descricao' => 'Informar e orientar os moradores sobre medidas preventivas.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Intensificar monitoramento da região',
+                        'descricao' => 'Aumentar a vigilância e monitoramento na área afetada.',
+                        'link' => null,
+                        'texto_link' => null
+                    ]
                 ];
                 break;
 
             case 'alta_demanda':
                 $acoes = [
-                    'Alocar recursos adicionais',
-                    'Ativar protocolo de sobrecarga',
-                    'Revisar escala de profissionais',
-                    'Implementar triagem rápida',
-                    'Comunicar gestão hospitalar'
+                    [
+                        'titulo' => 'Alocar recursos adicionais',
+                        'descricao' => 'Disponibilizar mais recursos humanos e materiais.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Ativar protocolo de sobrecarga',
+                        'descricao' => 'Implementar procedimentos especiais para alta demanda.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Revisar escala de profissionais',
+                        'descricao' => 'Ajustar a escala de trabalho para atender a demanda.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Implementar triagem rápida',
+                        'descricao' => 'Acelerar o processo de triagem para otimizar atendimentos.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Comunicar gestão hospitalar',
+                        'descricao' => 'Informar a gestão sobre a situação de sobrecarga.',
+                        'link' => null,
+                        'texto_link' => null
+                    ]
                 ];
                 break;
 
             case 'estatistica_anomala':
                 $acoes = [
-                    'Investigar causas da anomalia',
-                    'Revisar processos operacionais',
-                    'Auditar qualidade do atendimento',
-                    'Implementar ações corretivas',
-                    'Monitorar indicadores relacionados'
+                    [
+                        'titulo' => 'Investigar causas da anomalia',
+                        'descricao' => 'Analisar os fatores que geraram a anomalia estatística.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Revisar processos operacionais',
+                        'descricao' => 'Avaliar e ajustar os processos de trabalho.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Auditar qualidade do atendimento',
+                        'descricao' => 'Realizar auditoria para verificar a qualidade dos serviços.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Implementar ações corretivas',
+                        'descricao' => 'Executar medidas para corrigir as anomalias identificadas.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Monitorar indicadores relacionados',
+                        'descricao' => 'Acompanhar de perto os indicadores afetados.',
+                        'link' => null,
+                        'texto_link' => null
+                    ]
+                ];
+                break;
+
+            default:
+                $acoes = [
+                    [
+                        'titulo' => 'Avaliar situação',
+                        'descricao' => 'Analisar a notificação e determinar ações apropriadas.',
+                        'link' => null,
+                        'texto_link' => null
+                    ],
+                    [
+                        'titulo' => 'Registrar observações',
+                        'descricao' => 'Documentar observações relevantes sobre a notificação.',
+                        'link' => null,
+                        'texto_link' => null
+                    ]
                 ];
                 break;
         }
