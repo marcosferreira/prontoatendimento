@@ -9,6 +9,8 @@ use App\Models\ProcedimentoModel;
 use App\Models\ExameModel;
 use App\Models\AtendimentoProcedimentoModel;
 use App\Models\AtendimentoExameModel;
+use App\Models\BairroModel;
+use App\Models\LogradouroModel;
 use CodeIgniter\Controller;
 
 class Atendimentos extends BaseController
@@ -20,6 +22,8 @@ class Atendimentos extends BaseController
     protected $exameModel;
     protected $atendimentoProcedimentoModel;
     protected $atendimentoExameModel;
+    protected $bairroModel;
+    protected $logradouroModel;
 
     public function __construct()
     {
@@ -30,6 +34,8 @@ class Atendimentos extends BaseController
         $this->exameModel = new ExameModel();
         $this->atendimentoProcedimentoModel = new AtendimentoProcedimentoModel();
         $this->atendimentoExameModel = new AtendimentoExameModel();
+        $this->bairroModel = new BairroModel();
+        $this->logradouroModel = new LogradouroModel();
     }
 
     /**
@@ -118,6 +124,13 @@ class Atendimentos extends BaseController
         $medicos = $this->medicoModel->where('status', 'Ativo')->orderBy('nome', 'ASC')->findAll();
         $procedimentos = $this->procedimentoModel->orderBy('nome', 'ASC')->findAll();
         $exames = $this->exameModel->orderBy('nome', 'ASC')->findAll();
+        
+        // Buscar bairros e logradouros para a modal de cadastro de paciente
+        $bairros = $this->bairroModel->orderBy('nome_bairro', 'ASC')->findAll();
+        $logradouros = $this->logradouroModel->select('pam_logradouros.id_logradouro, pam_logradouros.nome_logradouro, pam_logradouros.tipo_logradouro, pam_logradouros.id_bairro, pam_bairros.nome_bairro as bairro_nome')
+                                            ->join('pam_bairros', 'pam_bairros.id_bairro = pam_logradouros.id_bairro')
+                                            ->orderBy('pam_logradouros.nome_logradouro', 'ASC')
+                                            ->findAll();
 
         $data = [
             'title' => 'Novo Atendimento',
@@ -126,6 +139,8 @@ class Atendimentos extends BaseController
             'medicos' => $medicos,
             'procedimentos' => $procedimentos,
             'exames' => $exames,
+            'bairros' => $bairros,
+            'logradouros' => $logradouros,
             'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
             'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']

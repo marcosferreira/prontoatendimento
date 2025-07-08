@@ -76,17 +76,22 @@
                                 <label for="id_paciente" class="form-label">
                                     <i class="bi bi-person"></i> Paciente *
                                 </label>
-                                <select class="form-select <?= session('validation') && session('validation')->hasError('id_paciente') ? 'is-invalid' : '' ?>" 
-                                        id="id_paciente" name="id_paciente" required data-placeholder="Selecione um paciente">
-                                    <option value="">Selecione um paciente</option>
-                                    <?php if (isset($pacientes)): ?>
-                                        <?php foreach ($pacientes as $paciente): ?>
-                                            <option value="<?= $paciente['id_paciente'] ?>" <?= old('id_paciente') == $paciente['id_paciente'] ? 'selected' : '' ?>>
-                                                <?= esc($paciente['nome']) ?> - CPF: <?= $paciente['cpf'] ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+                                <div class="input-group">
+                                    <select class="form-select <?= session('validation') && session('validation')->hasError('id_paciente') ? 'is-invalid' : '' ?>" 
+                                            id="id_paciente" name="id_paciente" required data-placeholder="Selecione um paciente">
+                                        <option value="">Selecione um paciente</option>
+                                        <?php if (isset($pacientes)): ?>
+                                            <?php foreach ($pacientes as $paciente): ?>
+                                                <option value="<?= $paciente['id_paciente'] ?>" <?= old('id_paciente') == $paciente['id_paciente'] ? 'selected' : '' ?>>
+                                                    <?= esc($paciente['nome']) ?> - CPF: <?= $paciente['cpf'] ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#novoPacienteModal" title="Cadastrar novo paciente">
+                                        <i class="bi bi-person-plus"></i>
+                                    </button>
+                                </div>
                                 <div class="invalid-feedback">
                                     <?= session('validation') && session('validation')->hasError('id_paciente') ? session('validation')->getError('id_paciente') : 'Por favor, selecione um paciente.' ?>
                                 </div>
@@ -322,6 +327,254 @@
     </main>
 </div>
 
+<!-- Modal Novo Paciente -->
+<div class="modal fade" id="novoPacienteModal" tabindex="-1" aria-labelledby="novoPacienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="novoPacienteModalLabel">
+                    <i class="bi bi-person-plus"></i> Novo Paciente
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNovoPacienteModal" action="<?= base_url('pacientes/store') ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="return_to_atendimento" value="1">
+                    
+                    <!-- Dados Pessoais -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-person"></i> Dados Pessoais
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="modal_nome" class="form-label">
+                                        Nome Completo <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_nome"
+                                        name="nome"
+                                        required
+                                        placeholder="Digite o nome completo">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_data_nascimento" class="form-label">
+                                        Data de Nascimento <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date"
+                                        class="form-control"
+                                        id="modal_data_nascimento"
+                                        name="data_nascimento"
+                                        required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_cpf" class="form-label">
+                                        CPF <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_cpf"
+                                        name="cpf"
+                                        required
+                                        placeholder="000.000.000-00">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_rg" class="form-label">RG</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_rg"
+                                        name="rg"
+                                        placeholder="Digite o RG">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_sexo" class="form-label">
+                                        Sexo <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select" id="modal_sexo" name="sexo" required>
+                                        <option value="">Selecione</option>
+                                        <option value="M">Masculino</option>
+                                        <option value="F">Feminino</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_telefone" class="form-label">Telefone</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_telefone"
+                                        name="telefone"
+                                        placeholder="(00) 0000-0000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_celular" class="form-label">Celular</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_celular"
+                                        name="celular"
+                                        placeholder="(00) 00000-0000">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="modal_email" class="form-label">E-mail</label>
+                                    <input type="email"
+                                        class="form-control"
+                                        id="modal_email"
+                                        name="email"
+                                        placeholder="exemplo@email.com">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_numero_sus" class="form-label">Número do SUS</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_numero_sus"
+                                        name="numero_sus"
+                                        placeholder="000000000000000"
+                                        maxlength="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-geo-alt"></i> Endereço
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="modal_id_bairro" class="form-label">Bairro</label>
+                                    <select class="form-select" id="modal_id_bairro" name="id_bairro">
+                                        <option value="">Selecione o bairro</option>
+                                        <?php if (isset($bairros) && !empty($bairros)): ?>
+                                            <?php foreach ($bairros as $bairro): ?>
+                                                <option value="<?= $bairro['id_bairro'] ?>">
+                                                    <?= esc($bairro['nome_bairro']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_id_logradouro" class="form-label">Logradouro</label>
+                                    <select class="form-select" id="modal_id_logradouro" name="id_logradouro">
+                                        <option value="">Selecione primeiro o bairro</option>
+                                        <?php if (isset($logradouros) && !empty($logradouros)): ?>
+                                            <?php foreach ($logradouros as $logradouro): ?>
+                                                <option value="<?= $logradouro['id_logradouro'] ?>" 
+                                                        data-bairro="<?= $logradouro['id_bairro'] ?>" 
+                                                        style="display: none;">
+                                                    <?= esc($logradouro['tipo_logradouro'] . ' ' . $logradouro['nome_logradouro']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="modal_numero" class="form-label">Número</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_numero"
+                                        name="numero"
+                                        placeholder="123">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="modal_complemento" class="form-label">Complemento</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_complemento"
+                                        name="complemento"
+                                        placeholder="Apto, Bloco, Casa, etc.">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informações Adicionais -->
+                    <div class="form-section mb-4">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-info-circle"></i> Informações Adicionais
+                        </h5>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="modal_nome_responsavel" class="form-label">Nome do Responsável</label>
+                                    <input type="text"
+                                        class="form-control"
+                                        id="modal_nome_responsavel"
+                                        name="nome_responsavel"
+                                        placeholder="Digite o nome do responsável (obrigatório para menores de 18 anos)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="modal_observacoes" class="form-label">Observações</label>
+                                    <textarea class="form-control"
+                                        id="modal_observacoes"
+                                        name="observacoes"
+                                        rows="3"
+                                        placeholder="Observações gerais sobre o paciente..."
+                                        maxlength="1000"></textarea>
+                                    <div class="form-text">Máximo 1000 caracteres</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="submit" form="formNovoPacienteModal" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Salvar Paciente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
@@ -535,6 +788,311 @@
                 }
             }, 3000);
         });
+
+        // Modal Novo Paciente Functions
+        const novoPacienteModal = document.getElementById('novoPacienteModal');
+        const formNovoPacienteModal = document.getElementById('formNovoPacienteModal');
+
+        // Configurar máscaras e validações quando o modal for aberto
+        novoPacienteModal.addEventListener('shown.bs.modal', function() {
+            // Focar no primeiro campo
+            document.getElementById('modal_nome').focus();
+
+            // Aplicar máscaras
+            applyMask('modal_cpf', '000.000.000-00');
+            applyMask('modal_telefone', '(00) 0000-0000');
+            applyMask('modal_celular', '(00) 00000-0000');
+
+            // Filtrar logradouros por bairro
+            document.getElementById('modal_id_bairro').addEventListener('change', function() {
+                const bairroId = this.value;
+                const logradouroSelect = document.getElementById('modal_id_logradouro');
+                
+                // Limpar e resetar logradouros
+                logradouroSelect.value = '';
+                const options = logradouroSelect.querySelectorAll('option');
+                
+                options.forEach(option => {
+                    if (option.value === '') {
+                        option.style.display = 'block';
+                        option.textContent = bairroId ? 'Selecione o logradouro' : 'Selecione primeiro o bairro';
+                    } else {
+                        const optionBairro = option.getAttribute('data-bairro');
+                        option.style.display = (bairroId && optionBairro === bairroId) ? 'block' : 'none';
+                    }
+                });
+            });
+
+            // Validar idade e responsável
+            document.getElementById('modal_data_nascimento').addEventListener('change', function() {
+                const nascimento = new Date(this.value);
+                const hoje = new Date();
+                let idade = hoje.getFullYear() - nascimento.getFullYear();
+                const mes = hoje.getMonth() - nascimento.getMonth();
+
+                if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+                    idade--;
+                }
+
+                const responsavelField = document.getElementById('modal_nome_responsavel');
+                const responsavelLabel = responsavelField.closest('.mb-3').querySelector('label');
+
+                if (idade < 18) {
+                    responsavelField.required = true;
+                    responsavelLabel.innerHTML = 'Nome do Responsável <span class="text-danger">*</span>';
+                    responsavelField.placeholder = 'Obrigatório para menores de 18 anos';
+                } else {
+                    responsavelField.required = false;
+                    responsavelLabel.innerHTML = 'Nome do Responsável';
+                    responsavelField.placeholder = 'Digite o nome do responsável (obrigatório para menores de 18 anos)';
+                }
+            });
+        });
+
+        // Limpar formulário quando modal for fechada
+        novoPacienteModal.addEventListener('hidden.bs.modal', function() {
+            formNovoPacienteModal.reset();
+            formNovoPacienteModal.classList.remove('was-validated');
+            
+            // Resetar logradouros
+            const logradouroSelect = document.getElementById('modal_id_logradouro');
+            logradouroSelect.innerHTML = '<option value="">Selecione primeiro o bairro</option>';
+            
+            // Adicionar todas as opções de logradouro novamente
+            <?php if (isset($logradouros) && !empty($logradouros)): ?>
+                <?php foreach ($logradouros as $logradouro): ?>
+                    const option_<?= $logradouro['id_logradouro'] ?> = document.createElement('option');
+                    option_<?= $logradouro['id_logradouro'] ?>.value = '<?= $logradouro['id_logradouro'] ?>';
+                    option_<?= $logradouro['id_logradouro'] ?>.setAttribute('data-bairro', '<?= $logradouro['id_bairro'] ?>');
+                    option_<?= $logradouro['id_logradouro'] ?>.style.display = 'none';
+                    option_<?= $logradouro['id_logradouro'] ?>.textContent = '<?= esc($logradouro['tipo_logradouro'] . ' ' . $logradouro['nome_logradouro']) ?>';
+                    logradouroSelect.appendChild(option_<?= $logradouro['id_logradouro'] ?>);
+                <?php endforeach; ?>
+            <?php endif; ?>
+        });
+
+        // Submeter formulário do modal
+        formNovoPacienteModal.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar CPF
+            const cpf = document.getElementById('modal_cpf').value.replace(/\D/g, '');
+            if (cpf.length !== 11 || !validarCPF(cpf)) {
+                alert('CPF inválido. Por favor, verifique.');
+                document.getElementById('modal_cpf').focus();
+                return;
+            }
+
+            // Mostrar loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+            submitBtn.disabled = true;
+
+            // Submeter via AJAX
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Adicionar novo paciente ao select
+                    const pacienteSelect = document.getElementById('id_paciente');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.paciente.id_paciente;
+                    newOption.textContent = `${data.paciente.nome} - CPF: ${data.paciente.cpf}`;
+                    newOption.selected = true;
+                    pacienteSelect.appendChild(newOption);
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(novoPacienteModal);
+                    modal.hide();
+                    
+                    // Mostrar mensagem de sucesso
+                    showAlert('success', 'Paciente cadastrado com sucesso e selecionado!');
+                } else {
+                    showAlert('danger', data.message || 'Erro ao cadastrar paciente');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('danger', 'Erro de comunicação com o servidor');
+            })
+            .finally(() => {
+                // Restaurar botão
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Função para aplicar máscara
+        function applyMask(elementId, mask) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            element.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                let maskedValue = '';
+                let maskIndex = 0;
+                let valueIndex = 0;
+
+                while (maskIndex < mask.length && valueIndex < value.length) {
+                    if (mask[maskIndex] === '0') {
+                        maskedValue += value[valueIndex];
+                        valueIndex++;
+                    } else {
+                        maskedValue += mask[maskIndex];
+                    }
+                    maskIndex++;
+                }
+
+                this.value = maskedValue;
+            });
+        }
+
+        // Função para validar CPF
+        function validarCPF(cpf) {
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+            let soma = 0;
+            for (let i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+
+            let resto = 11 - (soma % 11);
+            let digito1 = resto === 10 || resto === 11 ? 0 : resto;
+
+            if (digito1 !== parseInt(cpf.charAt(9))) return false;
+
+            soma = 0;
+            for (let i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+
+            resto = 11 - (soma % 11);
+            let digito2 = resto === 10 || resto === 11 ? 0 : resto;
+
+            return digito2 === parseInt(cpf.charAt(10));
+        }
+
+        // Função para mostrar alertas
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Inserir no topo do formulário
+            const form = document.getElementById('formAtendimento');
+            form.insertBefore(alertDiv, form.firstChild);
+            
+            // Auto-remover após 5 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
     });
 </script>
+<?= $this->endSection() ?>
+
+<?= $this->section('styles') ?>
+<style>
+    /* Estilos para a modal de novo paciente */
+    .modal-xl .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .form-section {
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        margin-bottom: 1rem;
+    }
+
+    .form-section-title {
+        color: #0d6efd;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.25rem;
+        border-bottom: 1px solid #0d6efd;
+        font-size: 0.9rem;
+    }
+
+    .form-section-title i {
+        margin-right: 0.5rem;
+    }
+
+    /* Melhorar aparência do input-group com select e botão */
+    .input-group .form-select {
+        border-right: 0;
+    }
+
+    .input-group .btn-outline-success {
+        border-left: 0;
+        border-color: #ced4da;
+    }
+
+    .input-group .form-select:focus {
+        box-shadow: none;
+        border-color: #86b7fe;
+    }
+
+    .input-group .form-select:focus + .btn-outline-success {
+        border-color: #86b7fe;
+    }
+
+    /* Animação para campos pré-selecionados */
+    .highlight-field {
+        animation: highlightPulse 2s ease-in-out;
+    }
+
+    @keyframes highlightPulse {
+        0% {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+        }
+        50% {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        100% {
+            background-color: #ffffff;
+            border-color: #ced4da;
+        }
+    }
+
+    /* Melhorar visual dos alertas */
+    .alert {
+        border-left: 4px solid;
+        border-radius: 0.375rem;
+    }
+
+    .alert-success {
+        border-left-color: #198754;
+        background-color: #d1e7dd;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+    .alert-info {
+        border-left-color: #0dcaf0;
+        background-color: #d1ecf1;
+    }
+</style>
 <?= $this->endSection() ?>
