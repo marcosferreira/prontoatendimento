@@ -253,8 +253,8 @@ class Notificacoes extends BaseController
         $periodo = $this->request->getGet('periodo') ?: 30;
         $formato = $this->request->getGet('formato') ?: 'html';
         
-        $dataInicio = date('Y-m-d', strtotime("-{$periodo} days"));
-        $dataFim = date('Y-m-d');
+        $dataInicio = date('Y-m-d 00:00:00', strtotime("-{$periodo} days"));
+        $dataFim = date('Y-m-d 23:59:59');
 
         $notificacoes = $this->notificacaoModel
             ->where('created_at >=', $dataInicio)
