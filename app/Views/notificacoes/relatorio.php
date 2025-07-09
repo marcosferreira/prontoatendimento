@@ -24,16 +24,6 @@
         <div class="main-container">
             <!-- Header -->
             <div class="header no-print">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="<?= base_url('notificacoes') ?>">
-                                <i class="bi bi-bell"></i> Notificações
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active">Relatório</li>
-                    </ol>
-                </nav>
                 <h1>
                     <i class="bi bi-file-earmark-text"></i> Relatório de Notificações BI
                 </h1>
