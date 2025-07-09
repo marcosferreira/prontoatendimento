@@ -262,7 +262,9 @@
                                                             } elseif ($notificacao['tipo'] === 'surto_sintomas') {
                                                                 echo "Local: " . esc($parametros['bairro_nome'] ?? 'N/A') . " - Casos: " . ($parametros['total_casos'] ?? 0);
                                                             } elseif ($notificacao['tipo'] === 'alta_demanda') {
-                                                                echo "Data: " . date('d/m/Y', strtotime($parametros['data'])) . " - " . ($parametros['atendimentos'] ?? 0) . " atendimentos";
+                                                                $data = $parametros['data'] ?? $parametros['data_simulada'] ?? null;
+                                                                $dataFormatada = $data ? date('d/m/Y', strtotime($data)) : 'N/A';
+                                                                echo "Data: " . $dataFormatada . " - " . ($parametros['atendimentos'] ?? $parametros['atendimentos_simulados'] ?? 0) . " atendimentos";
                                                             }
                                                             ?>
                                                         </small>

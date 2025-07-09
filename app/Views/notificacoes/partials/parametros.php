@@ -46,15 +46,18 @@ if (!isset($tipo)) $tipo = 'default';
     <?php elseif ($tipo === 'alta_demanda'): ?>
         <div class="col-md-3">
             <small class="text-muted">Data:</small><br>
-            <?= isset($parametros['data']) ? date('d/m/Y', strtotime($parametros['data'])) : 'N/A' ?>
+            <?php 
+            $data = $parametros['data'] ?? $parametros['data_simulada'] ?? null;
+            echo $data ? date('d/m/Y', strtotime($data)) : 'N/A';
+            ?>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Horário:</small><br>
-            <?= isset($parametros['hora']) ? $parametros['hora'] . ':00h' : 'N/A' ?>
+            <?= isset($parametros['hora']) ? $parametros['hora'] . ':00h' : (isset($parametros['hora_simulada']) ? $parametros['hora_simulada'] . 'h' : 'N/A') ?>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Atendimentos:</small><br>
-            <span class="badge bg-warning"><?= $parametros['atendimentos'] ?? 0 ?></span>
+            <span class="badge bg-warning"><?= $parametros['atendimentos'] ?? $parametros['atendimentos_simulados'] ?? 0 ?></span>
         </div>
         <div class="col-md-3">
             <small class="text-muted">Críticos:</small><br>
