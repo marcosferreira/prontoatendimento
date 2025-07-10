@@ -15,16 +15,6 @@
         <div class="main-container">
             <!-- Header -->
             <div class="header">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="<?= base_url('notificacoes') ?>">
-                                <i class="bi bi-bell"></i> Notificações
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active">Detalhes</li>
-                    </ol>
-                </nav>
                 <h1>
                     <i class="bi bi-eye"></i> Detalhes da Notificação
                 </h1>

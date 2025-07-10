@@ -145,6 +145,14 @@ class Pacientes extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
+            // Se for uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Dados inválidos',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -174,8 +182,39 @@ class Pacientes extends BaseController
         ];
 
         if ($this->pacienteModel->save($data)) {
+            $pacienteId = $this->pacienteModel->getInsertID();
+            
+            // Se for uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX()) {
+                // Buscar o paciente recém-criado
+                $paciente = $this->pacienteModel->find($pacienteId);
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Paciente cadastrado com sucesso!',
+                    'paciente' => [
+                        'id_paciente' => $paciente['id_paciente'],
+                        'nome' => $paciente['nome'],
+                        'cpf' => $paciente['cpf']
+                    ]
+                ]);
+            }
+            
+            // Verificar se deve retornar para atendimento
+            if ($this->request->getPost('return_to_atendimento')) {
+                return redirect()->to('atendimentos/create?paciente=' . $pacienteId)
+                    ->with('success', 'Paciente cadastrado com sucesso!');
+            }
+            
             return redirect()->to('pacientes')->with('success', 'Paciente cadastrado com sucesso!');
         } else {
+            // Se for uma requisição AJAX, retornar JSON
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao cadastrar paciente. Tente novamente.'
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Erro ao cadastrar paciente.');
         }
     }

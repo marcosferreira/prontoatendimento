@@ -24,16 +24,6 @@
         <div class="main-container">
             <!-- Header -->
             <div class="header no-print">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="<?= base_url('notificacoes') ?>">
-                                <i class="bi bi-bell"></i> Notificações
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active">Relatório</li>
-                    </ol>
-                </nav>
                 <h1>
                     <i class="bi bi-file-earmark-text"></i> Relatório de Notificações BI
                 </h1>
@@ -262,7 +252,9 @@
                                                             } elseif ($notificacao['tipo'] === 'surto_sintomas') {
                                                                 echo "Local: " . esc($parametros['bairro_nome'] ?? 'N/A') . " - Casos: " . ($parametros['total_casos'] ?? 0);
                                                             } elseif ($notificacao['tipo'] === 'alta_demanda') {
-                                                                echo "Data: " . date('d/m/Y', strtotime($parametros['data'])) . " - " . ($parametros['atendimentos'] ?? 0) . " atendimentos";
+                                                                $data = $parametros['data'] ?? $parametros['data_simulada'] ?? null;
+                                                                $dataFormatada = $data ? date('d/m/Y', strtotime($data)) : 'N/A';
+                                                                echo "Data: " . $dataFormatada . " - " . ($parametros['atendimentos'] ?? $parametros['atendimentos_simulados'] ?? 0) . " atendimentos";
                                                             }
                                                             ?>
                                                         </small>
