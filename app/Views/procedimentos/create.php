@@ -131,11 +131,6 @@
                         <select id="filterCategory" class="form-select">
                             <option value="">Todas as categorias</option>
                             <option value="03.01">Consultas/Atendimentos</option>
-                            <option value="03.02">Fisioterapia</option>
-                            <option value="03.03">Pequenas Cirurgias</option>
-                            <option value="03.04">Procedimentos Clínicos</option>
-                            <option value="04.01">Exames Laboratoriais</option>
-                            <option value="04.02">Exames de Imagem</option>
                         </select>
                     </div>
                 </div>
@@ -152,119 +147,55 @@
                         <tbody id="tussTableBody">
                             <!-- Procedimentos de Consulta/Atendimento -->
                             <tr data-category="03.01">
-                                <td><code>0301010017</code></td>
-                                <td>Consulta médica em atenção primária</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301010017', 'Consulta médica em atenção primária')">Usar</button></td>
+                                <td><code>03.01.06.00.61</code></td>
+                                <td>Atendimento de urgência em atenção espericalizada</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.06.00.61', 'Atendimento de urgência em atenção espericalizada')">Usar</button></td>
                             </tr>
                             <tr data-category="03.01">
-                                <td><code>0301010026</code></td>
+                                <td><code>03.01.01.01.18</code></td>
+                                <td>Acolhimento com classificação de risco</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.01.01.18', 'Acolhimento com classificação de risco')">Usar</button></td>
+                            </tr>
+                            <tr data-category="03.01">
+                                <td><code>03.01.01.00.48</code></td>
+                                <td>Consulta de Profissionais dfe Nível Superior na atenção especializada (exceto médico)</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.01.00.48', 'Consulta de Profissionais dfe Nível Superior na atenção especializada (exceto médico)')">Usar</button></td>
+                            </tr>
+                            <tr data-category="03.01">
+                                <td><code>03.01.01.00.72</code></td>
                                 <td>Consulta médica em atenção especializada</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301010026', 'Consulta médica em atenção especializada')">Usar</button></td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.01.00.72', 'Consulta médica em atenção especializada')">Usar</button></td>
+                            </tr>
+
+                            <tr data-category="03.01">
+                                <td><code>03.01.10.01.52</code></td>
+                                <td>Retirada de pontos de cirurgias (por pacientes)</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.10.01.52', 'Retirada de pontos de cirurgias (por pacientes)')">Usar</button></td>
                             </tr>
                             <tr data-category="03.01">
-                                <td><code>0301010034</code></td>
-                                <td>Consulta médica de urgência</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301010034', 'Consulta médica de urgência')">Usar</button></td>
+                                <td><code>03.01.10.00.39</code></td>
+                                <td>Aferição de pressão arterial</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.10.00.39', 'Aferição de pressão arterial')">Usar</button></td>
                             </tr>
-
-                            <!-- Procedimentos Clínicos -->
-                            <tr data-category="03.04">
-                                <td><code>0301020013</code></td>
-                                <td>Curativo grau I</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301020013', 'Curativo grau I')">Usar</button></td>
+                            <tr data-category="03.01">
+                                <td><code>03.01.10.00.12</code></td>
+                                <td>Medicamentos na atenção especializada</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.10.00.12', 'Medicamentos na atenção especializada')">Usar</button></td>
                             </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301020021</code></td>
-                                <td>Curativo grau II</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301020021', 'Curativo grau II')">Usar</button></td>
+                            <tr data-category="03.01">
+                                <td><code>04.01.01.01.12</code></td>
+                                <td>Retirada de corpo estranho subcutaneo</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('04.01.01.01.12', 'Retirada de corpo estranho subcutaneo')">Usar</button></td>
                             </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301020030</code></td>
-                                <td>Sutura simples</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301020030', 'Sutura simples')">Usar</button></td>
+                            <tr data-category="03.01">
+                                <td><code>02.14.01.00.15</code></td>
+                                <td>Glicemia capilar</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('02.14.01.00.15', 'Glicemia capilar')">Usar</button></td>
                             </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301030019</code></td>
-                                <td>Aplicação de medicamento intramuscular</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301030019', 'Aplicação de medicamento intramuscular')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301030027</code></td>
-                                <td>Aplicação de medicamento endovenoso</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301030027', 'Aplicação de medicamento endovenoso')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301040014</code></td>
-                                <td>Nebulização</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301040014', 'Nebulização')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.04">
-                                <td><code>0301050010</code></td>
-                                <td>Lavagem auricular</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0301050010', 'Lavagem auricular')">Usar</button></td>
-                            </tr>
-
-                            <!-- Pequenas Cirurgias -->
-                            <tr data-category="03.03">
-                                <td><code>0303010016</code></td>
-                                <td>Drenagem de abscesso</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0303010016', 'Drenagem de abscesso')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.03">
-                                <td><code>0303020012</code></td>
-                                <td>Excisão de cisto sebáceo</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0303020012', 'Excisão de cisto sebáceo')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.03">
-                                <td><code>0303030018</code></td>
-                                <td>Retirada de corpo estranho</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0303030018', 'Retirada de corpo estranho')">Usar</button></td>
-                            </tr>
-
-                            <!-- Fisioterapia -->
-                            <tr data-category="03.02">
-                                <td><code>0302010015</code></td>
-                                <td>Atendimento fisioterapêutico</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0302010015', 'Atendimento fisioterapêutico')">Usar</button></td>
-                            </tr>
-                            <tr data-category="03.02">
-                                <td><code>0302020011</code></td>
-                                <td>Sessão de fisioterapia respiratória</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0302020011', 'Sessão de fisioterapia respiratória')">Usar</button></td>
-                            </tr>
-
-                            <!-- Exames Laboratoriais -->
-                            <tr data-category="04.01">
-                                <td><code>0401010014</code></td>
-                                <td>Hemograma completo</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0401010014', 'Hemograma completo')">Usar</button></td>
-                            </tr>
-                            <tr data-category="04.01">
-                                <td><code>0401020010</code></td>
-                                <td>Glicemia de jejum</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0401020010', 'Glicemia de jejum')">Usar</button></td>
-                            </tr>
-                            <tr data-category="04.01">
-                                <td><code>0401030016</code></td>
-                                <td>Urina tipo I</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0401030016', 'Urina tipo I')">Usar</button></td>
-                            </tr>
-
-                            <!-- Exames de Imagem -->
-                            <tr data-category="04.02">
-                                <td><code>0402010012</code></td>
-                                <td>Radiografia de tórax</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0402010012', 'Radiografia de tórax')">Usar</button></td>
-                            </tr>
-                            <tr data-category="04.02">
-                                <td><code>0402020018</code></td>
-                                <td>Ultrassonografia abdominal</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0402020018', 'Ultrassonografia abdominal')">Usar</button></td>
-                            </tr>
-                            <tr data-category="04.02">
-                                <td><code>0402030014</code></td>
-                                <td>Eletrocardiograma</td>
-                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('0402030014', 'Eletrocardiograma')">Usar</button></td>
+                            <tr data-category="03.01">
+                                <td><code>03.01.10.00.12</code></td>
+                                <td>Ingeção</td>
+                                <td><button class="btn btn-sm btn-primary" onclick="selectTussCode('03.01.10.00.12', 'Ingeção')">Usar</button></td>
                             </tr>
                         </tbody>
                     </table>
