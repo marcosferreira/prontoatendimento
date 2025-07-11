@@ -14,17 +14,17 @@ class AddIndicesOptimizacao extends Migration
         
         // Aplicar índices usando SQL direto com o prefixo correto
         // Verificar se índice já existe antes de criar
-        try {
-            $this->db->query("CREATE INDEX idx_paciente_cpf ON {$prefix}pacientes(cpf)");
-        } catch (\Exception $e) {
-            // Índice já existe, ignorar
-        }
+        // try {
+        //     $this->db->query("CREATE INDEX idx_paciente_cpf ON {$prefix}pacientes(cpf)");
+        // } catch (\Exception $e) {
+        //     // Índice já existe, ignorar
+        // }
         
-        try {
-            $this->db->query("CREATE INDEX idx_paciente_sus ON {$prefix}pacientes(sus)");
-        } catch (\Exception $e) {
-            // Índice já existe, ignorar
-        }
+        // try {
+        //     $this->db->query("CREATE INDEX idx_paciente_sus ON {$prefix}pacientes(sus)");
+        // } catch (\Exception $e) {
+        //     // Índice já existe, ignorar
+        // }
         
         try {
             $this->db->query("CREATE INDEX idx_paciente_nome ON {$prefix}pacientes(nome)");
@@ -70,17 +70,17 @@ class AddIndicesOptimizacao extends Migration
         $prefix = $config->default['DBPrefix'] ?? '';
         
         // Remover índices criados (usar try/catch pois o índice pode não existir)
-        try {
-            $this->db->query("DROP INDEX idx_paciente_cpf ON {$prefix}pacientes");
-        } catch (\Exception $e) {
-            // Índice não existe, ignorar
-        }
+        // try {
+        //     $this->db->query("DROP INDEX idx_paciente_cpf ON {$prefix}pacientes");
+        // } catch (\Exception $e) {
+        //     // Índice não existe, ignorar
+        // }
         
-        try {
-            $this->db->query("DROP INDEX idx_paciente_sus ON {$prefix}pacientes");
-        } catch (\Exception $e) {
-            // Índice não existe, ignorar
-        }
+        // try {
+        //     $this->db->query("DROP INDEX idx_paciente_sus ON {$prefix}pacientes");
+        // } catch (\Exception $e) {
+        //     // Índice não existe, ignorar
+        // }
         
         try {
             $this->db->query("DROP INDEX idx_paciente_nome ON {$prefix}pacientes");

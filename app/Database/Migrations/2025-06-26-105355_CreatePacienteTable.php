@@ -29,7 +29,6 @@ class CreatePacienteTable extends Migration
             'cpf' => [
                 'type'       => 'varchar',
                 'constraint' => '14',
-                'unique'     => true,
                 'null'       => false,
             ],
             'rg' => [
@@ -58,7 +57,7 @@ class CreatePacienteTable extends Migration
             ],
             'data_nascimento' => [
                 'type' => 'date',
-                'null' => false,
+                'null' => true,
             ],
             'sexo' => [
                 'type'       => 'enum',

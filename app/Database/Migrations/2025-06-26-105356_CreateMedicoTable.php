@@ -23,7 +23,6 @@ class CreateMedicoTable extends Migration
             'crm' => [
                 'type'       => 'varchar',
                 'constraint' => 20,
-                'unique'     => true,
                 'null'       => false,
             ],
             'especialidade' => [
