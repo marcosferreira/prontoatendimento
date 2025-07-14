@@ -24,7 +24,7 @@
                         <div class="section-card">
                             <h2 class="section-title">
                                 <i class="bi bi-person-badge"></i>
-                                Últimos Atendimentos
+                                Últimos Atendimentos (5 mais recentes)
                             </h2>
                             <div class="table-responsive">
                                 
