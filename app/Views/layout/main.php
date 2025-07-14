@@ -32,6 +32,26 @@
 </head>
 
 <body>
+    <script>
+        // Aplica o estado da sidebar do localStorage antes do DOM carregar para evitar 'flicker'.
+        // Isso garante que o layout não mude visualmente após a renderização inicial.
+        (function() {
+            try {
+                const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                const isAdminCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
+
+                if (isCollapsed) {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+                // A verificação para admin é separada para permitir diferentes estados
+                if (isAdminCollapsed) {
+                    document.body.classList.add('admin-sidebar-collapsed');
+                }
+            } catch (e) {
+                // Silencia erros caso o localStorage não esteja disponível.
+            }
+        })();
+    </script>
     <div class="app-container">
         <?= $this->include('components/sidebar') ?>
 
