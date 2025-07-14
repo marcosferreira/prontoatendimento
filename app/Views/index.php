@@ -215,7 +215,7 @@
                             </h2>
                             <?php if (!empty($notificacoes)): ?>
                                 <?php foreach ($notificacoes as $notificacao): ?>
-                                    <div class="alert-modern alert-<?= $notificacao['severidade'] ?>" role="alert">
+                                    <div class="alert-modern my-2 alert-<?= $notificacao['severidade'] ?>" role="alert">
                                         <i class="bi bi-<?= getSeveridadeIcone($notificacao['severidade']) ?>"></i>
                                         <div>
                                             <strong><?= esc($notificacao['titulo']) ?>:</strong> 
