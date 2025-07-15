@@ -18,7 +18,8 @@ class MedicoModel extends Model
         'especialidade',
         'telefone',
         'email',
-        'status'
+        'status',
+        'id_user'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -41,7 +42,8 @@ class MedicoModel extends Model
         'especialidade' => 'max_length[100]',
         'telefone' => 'permit_empty|max_length[20]',
         'email' => 'permit_empty|valid_email|max_length[255]',
-        'status' => 'in_list[Ativo,Inativo]'
+        'status' => 'in_list[Ativo,Inativo]',
+        'id_user' => 'permit_empty|is_natural_no_zero|validateUserIsMedicoGroup'
     ];
     
     protected $validationMessages = [
@@ -66,8 +68,24 @@ class MedicoModel extends Model
         ],
         'status' => [
             'in_list' => 'Status deve ser Ativo ou Inativo'
+        ],
+        'id_user' => [
+            'is_natural_no_zero' => 'Selecione um usuário válido',
+            'validateUserIsMedicoGroup' => 'O usuário selecionado não pertence ao grupo médico'
         ]
     ];
+
+    /**
+     * Retorna o usuário vinculado ao médico (se houver)
+     */
+    public function getUsuarioVinculado($id_medico)
+    {
+        $medico = $this->find($id_medico);
+        if (!$medico || empty($medico['id_user'])) {
+            return null;
+        }
+        return model('UserModel')->find($medico['id_user']);
+    }
     
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;

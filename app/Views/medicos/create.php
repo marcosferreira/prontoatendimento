@@ -68,6 +68,12 @@
                                                value="<?= old('crm') ?>" required>
                                     </div>
                                 </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="id_user" class="form-label">Usuário do Sistema (opcional)</label>
+                    <select class="form-select" id="id_user" name="id_user"></select>
+                </div>
+            </div>
                             </div>
 
                             <div class="row">
@@ -109,13 +115,15 @@
     </main>
 </div>
 
+<script src="<?= base_url('assets/js/usuarios-medicos-select.js') ?>"></script>
 <script>
+const base_url = "<?= base_url() ?>";
+carregarUsuariosMedicos('id_user');
 // Máscara para CRM
 document.getElementById('crm').addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
     e.target.value = value;
 });
-
 // Capitalizar nome
 document.getElementById('nome').addEventListener('input', function(e) {
     const words = e.target.value.split(' ');

@@ -4,7 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
- */
+*/
 $routes->get('/', 'Home::index');
 $routes->get('/test-email', 'Home::testEmail');
 
@@ -88,6 +88,7 @@ $routes->group('medicos', static function ($routes) {
     // AJAX routes
     $routes->post('search', 'Medicos::search');
     $routes->get('ativos', 'Medicos::getAtivos');
+    $routes->get('usuarios-medicos-api', 'UsuariosMedicosApi::index');
     
     // Export
     $routes->get('export', 'Medicos::export');
