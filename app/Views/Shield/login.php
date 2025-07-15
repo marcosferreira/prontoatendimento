@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/auth_layout') ?>
+<?= $this->extend('Shield/layout') ?>
 
 <?= $this->section('title') ?><?= lang('Auth.login') ?> <?= $this->endSection() ?>
 
