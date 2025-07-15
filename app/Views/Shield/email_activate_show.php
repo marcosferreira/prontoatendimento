@@ -1,4 +1,4 @@
-<?= $this->extend(config('Auth')->views['layout']) ?>
+<?= $this->extend('layouts/auth_layout') ?>
 
 <?= $this->section('title') ?><?= lang('Auth.emailActivateTitle') ?> <?= $this->endSection() ?>
 
