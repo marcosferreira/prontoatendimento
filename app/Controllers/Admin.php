@@ -9,10 +9,32 @@ class Admin extends BaseController
      */
     public function index(): string
     {
+        $db = \Config\Database::connect();
+        
+        // Busca usuários recentes com dados completos
+        $builder = $db->table('users u')
+            ->select('u.id, u.username, u.nome, u.cpf, u.active, u.created_at, ai.secret as email, gu.group as grupo_nome')
+            ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+            ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+            ->where('u.deleted_at', null)
+            ->orderBy('u.created_at', 'DESC')
+            ->limit(5);
+        
+        $recentUsers = $builder->get()->getResultArray();
+        
+        // Processa os dados para garantir valores padrão
+        foreach ($recentUsers as &$user) {
+            $user['nome'] = $user['nome'] ?? $user['username'];
+            $user['email'] = $user['email'] ?? 'N/A';
+            $user['grupo_nome'] = $user['grupo_nome'] ?? 'N/A';
+            $user['active'] = (int)($user['active'] ?? 0);
+        }
+
         $data = [
             'title' => 'Administração',
             'description' => 'Painel Administrativo - Superadmin',
-            'keywords' => 'admin, administração, superadmin, painel'
+            'keywords' => 'admin, administração, superadmin, painel',
+            'recentUsers' => $recentUsers
         ];
 
         return view('admin/dashboard', $data);
