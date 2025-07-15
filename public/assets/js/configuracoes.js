@@ -326,11 +326,11 @@ class ConfiguracoesManager {
             document.getElementById('editUserEmail').value = cells[2].textContent.trim();
             
             // Set profile
-            const profileText = cells[3].textContent.trim().toLowerCase();
+            const profileText = cells[3].querySelector('.status-badge').textContent.trim().toLowerCase();
             document.getElementById('editUserProfile').value = profileText;
             
             // Set active status
-            const isActive = cells[4].textContent.includes('Ativo');
+            const isActive = cells[4].textContent.trim().toLowerCase() === 'ativo';
             document.getElementById('editUserActive').checked = isActive;
 
             bootstrap.Modal.getOrCreateInstance(modal).show();
@@ -415,7 +415,23 @@ class ConfiguracoesManager {
         }
 
         try {
+            const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
+            if (!userRow) {
+                this.showAlert('error', 'Usuário não encontrado na tabela.');
+                return;
+            }
+            
+            const cells = userRow.querySelectorAll('td');
+            const nome = cells[0].textContent.trim();
+            const cpf = cells[1].textContent.trim();
+            const email = cells[2].textContent.trim();
+            const perfil = cells[3].querySelector('.status-badge').textContent.trim().toLowerCase();
+
             const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('cpf', cpf);
+            formData.append('email', email);
+            formData.append('perfil', perfil);
             formData.append('ativo', currentStatus === '1' ? '0' : '1');
 
             const response = await fetch(`${this.baseUrl}/configuracoes/editarUsuario/${userId}`, {
@@ -441,8 +457,101 @@ class ConfiguracoesManager {
     }
 
     async refreshUsersTable() {
-        // Reload the page to refresh the users table
-        window.location.reload();
+        try {
+            console.log('Iniciando refresh da tabela de usuários');
+            const response = await fetch(`${this.baseUrl}/configuracoes/usuarios`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            console.log('Resposta recebida:', response.status, response.statusText);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            const result = await response.json();
+            console.log('Resultado parseado:', result);
+            
+            if (result.success) {
+                const table = document.getElementById('usersTable');
+                if (!table) {
+                    throw new Error('Elemento usersTable não encontrado');
+                }
+                
+                const tableBody = table.querySelector('tbody');
+                if (!tableBody) {
+                    throw new Error('Tbody da tabela não encontrado');
+                }
+                
+                tableBody.innerHTML = this.renderUsersTableRows(result.data);
+                console.log('Tabela atualizada com sucesso');
+            } else {
+                console.error('Falha na resposta do servidor:', result);
+                this.showAlert('error', `Falha ao atualizar a lista de usuários: ${result.message || 'Erro desconhecido'}`);
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar tabela de usuários:', error);
+            this.showAlert('error', `Erro ao atualizar a lista de usuários: ${error.message}`);
+        }
+    }
+
+    renderUsersTableRows(users) {
+        if (users.length === 0) {
+            return `
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                        <h4 class="text-muted">Nenhum usuário encontrado</h4>
+                    </td>
+                </tr>
+            `;
+        }
+
+        const grupoColors = {
+            'admin': 'background: #fee2e2; color: #991b1b;',
+            'superadmin': 'background: #fee2e2; color: #991b1b;',
+            'medico': 'background: #dbeafe; color: #1e40af;',
+            'enfermeiro': 'background: #ecfdf5; color: #047857;',
+            'farmaceutico': 'background: #dcfce7; color: #047857;',
+            'recepcionista': 'background: #fef3c7; color: #b45309;',
+            'gestor': 'background: #f3e8ff; color: #7c3aed;'
+        };
+
+        return users.map(usuario => {
+            const grupo = usuario.grupo_nome || 'N/A';
+            const style = grupoColors[grupo.toLowerCase()] || 'background: #f3f4f6; color: #374151;';
+            const statusBadge = usuario.active ? '<span class="status-badge status-normal">Ativo</span>' : '<span class="status-badge status-danger">Inativo</span>';
+            const lastActive = this.formatLastActive(usuario.last_active);
+            const toggleIcon = usuario.active ? 'x-circle' : 'check-circle';
+            const toggleTitle = usuario.active ? 'Desativar' : 'Ativar';
+            const toggleBtnClass = usuario.active ? 'danger' : 'success';
+
+            return `
+                <tr data-user-id="${usuario.id}">
+                    <td><strong>${this.escapeHTML(usuario.nome || usuario.username)}</strong></td>
+                    <td>${this.escapeHTML(usuario.cpf || 'N/A')}</td>
+                    <td>${this.escapeHTML(usuario.email || 'N/A')}</td>
+                    <td><span class="status-badge" style="${style}">${this.escapeHTML(this.ucfirst(grupo))}</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${lastActive}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary btn-sm btn-edit-user" data-user-id="${usuario.id}" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm btn-reset-password" data-user-id="${usuario.id}" title="Resetar Senha">
+                                <i class="bi bi-key"></i>
+                            </button>
+                            <button class="btn btn-outline-${toggleBtnClass} btn-sm btn-toggle-status" data-user-id="${usuario.id}" data-current-status="${usuario.active}" title="${toggleTitle}">
+                                <i class="bi bi-${toggleIcon}"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
     }
 
     // Audit Methods
@@ -704,43 +813,42 @@ class ConfiguracoesManager {
             second: '2-digit'
         });
     }
+
+    escapeHTML(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    formatLastActive(lastActive) {
+        if (!lastActive || lastActive === 'Nunca' || lastActive === '0000-00-00 00:00:00') {
+            return '<span class="text-muted">Nunca acessou</span>';
+        }
+        
+        try {
+            const date = new Date(lastActive);
+            if (isNaN(date.getTime())) {
+                return '<span class="text-muted">Nunca acessou</span>';
+            }
+            
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return '<span class="text-muted">Nunca acessou</span>';
+        }
+    }
+
+    ucfirst(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 }
 
-// Global functions for onclick events
-window.createBackup = async function(type) {
-    const button = document.getElementById(type === 'completo' ? 'createFullBackup' : 'createDataBackup');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Criando...';
-    button.disabled = true;
-
-    try {
-        const response = await fetch(`${window.location.origin}/configuracoes/criarBackup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: `tipo=${type}`
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            configManager.showAlert('success', result.message);
-            configManager.loadBackupHistory(); // Refresh history
-        } else {
-            configManager.showAlert('error', result.message);
-        }
-    } catch (error) {
-        console.error('Erro:', error);
-        configManager.showAlert('error', 'Erro ao criar backup');
-    } finally {
-        button.innerHTML = originalText;
-        button.disabled = false;
-    }
-};
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    window.configManager = new ConfiguracoesManager();
+document.addEventListener('DOMContentLoaded', () => {
+    new ConfiguracoesManager();
 });

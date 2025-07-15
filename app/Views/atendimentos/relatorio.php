@@ -334,7 +334,7 @@
         new Chart(ctxMedicos, {
             type: 'bar',
             data: {
-                labels: medicosData.length > 0 ? medicosData.map(item => item.medico.split(' ')[0]) : ['Médico 1', 'Médico 2'],
+                labels: medicosData.length > 0 ? medicosData.map(item => item.medico) : ['Médico 1', 'Médico 2'],
                 datasets: [{
                     label: 'Atendimentos',
                     data: medicosData.length > 0 ? medicosData.map(item => item.total) : [0, 0],

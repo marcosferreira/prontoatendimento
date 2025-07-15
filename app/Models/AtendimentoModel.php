@@ -34,7 +34,6 @@ class AtendimentoModel extends Model
     protected array $casts = [
         'id_paciente' => 'int',
         'id_medico' => 'int',
-        'data_atendimento' => 'datetime',
         'hgt_glicemia' => '?float',
         'temperatura' => '?float',
         'obito' => 'boolean'

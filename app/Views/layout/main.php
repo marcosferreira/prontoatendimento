@@ -22,16 +22,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/topbar.css') ?>">
     
     <!-- Additional CSS -->
     <?= $this->renderSection('styles') ?>
 </head>
 
 <body>
+    <script>
+        // Aplica o estado da sidebar do localStorage antes do DOM carregar para evitar 'flicker'.
+        // Isso garante que o layout não mude visualmente após a renderização inicial.
+        (function() {
+            try {
+                const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                const isAdminCollapsed = localStorage.getItem('admin-sidebar-collapsed') === 'true';
+
+                if (isCollapsed) {
+                    document.body.classList.add('sidebar-collapsed');
+                }
+                // A verificação para admin é separada para permitir diferentes estados
+                if (isAdminCollapsed) {
+                    document.body.classList.add('admin-sidebar-collapsed');
+                }
+            } catch (e) {
+                // Silencia erros caso o localStorage não esteja disponível.
+            }
+        })();
+    </script>
     <div class="app-container">
         <?= $this->include('components/sidebar') ?>
 
@@ -52,12 +71,10 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
     <!-- Custom JavaScript -->
     <script src="<?= base_url('assets/js/app.js') ?>"></script>
-    
+    <script src="<?= base_url('assets/js/main.js') ?>"></script>
+
     <!-- Page specific scripts -->
     <?php if (isset($script)): ?>
     <script src="<?= base_url('assets/js/' . $script . '.js') ?>"></script>

@@ -1,0 +1,104 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #fff; /* Garante fundo branco caso a coluna não ocupe tudo */
+}
+
+body {
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.auth-banner {
+    height: 100vh;
+    background: url('../images/bg-login.jpg') no-repeat center center;
+    /* background: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop') no-repeat center center; */
+    background-size: cover;
+}
+
+.auth-card {
+    background-color: #fff;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 2rem;
+    width: 100%;
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 420px; /* Controla a largura do formulário */
+    margin: 0 auto; /* Centraliza o formulário */
+}
+
+.auth-logo img {
+    max-width: 150px;
+    margin-bottom: 1.5rem;
+}
+
+.form-floating > label {
+    padding-left: 2.5rem; /* Space for icon */
+}
+
+.form-floating > .form-control {
+    padding-left: 2.375rem; /* Align text after icon */
+}
+
+.form-floating > label > i {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-primary i {
+    margin-right: 8px;
+}
+
+a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .auth-card {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f0f2f5;
+    }
+    .auth-form-container {
+        background-color: #fff;
+        padding: 2.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+}

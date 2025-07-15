@@ -47,7 +47,15 @@
                         <span class="status-badge status-danger">Inativo</span>
                     <?php endif; ?>
                 </td>
-                <td><?= $usuario['last_active'] ? date('d/m/Y H:i', strtotime($usuario['last_active'])) : 'Nunca' ?></td>
+                <td>
+                    <?php 
+                    if ($usuario['last_active'] && $usuario['last_active'] !== '0000-00-00 00:00:00') {
+                        echo date('d/m/Y H:i', strtotime($usuario['last_active']));
+                    } else {
+                        echo '<span class="text-muted">Nunca acessou</span>';
+                    }
+                    ?>
+                </td>
                 <td>
                     <div class="btn-group" role="group">
                         <button class="btn btn-outline-primary btn-sm btn-edit-user" 

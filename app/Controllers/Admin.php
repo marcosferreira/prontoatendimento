@@ -9,10 +9,32 @@ class Admin extends BaseController
      */
     public function index(): string
     {
+        $db = \Config\Database::connect();
+        
+        // Busca usuários recentes com dados completos
+        $builder = $db->table('users u')
+            ->select('u.id, u.username, u.nome, u.cpf, u.active, u.created_at, ai.secret as email, gu.group as grupo_nome')
+            ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+            ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+            ->where('u.deleted_at', null)
+            ->orderBy('u.created_at', 'DESC')
+            ->limit(5);
+        
+        $recentUsers = $builder->get()->getResultArray();
+        
+        // Processa os dados para garantir valores padrão
+        foreach ($recentUsers as &$user) {
+            $user['nome'] = $user['nome'] ?? $user['username'];
+            $user['email'] = $user['email'] ?? 'N/A';
+            $user['grupo_nome'] = $user['grupo_nome'] ?? 'N/A';
+            $user['active'] = (int)($user['active'] ?? 0);
+        }
+
         $data = [
             'title' => 'Administração',
             'description' => 'Painel Administrativo - Superadmin',
-            'keywords' => 'admin, administração, superadmin, painel'
+            'keywords' => 'admin, administração, superadmin, painel',
+            'recentUsers' => $recentUsers
         ];
 
         return view('admin/dashboard', $data);
@@ -23,8 +45,26 @@ class Admin extends BaseController
      */
     public function users(): string
     {
-        $userModel = auth()->getProvider();
-        $users = $userModel->findAll();
+        $db = \Config\Database::connect();
+        
+        // Query otimizada com JOIN para buscar todos os dados necessários
+        $builder = $db->table('users u')
+            ->select('u.id, u.username, u.nome, u.cpf, u.active, u.last_active, ai.secret as email, gu.group as grupo_nome')
+            ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+            ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+            ->where('u.deleted_at', null)
+            ->orderBy('u.username', 'ASC');
+        
+        $users = $builder->get()->getResultArray();
+        
+        // Processa os dados para garantir valores padrão
+        foreach ($users as &$user) {
+            $user['nome'] = $user['nome'] ?? $user['username'];
+            $user['cpf'] = $user['cpf'] ?? 'N/A';
+            $user['email'] = $user['email'] ?? 'N/A';
+            $user['grupo_nome'] = $user['grupo_nome'] ?? 'N/A';
+            $user['active'] = (int)($user['active'] ?? 0);
+        }
 
         $data = [
             'title' => 'Gerenciar Usuários',
@@ -57,6 +97,8 @@ class Admin extends BaseController
     public function storeUser()
     {
         $rules = [
+            'nome'     => 'required|min_length[3]|max_length[255]',
+            'cpf'      => 'permit_empty|exact_length[14]|is_unique[users.cpf]',
             'email'    => 'required|valid_email',
             'username' => 'required|is_unique[users.username]',
             'password' => 'required|min_length[8]',
@@ -75,27 +117,57 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('errors', ['email' => 'Email já está em uso']);
         }
 
-        $userEntity = new \CodeIgniter\Shield\Entities\User([
-            'username' => $this->request->getPost('username'),
-        ]);
+        try {
+            $userProvider->db->transStart();
 
-        // Set the email identity
-        $userEntity->email = $this->request->getPost('email');
-        $userEntity->password = $this->request->getPost('password');
-        
-        // Set active status (default to active if not provided)
-        $activeValue = $this->request->getPost('active');
-        $userEntity->active = $activeValue !== null ? (int) $activeValue : 1;
+            $userEntity = new \CodeIgniter\Shield\Entities\User([
+                'username' => $this->request->getPost('username'),
+            ]);
 
-        $userProvider->save($userEntity);
-        
-        // Reload user to get the ID
-        $userEntity = $userProvider->findByCredentials(['username' => $this->request->getPost('username')]);
-        
-        // Adicionar ao grupo selecionado
-        $userEntity->addGroup($this->request->getPost('group'));
+            // Set the email identity
+            $userEntity->email = $this->request->getPost('email');
+            $userEntity->password = $this->request->getPost('password');
+            
+            // Set active status (default to active if not provided)
+            $activeValue = $this->request->getPost('active');
+            $userEntity->active = $activeValue !== null ? (int) $activeValue : 1;
 
-        return redirect()->to('/admin/users')->with('message', 'Usuário criado com sucesso!');
+            $userProvider->save($userEntity);
+            
+            // Get the new user ID
+            $userId = $userProvider->getInsertID();
+            
+            // Update custom fields using query builder
+            $db = \Config\Database::connect();
+            $updateData = [
+                'nome' => $this->request->getPost('nome')
+            ];
+            
+            // Add CPF only if provided
+            if (!empty($this->request->getPost('cpf'))) {
+                $updateData['cpf'] = $this->request->getPost('cpf');
+            }
+            
+            $db->table('users')->where('id', $userId)->update($updateData);
+            
+            // Reload user to get the ID
+            $userEntity = $userProvider->findByCredentials(['username' => $this->request->getPost('username')]);
+            
+            // Adicionar ao grupo selecionado
+            $userEntity->addGroup($this->request->getPost('group'));
+
+            $userProvider->db->transComplete();
+
+            if ($userProvider->db->transStatus()) {
+                return redirect()->to('/admin/users')->with('message', 'Usuário criado com sucesso!');
+            } else {
+                throw new \Exception('Erro na transação do banco de dados');
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao criar usuário no Admin: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('errors', ['general' => 'Erro ao criar usuário: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -103,12 +175,31 @@ class Admin extends BaseController
      */
     public function editUser($id): string
     {
-        $userModel = auth()->getProvider();
-        $user = $userModel->find($id);
+        $db = \Config\Database::connect();
+        
+        // Busca dados completos do usuário
+        $builder = $db->table('users u')
+            ->select('u.id, u.username, u.nome, u.cpf, u.active, u.last_active, ai.secret as email, gu.group as grupo_nome')
+            ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+            ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+            ->where('u.id', $id)
+            ->where('u.deleted_at', null);
+        
+        $userData = $builder->get()->getRowArray();
 
-        if (!$user) {
+        if (!$userData) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
+
+        // Processa os dados para garantir valores padrão
+        $userData['nome'] = $userData['nome'] ?? $userData['username'];
+        $userData['cpf'] = $userData['cpf'] ?? '';
+        $userData['email'] = $userData['email'] ?? '';
+        $userData['grupo_nome'] = $userData['grupo_nome'] ?? '';
+
+        // Busca o objeto User para compatibilidade com as funções existentes
+        $userModel = auth()->getProvider();
+        $user = $userModel->find($id);
 
         $authConfig = new \Config\AuthGroups();
 
@@ -116,6 +207,7 @@ class Admin extends BaseController
             'title' => 'Editar Usuário',
             'description' => 'Editar Usuário do Sistema',
             'user' => $user,
+            'userData' => $userData, // Dados completos com nome e CPF
             'groups' => $authConfig->groups,
             'userGroups' => $user->getGroups()
         ];
@@ -136,6 +228,8 @@ class Admin extends BaseController
         }
 
         $rules = [
+            'nome'     => 'required|min_length[3]|max_length[255]',
+            'cpf'      => 'permit_empty|exact_length[14]|is_unique[users.cpf,id,' . $id . ']',
             'email'    => 'required|valid_email',
             'username' => "required|is_unique[users.username,id,{$id}]",
             'group'    => 'required'
@@ -156,27 +250,56 @@ class Admin extends BaseController
             return redirect()->back()->withInput()->with('errors', ['email' => 'Email já está em uso por outro usuário']);
         }
 
-        $user->username = $this->request->getPost('username');
-        $user->email = $this->request->getPost('email');
-        
-        // Update active status - prevent user from deactivating themselves
-        $activeValue = $this->request->getPost('active');
-        $requestedActive = $activeValue !== null ? (int) $activeValue : 1;
-        if ($user->id === auth()->id() && $requestedActive === 0) {
-            return redirect()->back()->withInput()->with('errors', ['active' => 'Você não pode desativar sua própria conta!']);
+        try {
+            $userModel->db->transStart();
+
+            // Update basic user data
+            $user->username = $this->request->getPost('username');
+            $user->email = $this->request->getPost('email');
+            
+            // Update active status - prevent user from deactivating themselves
+            $activeValue = $this->request->getPost('active');
+            $requestedActive = $activeValue !== null ? (int) $activeValue : 1;
+            if ($user->id === auth()->id() && $requestedActive === 0) {
+                return redirect()->back()->withInput()->with('errors', ['active' => 'Você não pode desativar sua própria conta!']);
+            }
+            $user->active = $requestedActive;
+            
+            if ($this->request->getPost('password')) {
+                $user->password = $this->request->getPost('password');
+            }
+
+            $userModel->save($user);
+
+            // Update custom fields using query builder
+            $db = \Config\Database::connect();
+            $updateData = [
+                'nome' => $this->request->getPost('nome')
+            ];
+            
+            // Add CPF only if provided
+            $cpf = $this->request->getPost('cpf');
+            if (!empty($cpf)) {
+                $updateData['cpf'] = $cpf;
+            }
+            
+            $db->table('users')->where('id', $id)->update($updateData);
+
+            // Atualizar grupos - syncGroups espera string, não array
+            $user->syncGroups($this->request->getPost('group'));
+
+            $userModel->db->transComplete();
+
+            if ($userModel->db->transStatus()) {
+                return redirect()->to('/admin/users')->with('message', 'Usuário atualizado com sucesso!');
+            } else {
+                throw new \Exception('Erro na transação do banco de dados');
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao atualizar usuário no Admin: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('errors', ['general' => 'Erro ao atualizar usuário: ' . $e->getMessage()]);
         }
-        $user->active = $requestedActive;
-        
-        if ($this->request->getPost('password')) {
-            $user->password = $this->request->getPost('password');
-        }
-
-        $userModel->save($user);
-
-        // Atualizar grupos - syncGroups espera string, não array
-        $user->syncGroups($this->request->getPost('group'));
-
-        return redirect()->to('/admin/users')->with('message', 'Usuário atualizado com sucesso!');
     }
 
     /**

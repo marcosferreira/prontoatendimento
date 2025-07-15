@@ -53,56 +53,56 @@
                                             <thead>
                                                 <tr>
                                                     <th>ID</th>
-                                                    <th>Usuário</th>
+                                                    <th>Nome</th>
+                                                    <th>CPF</th>
+                                                    <th>Username</th>
                                                     <th>Email</th>
-                                                    <th>Grupos</th>
+                                                    <th>Grupo</th>
                                                     <th>Status</th>
-                                                    <th>Último Login</th>
-                                                    <th>Criado em</th>
+                                                    <th>Último Acesso</th>
                                                     <th>Ações</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach($users as $user): ?>
                                                 <tr>
-                                                    <td><?= $user->id ?></td>
+                                                    <td><?= $user['id'] ?></td>
                                                     <td>
                                                         <div class="admin-user-cell">
                                                             <div class="admin-user-avatar-sm">
-                                                                <?= strtoupper(substr($user->username, 0, 2)) ?>
+                                                                <?= strtoupper(substr($user['nome'] ?? $user['username'], 0, 2)) ?>
                                                             </div>
                                                             <div>
-                                                                <strong><?= esc($user->username) ?></strong>
-                                                                <?php if($user->id === auth()->id()): ?>
+                                                                <strong><?= esc($user['nome'] ?? $user['username']) ?></strong>
+                                                                <?php if($user['id'] === auth()->id()): ?>
                                                                     <small class="text-muted">(Você)</small>
                                                                 <?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td><?= esc($user->email) ?></td>
+                                                    <td><?= esc($user['cpf'] ?? 'N/A') ?></td>
+                                                    <td><?= esc($user['username']) ?></td>
+                                                    <td><?= esc($user['email'] ?? 'N/A') ?></td>
                                                     <td>
-                                                        <?php 
-                                                        $groups = $user->getGroups();
-                                                        if (!empty($groups)): 
-                                                            foreach($groups as $group):
-                                                                $badgeClass = match($group) {
-                                                                    'superadmin' => 'bg-danger',
-                                                                    'admin' => 'bg-warning',
-                                                                    'developer' => 'bg-info',
-                                                                    'beta' => 'bg-secondary',
-                                                                    default => 'bg-primary'
-                                                                };
+                                                        <?php
+                                                        $grupo = $user['grupo_nome'] ?? 'N/A';
+                                                        $badgeClass = match($grupo) {
+                                                            'superadmin' => 'bg-danger',
+                                                            'admin' => 'bg-warning',
+                                                            'medico' => 'bg-primary',
+                                                            'enfermeiro' => 'bg-success',
+                                                            'farmaceutico' => 'bg-success',
+                                                            'recepcionista' => 'bg-warning',
+                                                            'gestor' => 'bg-info',
+                                                            'developer' => 'bg-info',
+                                                            'beta' => 'bg-secondary',
+                                                            default => 'bg-light text-dark'
+                                                        };
                                                         ?>
-                                                            <span class="badge <?= $badgeClass ?> me-1"><?= esc($group) ?></span>
-                                                        <?php 
-                                                            endforeach;
-                                                        else: 
-                                                        ?>
-                                                            <span class="badge bg-light text-dark">Sem grupo</span>
-                                                        <?php endif; ?>
+                                                        <span class="badge <?= $badgeClass ?>"><?= esc(ucfirst($grupo)) ?></span>
                                                     </td>
                                                     <td>
-                                                        <?php if($user->active): ?>
+                                                        <?php if($user['active']): ?>
                                                             <span class="badge bg-success">
                                                                 <i class="bi bi-check-circle"></i> Ativo
                                                             </span>
@@ -113,25 +113,26 @@
                                                         <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        <?php if(isset($user->last_active) && $user->last_active): ?>
-                                                            <?= $user->last_active->format('d/m/Y H:i') ?>
-                                                        <?php else: ?>
-                                                            <span class="text-muted">Nunca</span>
-                                                        <?php endif; ?>
+                                                        <?php 
+                                                        if ($user['last_active'] && $user['last_active'] !== '0000-00-00 00:00:00') {
+                                                            echo date('d/m/Y H:i', strtotime($user['last_active']));
+                                                        } else {
+                                                            echo '<span class="text-muted">Nunca acessou</span>';
+                                                        }
+                                                        ?>
                                                     </td>
-                                                    <td><?= $user->created_at->format('d/m/Y H:i') ?></td>
                                                     <td>
                                                         <div class="admin-action-buttons">
-                                                            <a href="<?php echo base_url('/admin/users/edit/' . $user->id); ?>" 
+                                                            <a href="<?php echo base_url('/admin/users/edit/' . $user['id']); ?>" 
                                                                class="btn btn-sm btn-outline-primary" 
                                                                title="Editar">
                                                                 <i class="bi bi-pencil"></i>
                                                             </a>
-                                                            <?php if($user->id !== auth()->id()): ?>
+                                                            <?php if($user['id'] !== auth()->id()): ?>
                                                             <button type="button" 
                                                                     class="btn btn-sm btn-outline-danger" 
                                                                     title="Deletar"
-                                                                    onclick="confirmDelete('<?php echo base_url('/admin/users/delete/' . $user->id); ?>', 'Deletar usuário?', 'O usuário <?= esc($user->username) ?> será permanentemente removido.')">
+                                                                    onclick="confirmDelete('<?php echo base_url('/admin/users/delete/' . $user['id']); ?>', 'Deletar usuário?', 'O usuário <?= esc($user['username']) ?> será permanentemente removido.')">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                             <?php endif; ?>

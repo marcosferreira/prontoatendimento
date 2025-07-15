@@ -55,6 +55,43 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="mb-3">
+                                                    <label for="nome" class="form-label">
+                                                        <i class="bi bi-person-badge"></i> Nome Completo *
+                                                    </label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="nome" 
+                                                           name="nome" 
+                                                           value="<?= old('nome', $userData['nome'] ?? '') ?>"
+                                                           required>
+                                                    <div class="form-text">
+                                                        Nome completo do usuário
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cpf" class="form-label">
+                                                        <i class="bi bi-card-text"></i> CPF
+                                                    </label>
+                                                    <input type="text" 
+                                                           class="form-control" 
+                                                           id="cpf" 
+                                                           name="cpf" 
+                                                           value="<?= old('cpf', $userData['cpf'] ?? '') ?>"
+                                                           maxlength="14"
+                                                           placeholder="000.000.000-00">
+                                                    <div class="form-text">
+                                                        CPF do usuário (opcional)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
                                                     <label for="username" class="form-label">
                                                         <i class="bi bi-person"></i> Nome de Usuário *
                                                     </label>
@@ -257,5 +294,16 @@
     
     // Show permissions on page load
     updatePermissions();
+    
+    // Máscara para CPF
+    document.getElementById('cpf').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length <= 11) {
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+        e.target.value = value;
+    });
     </script>
 <?php echo $this->endSection(); ?>

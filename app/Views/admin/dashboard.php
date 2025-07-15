@@ -29,7 +29,11 @@
                                         <i class="bi bi-people"></i>
                                     </div>
                                     <div class="admin-stat-content">
-                                        <h3><?= auth()->getProvider()->countAllResults() ?></h3>
+                                        <?php
+                                        $db = \Config\Database::connect();
+                                        $totalUsers = $db->table('users')->where('deleted_at', null)->countAllResults();
+                                        ?>
+                                        <h3><?= $totalUsers ?></h3>
                                         <p>Total de Usuários</p>
                                     </div>
                                 </div>
@@ -42,44 +46,19 @@
                                     </div>
                                     <div class="admin-stat-content">
                                         <?php 
-                                        // Usuários online: múltiplas abordagens para detectar usuários online
-                                        $onlineUsers = 0;
-                                        
-                                        // Abordagem 1: Verificar last_active (se disponível)
+                                        // Usuários online: última atividade nas últimas 2 horas
                                         $onlineThreshold = date('Y-m-d H:i:s', strtotime('-2 hours'));
                                         try {
-                                            $onlineUsers = auth()->getProvider()->where('last_active >=', $onlineThreshold)->countAllResults();
+                                            $onlineUsers = $db->table('users')
+                                                ->where('deleted_at', null)
+                                                ->where('last_active >=', $onlineThreshold)
+                                                ->countAllResults();
                                         } catch (Exception $e) {
-                                            // Se der erro, last_active pode não existir
-                                            $onlineUsers = 0;
-                                        }
-                                        
-                                        // Abordagem 2: Se não houver last_active, verificar sessões ativas
-                                        if ($onlineUsers == 0) {
-                                            $sessionPath = WRITEPATH . 'session/';
-                                            $activeSessionCount = 0;
-                                            
-                                            if (is_dir($sessionPath)) {
-                                                $sessionFiles = glob($sessionPath . 'ci_session*');
-                                                $twoHoursAgo = time() - (2 * 3600); // 2 horas em segundos
-                                                
-                                                foreach ($sessionFiles as $sessionFile) {
-                                                    if (filemtime($sessionFile) > $twoHoursAgo) {
-                                                        $content = file_get_contents($sessionFile);
-                                                        // Verificar se a sessão contém um usuário logado
-                                                        if (strpos($content, 'user|a:1:{s:2:"id"') !== false) {
-                                                            $activeSessionCount++;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            
-                                            $onlineUsers = $activeSessionCount;
-                                        }
-                                        
-                                        // Abordagem 3: Se ainda for 0, usar usuários ativos do sistema como fallback
-                                        if ($onlineUsers == 0) {
-                                            $onlineUsers = auth()->getProvider()->where('active', 1)->countAllResults();
+                                            // Fallback: usuários ativos se last_active não existir
+                                            $onlineUsers = $db->table('users')
+                                                ->where('deleted_at', null)
+                                                ->where('active', 1)
+                                                ->countAllResults();
                                         }
                                         ?>
                                         <h3><?= $onlineUsers ?></h3>
@@ -94,7 +73,14 @@
                                         <i class="bi bi-shield-check"></i>
                                     </div>
                                     <div class="admin-stat-content">
-                                        <h3><?= count(array_filter(auth()->getProvider()->findAll(), function($user) { return $user->inGroup('superadmin'); })) ?></h3>
+                                        <?php
+                                        $superadmins = $db->table('users u')
+                                            ->join('auth_groups_users gu', 'gu.user_id = u.id')
+                                            ->where('u.deleted_at', null)
+                                            ->where('gu.group', 'superadmin')
+                                            ->countAllResults();
+                                        ?>
+                                        <h3><?= $superadmins ?></h3>
                                         <p>Superadmins</p>
                                     </div>
                                 </div>
@@ -163,7 +149,8 @@
                                         <table class="table admin-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Usuário</th>
+                                                    <th>Nome</th>
+                                                    <th>Username</th>
                                                     <th>Email</th>
                                                     <th>Grupo</th>
                                                     <th>Status</th>
@@ -172,33 +159,73 @@
                                             </thead>
                                             <tbody>
                                                 <?php 
-                                                $recentUsers = auth()->getProvider()->orderBy('created_at', 'DESC')->findAll(5);
-                                                foreach($recentUsers as $user): 
+                                                // Usa os dados passados pelo controller ou busca como fallback
+                                                $users = isset($recentUsers) ? $recentUsers : [];
+                                                
+                                                // Fallback caso não tenha dados do controller
+                                                if (empty($users)) {
+                                                    $recentUsersObj = auth()->getProvider()->orderBy('created_at', 'DESC')->findAll(5);
+                                                    foreach($recentUsersObj as $userObj) {
+                                                        $users[] = [
+                                                            'id' => $userObj->id,
+                                                            'nome' => $userObj->username, // fallback
+                                                            'username' => $userObj->username,
+                                                            'email' => $userObj->email ?? 'N/A',
+                                                            'grupo_nome' => !empty($userObj->getGroups()) ? $userObj->getGroups()[0] : 'N/A',
+                                                            'active' => $userObj->active,
+                                                            'created_at' => $userObj->created_at->format('Y-m-d H:i:s')
+                                                        ];
+                                                    }
+                                                }
+                                                
+                                                foreach($users as $user): 
                                                 ?>
                                                 <tr>
                                                     <td>
                                                         <div class="admin-user-cell">
                                                             <div class="admin-user-avatar-sm">
-                                                                <?= strtoupper(substr($user->username, 0, 2)) ?>
+                                                                <?= strtoupper(substr($user['nome'] ?? $user['username'], 0, 2)) ?>
                                                             </div>
-                                                            <?= esc($user->username) ?>
+                                                            <strong><?= esc($user['nome'] ?? $user['username']) ?></strong>
                                                         </div>
                                                     </td>
-                                                    <td><?= esc($user->email) ?></td>
+                                                    <td><?= esc($user['username']) ?></td>
+                                                    <td><?= esc($user['email'] ?? 'N/A') ?></td>
                                                     <td>
-                                                        <?php 
-                                                        $groups = $user->getGroups();
-                                                        echo !empty($groups) ? '<span class="badge bg-primary">' . esc($groups[0]) . '</span>' : '<span class="badge bg-secondary">Sem grupo</span>';
+                                                        <?php
+                                                        $grupo = $user['grupo_nome'] ?? 'N/A';
+                                                        $badgeClass = match($grupo) {
+                                                            'superadmin' => 'bg-danger',
+                                                            'admin' => 'bg-warning',
+                                                            'medico' => 'bg-primary',
+                                                            'enfermeiro' => 'bg-success',
+                                                            'farmaceutico' => 'bg-success',
+                                                            'recepcionista' => 'bg-warning',
+                                                            'gestor' => 'bg-info',
+                                                            'developer' => 'bg-info',
+                                                            'beta' => 'bg-secondary',
+                                                            default => 'bg-light text-dark'
+                                                        };
                                                         ?>
+                                                        <span class="badge <?= $badgeClass ?>"><?= esc(ucfirst($grupo)) ?></span>
                                                     </td>
                                                     <td>
-                                                        <?php if($user->active): ?>
+                                                        <?php if($user['active']): ?>
                                                             <span class="badge bg-success">Ativo</span>
                                                         <?php else: ?>
                                                             <span class="badge bg-danger">Inativo</span>
                                                         <?php endif; ?>
                                                     </td>
-                                                    <td><?= $user->created_at->format('d/m/Y H:i') ?></td>
+                                                    <td>
+                                                        <?php 
+                                                        // Trata tanto string quanto objeto DateTime
+                                                        if (is_string($user['created_at'])) {
+                                                            echo date('d/m/Y H:i', strtotime($user['created_at']));
+                                                        } else {
+                                                            echo $user['created_at']->format('d/m/Y H:i');
+                                                        }
+                                                        ?>
+                                                    </td>
                                                 </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
