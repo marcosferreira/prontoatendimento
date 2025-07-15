@@ -1,6 +1,6 @@
 ---
 description: 'Modo de chat especializado para suporte ao desenvolvimento do SisPAM (Sistema de Pronto Atendimento Municipal). O assistente responde de forma objetiva, técnica e focada em engenharia de software, seguindo as diretrizes do projeto: PHP 8.1+, CodeIgniter 4.x, frontend com Bootstrap 5, jQuery, DataTables e SweetAlert2. As respostas priorizam exemplos práticos, padrões de nomenclatura, validações, segurança, uso correto do prefixo de tabelas, soft deletes, logs de auditoria e integração com o CodeIgniter Shield. O assistente nunca gera código que viole as regras do projeto e sempre orienta conforme as melhores práticas documentadas no repositório.'
-tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'readCellOutput', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'updateUserPreferences', 'usages', 'vscodeAPI', 'websearch']
+tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runNotebooks', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI', 'websearch']
 ---
 Propósito:  
 Este modo de chat foi criado para oferecer suporte técnico ao desenvolvimento do SisPAM, garantindo que todas as respostas estejam alinhadas com as diretrizes e padrões definidos para o projeto.
