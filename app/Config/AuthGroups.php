@@ -43,23 +43,43 @@ class AuthGroups extends ShieldAuthGroups
     public array $groups = [
         'superadmin' => [
             'title'       => 'Super Admin',
-            'description' => 'Complete control of the site.',
+            'description' => 'Controle total do sistema.',
         ],
         'admin' => [
-            'title'       => 'Admin',
-            'description' => 'Day to day administrators of the site.',
+            'title'       => 'Administrador',
+            'description' => 'Administração geral do sistema.',
+        ],
+        'gestor' => [
+            'title'       => 'Gestor',
+            'description' => 'Acesso a relatórios e dados gerenciais.',
+        ],
+        'medico' => [
+            'title'       => 'Médico',
+            'description' => 'Acesso aos módulos de atendimento e prontuário.',
+        ],
+        'enfermeiro' => [
+            'title'       => 'Enfermeiro',
+            'description' => 'Acesso aos módulos de triagem e atendimento.',
+        ],
+        'farmaceutico' => [
+            'title'       => 'Farmacêutico',
+            'description' => 'Acesso ao módulo de farmácia e dispensação.',
+        ],
+        'recepcionista' => [
+            'title'       => 'Recepcionista',
+            'description' => 'Acesso ao cadastro de pacientes e agendamento.',
         ],
         'developer' => [
             'title'       => 'Developer',
-            'description' => 'Site programmers.',
+            'description' => 'Programadores do sistema.',
         ],
         'user' => [
             'title'       => 'User',
-            'description' => 'General users of the site. Often customers.',
+            'description' => 'Usuários gerais do sistema. Geralmente pacientes.',
         ],
         'beta' => [
             'title'       => 'Beta User',
-            'description' => 'Has access to beta-level features.',
+            'description' => 'Acesso a funcionalidades em teste.',
         ],
     ];
 
@@ -72,13 +92,16 @@ class AuthGroups extends ShieldAuthGroups
      * If a permission is not listed here it cannot be used.
      */
     public array $permissions = [
-        'admin.access'        => 'Can access the sites admin area',
-        'admin.settings'      => 'Can access the main site settings',
-        'users.manage-admins' => 'Can manage other admins',
-        'users.create'        => 'Can create new non-admin users',
-        'users.edit'          => 'Can edit existing non-admin users',
-        'users.delete'        => 'Can delete existing non-admin users',
-        'beta.access'         => 'Can access beta-level features',
+        'admin.access'        => 'Pode acessar a área de administração',
+        'admin.settings'      => 'Pode acessar as configurações gerais do sistema',
+        'users.manage-admins' => 'Pode gerenciar outros administradores',
+        'users.create'        => 'Pode criar novos usuários não-admin',
+        'users.edit'          => 'Pode editar usuários não-admin existentes',
+        'users.delete'        => 'Pode deletar usuários não-admin existentes',
+        'beta.access'         => 'Pode acessar funcionalidades em teste',
+        'atendimentos.view'   => 'Pode visualizar atendimentos',
+        'pacientes.create'    => 'Pode criar novos pacientes',
+        'relatorios.view'     => 'Pode visualizar relatórios gerenciais',
     ];
 
     /**
@@ -94,6 +117,9 @@ class AuthGroups extends ShieldAuthGroups
             'admin.*',
             'users.*',
             'beta.*',
+            'atendimentos.*',
+            'pacientes.*',
+            'relatorios.*',
         ],
         'admin' => [
             'admin.access',
@@ -101,6 +127,27 @@ class AuthGroups extends ShieldAuthGroups
             'users.edit',
             'users.delete',
             'beta.access',
+            'atendimentos.view',
+            'pacientes.create',
+            'relatorios.view',
+        ],
+        'gestor' => [
+            'admin.access',
+            'relatorios.view',
+        ],
+        'medico' => [
+            'atendimentos.view',
+            'pacientes.create',
+        ],
+        'enfermeiro' => [
+            'atendimentos.view',
+            'pacientes.create',
+        ],
+        'farmaceutico' => [
+            'atendimentos.view',
+        ],
+        'recepcionista' => [
+            'pacientes.create',
         ],
         'developer' => [
             'admin.access',

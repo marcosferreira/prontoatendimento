@@ -36,17 +36,31 @@ class Configuracoes extends BaseController
         ];
 
         // Busca usuários para gestão
-        $userModel = auth()->getProvider();
+        $currentUser = auth()->user();
+        $db = \Config\Database::connect();
         
-        // Busca usuários com seus grupos
-        $usuarios = [];
-        $allUsers = $userModel->asArray()->findAll();
+        // Query base com JOIN para buscar todos os dados de uma vez
+        $builder = $db->table('users u')
+            ->select('u.id, u.username, u.nome, u.cpf, u.active, u.last_active, ai.secret as email, gu.group as grupo_nome')
+            ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+            ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+            ->where('u.deleted_at', null);
+
+        // Se o usuário logado for admin (e não superadmin), não mostrar superadmins
+        if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin')) {
+            $builder->where('gu.group !=', 'superadmin');
+        }
         
-        foreach ($allUsers as $user) {
-            $userEntity = $userModel->find($user['id']);
-            $groups = $userEntity ? $userEntity->getGroups() : [];
-            $user['grupo_nome'] = !empty($groups) ? $groups[0] : 'N/A';
-            $usuarios[] = $user;
+        $usuarios = $builder->get()->getResultArray();
+        
+        // Processa os dados para garantir valores padrão
+        foreach ($usuarios as &$usuario) {
+            $usuario['nome'] = $usuario['nome'] ?? $usuario['username'];
+            $usuario['cpf'] = $usuario['cpf'] ?? 'N/A';
+            $usuario['email'] = $usuario['email'] ?? 'N/A';
+            $usuario['grupo_nome'] = $usuario['grupo_nome'] ?? 'N/A';
+            $usuario['last_active'] = $usuario['last_active'] ?? null;
+            $usuario['active'] = (int)($usuario['active'] ?? 0);
         }
 
         // Busca logs de auditoria recentes
@@ -163,20 +177,46 @@ class Configuracoes extends BaseController
         }
 
         try {
-            $userModel = auth()->getProvider();
+            $currentUser = auth()->user();
+            $db = \Config\Database::connect();
             
-            // Busca usuários com seus grupos
-            $usuarios = [];
-            $allUsers = $userModel->asArray()->findAll();
+            log_message('info', 'Iniciando busca de usuários para refresh da tabela');
             
-            foreach ($allUsers as $user) {
-                $userEntity = $userModel->find($user['id']);
-                $groups = $userEntity ? $userEntity->getGroups() : [];
-                $user['grupo_nome'] = !empty($groups) ? $groups[0] : 'N/A';
-                $user['last_active'] = $user['last_active'] ?? 'Nunca';
-                $user['active'] = $user['active'] ?? 0;
-                $usuarios[] = $user;
+            // Query base com JOIN para buscar todos os dados de uma vez
+            $builder = $db->table('users u')
+                ->select('u.id, u.username, u.nome, u.cpf, u.active, u.last_active, ai.secret as email, gu.group as grupo_nome')
+                ->join('auth_identities ai', 'ai.user_id = u.id AND ai.type = "email_password"', 'left')
+                ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
+                ->where('u.deleted_at', null);
+
+            // Se o usuário logado for admin (e não superadmin), não mostrar superadmins
+            if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin')) {
+                $builder->where('gu.group !=', 'superadmin');
             }
+            
+            $usuarios = $builder->get()->getResultArray();
+            
+            log_message('info', 'Encontrados ' . count($usuarios) . ' usuários');
+            
+            // Processa os dados para garantir valores padrão
+            foreach ($usuarios as &$usuario) {
+                $usuario['nome'] = $usuario['nome'] ?? $usuario['username'];
+                $usuario['cpf'] = $usuario['cpf'] ?? 'N/A';
+                $usuario['email'] = $usuario['email'] ?? 'N/A';
+                $usuario['grupo_nome'] = $usuario['grupo_nome'] ?? 'N/A';
+                
+                // Formatar last_active de forma mais robusta
+                if (!$usuario['last_active'] || $usuario['last_active'] === '0000-00-00 00:00:00') {
+                    $usuario['last_active'] = null;
+                } else {
+                    // Manter o formato ISO para o JavaScript processar corretamente
+                    $usuario['last_active'] = date('c', strtotime($usuario['last_active']));
+                }
+                
+                $usuario['active'] = (int)($usuario['active'] ?? 0);
+            }
+
+            log_message('info', 'Dados dos usuários processados com sucesso');
 
             return $this->response->setJSON([
                 'success' => true,
@@ -185,10 +225,12 @@ class Configuracoes extends BaseController
 
         } catch (\Exception $e) {
             log_message('error', 'Erro ao buscar usuários: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Erro ao buscar usuários'
+                'message' => 'Erro ao buscar usuários',
+                'error' => $e->getMessage() // Incluir erro específico para debug
             ]);
         }
     }
@@ -210,16 +252,31 @@ class Configuracoes extends BaseController
             ]);
         }
 
+        $currentUser = auth()->user();
+        $perfil = $this->request->getPost('perfil');
+
+        // Admin não pode criar superadmin
+        if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin') && $perfil === 'superadmin') {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Você não tem permissão para criar usuários Super Admin.'
+            ]);
+        }
+
+        // Normaliza o campo forcar_alteracao
+        $forcarAlteracao = $this->request->getPost('forcar_alteracao') ? 1 : 0;
+        $postData = array_merge($this->request->getPost(), ['forcar_alteracao' => $forcarAlteracao]);
+
         $rules = [
             'nome' => 'required|min_length[3]|max_length[255]',
             'cpf' => 'required|exact_length[14]|is_unique[users.cpf]',
-            'email' => 'permit_empty|valid_email|is_unique[users.email]',
-            'perfil' => 'required|in_list[admin,medico,enfermeiro,farmaceutico,recepcionista,gestor]',
+            'email' => 'permit_empty|valid_email|is_unique[auth_identities.secret]',
+            'perfil' => 'required|in_list[superadmin,admin,medico,enfermeiro,farmaceutico,recepcionista,gestor,developer,user,beta]',
             'senha' => 'required|min_length[6]',
-            'forcar_alteracao' => 'permit_empty|in_list[0,1]'
+            'forcar_alteracao' => 'in_list[0,1]'
         ];
 
-        if (!$this->validate($rules)) {
+        if (!$this->validateData($postData, $rules)) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Dados inválidos',
@@ -228,33 +285,67 @@ class Configuracoes extends BaseController
         }
 
         try {
-            $userData = [
-                'username' => $this->request->getPost('cpf'),
-                'email' => $this->request->getPost('email'),
-                'password' => $this->request->getPost('senha'),
-                'active' => 1,
-                'nome' => $this->request->getPost('nome'),
-                'cpf' => $this->request->getPost('cpf'),
-                'force_pass_reset' => $this->request->getPost('forcar_alteracao') ? 1 : 0
+            $userModel = auth()->getProvider();
+            
+            // Usa uma transação para garantir a consistência
+            $userModel->db->transStart();
+
+            // Primeiro, cria o usuário básico via Shield
+            $shieldData = [
+                'username'         => $postData['cpf'],
+                'email'            => $postData['email'],
+                'password'         => $postData['senha'],
+                'active'           => 1,
+                'force_pass_reset' => $postData['forcar_alteracao'],
             ];
 
-            $userModel = auth()->getProvider();
-            $userId = $userModel->insert($userData);
+            $user = new \CodeIgniter\Shield\Entities\User($shieldData);
+            
+            if (!$userModel->save($user)) {
+                throw new \Exception('Erro ao salvar usuário: ' . implode(', ', $userModel->errors()));
+            }
+            
+            // Pega o ID do usuário recém-criado
+            $userId = $userModel->getInsertID();
+            
+            // Agora atualiza os campos personalizados usando query builder diretamente
+            $db = \Config\Database::connect();
+            // Executa o update - não verifica retorno pois pode ser false mesmo em caso de sucesso
+            $db->table('users')->where('id', $userId)->update([
+                'nome' => $postData['nome'],
+                'cpf'  => $postData['cpf'],
+            ]);
+            
+            // Adiciona ao grupo
+            $user = $userModel->findById($userId);
+            if (!$user) {
+                throw new \Exception('Usuário criado mas não encontrado para adicionar ao grupo');
+            }
+            
+            $user->addGroup($postData['perfil']);
 
-            if ($userId) {
-                // Adiciona ao grupo
-                $groupModel = new \CodeIgniter\Shield\Models\GroupModel();
-                $groupModel->addUserToGroup($userId, $this->request->getPost('perfil'));
+            $userModel->db->transComplete();
 
+            if ($userModel->db->transStatus()) {
                 // Registra auditoria
+                $auditoriaData = [
+                    'username' => $postData['cpf'],
+                    'email' => $postData['email'],
+                    'nome' => $postData['nome'],
+                    'cpf' => $postData['cpf'],
+                    'perfil' => $postData['perfil'],
+                    'active' => 1,
+                    'force_pass_reset' => $postData['forcar_alteracao']
+                ];
+                
                 $this->auditoriaModel->registrarAcao(
                     'Usuário Criado',
                     'Usuários',
-                    'Usuário: ' . $this->request->getPost('nome') . ' (' . $this->request->getPost('cpf') . ')',
+                    'Usuário: ' . $postData['nome'] . ' (' . $postData['cpf'] . ')',
                     null,
                     null,
                     null,
-                    $userData
+                    $auditoriaData
                 );
 
                 return $this->response->setJSON([
@@ -262,11 +353,12 @@ class Configuracoes extends BaseController
                     'message' => 'Usuário criado com sucesso!'
                 ]);
             } else {
-                throw new \Exception('Erro ao criar usuário');
+                throw new \Exception('Erro na transação do banco de dados ao criar usuário.');
             }
 
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar usuário: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             
             return $this->response->setJSON([
                 'success' => false,
@@ -292,15 +384,35 @@ class Configuracoes extends BaseController
             ]);
         }
 
+        $userModel = auth()->getProvider();
+        $currentUser = auth()->user();
+        $targetUser = $userModel->find($id);
+
+        if (!$targetUser) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Usuário não encontrado.']);
+        }
+
+        // Admin não pode editar superadmin
+        if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin') && $targetUser->inGroup('superadmin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Você não tem permissão para editar usuários Super Admin.'
+            ]);
+        }
+
+        // Normaliza o campo ativo
+        $ativo = $this->request->getPost('ativo') ? 1 : 0;
+        $postData = array_merge($this->request->getPost(), ['ativo' => $ativo]);
+
         $rules = [
             'nome' => 'required|min_length[3]|max_length[255]',
             'cpf' => 'required|exact_length[14]|is_unique[users.cpf,id,' . $id . ']',
-            'email' => 'permit_empty|valid_email|is_unique[users.email,id,' . $id . ']',
-            'perfil' => 'required|in_list[admin,medico,enfermeiro,farmaceutico,recepcionista,gestor]',
-            'ativo' => 'permit_empty|in_list[0,1]'
+            'email' => 'permit_empty|valid_email|is_unique[auth_identities.secret,user_id,' . $id . ']',
+            'perfil' => 'required|in_list[superadmin,admin,medico,enfermeiro,farmaceutico,recepcionista,gestor,developer,user,beta]',
+            'ativo' => 'in_list[0,1]'
         ];
 
-        if (!$this->validate($rules)) {
+        if (!$this->validateData($postData, $rules)) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Dados inválidos',
@@ -309,8 +421,7 @@ class Configuracoes extends BaseController
         }
 
         try {
-            $userModel = auth()->getProvider();
-            $usuarioAnterior = $userModel->find($id);
+            $usuarioAnterior = $userModel->asArray()->find($id);
             
             if (!$usuarioAnterior) {
                 return $this->response->setJSON([
@@ -319,28 +430,56 @@ class Configuracoes extends BaseController
                 ]);
             }
 
-            $userData = [
-                'nome' => $this->request->getPost('nome'),
-                'cpf' => $this->request->getPost('cpf'),
-                'email' => $this->request->getPost('email'),
-                'active' => $this->request->getPost('ativo') ? 1 : 0
+            $userModel->db->transStart();
+
+            // Atualiza dados básicos usando query builder diretamente
+            $db = \Config\Database::connect();
+            
+            // Atualiza campos na tabela users
+            $updateData = [
+                'username' => $postData['cpf'],
+                'active'   => $postData['ativo'],
+                'nome'     => $postData['nome'],
+                'cpf'      => $postData['cpf'],
             ];
+            
+            // Executa o update - não verifica retorno pois pode ser false mesmo em caso de sucesso
+            $db->table('users')->where('id', $id)->update($updateData);
 
-            if ($userModel->update($id, $userData)) {
-                // Atualiza grupo
-                $groupModel = new \CodeIgniter\Shield\Models\GroupModel();
-                $groupModel->removeUserFromAllGroups($id);
-                $groupModel->addUserToGroup($id, $this->request->getPost('perfil'));
+            // Atualiza email na tabela 'auth_identities'
+            $user = $userModel->findById($id);
+            $identityModel = new \CodeIgniter\Shield\Models\UserIdentityModel();
+            $identity = $identityModel->where('user_id', $user->id)->where('type', 'email_password')->first();
+            
+            if ($identity) {
+                $identity->secret = $postData['email'];
+                $identityModel->save($identity);
+            }
 
+            // Atualiza grupo
+            $user->syncGroups($postData['perfil']);
+
+            $userModel->db->transComplete();
+
+            if ($userModel->db->transStatus()) {
                 // Registra auditoria
+                $auditoriaData = [
+                    'username' => $postData['cpf'],
+                    'email' => $postData['email'],
+                    'nome' => $postData['nome'],
+                    'cpf' => $postData['cpf'],
+                    'perfil' => $postData['perfil'],
+                    'active' => $postData['ativo']
+                ];
+                
                 $this->auditoriaModel->registrarAcao(
                     'Usuário Editado',
                     'Usuários',
-                    'Usuário: ' . $this->request->getPost('nome') . ' (' . $this->request->getPost('cpf') . ')',
+                    'Usuário: ' . $postData['nome'] . ' (' . $postData['cpf'] . ')',
                     null,
                     null,
                     $usuarioAnterior,
-                    $userData
+                    $auditoriaData
                 );
 
                 return $this->response->setJSON([
@@ -348,7 +487,7 @@ class Configuracoes extends BaseController
                     'message' => 'Usuário atualizado com sucesso!'
                 ]);
             } else {
-                throw new \Exception('Erro ao atualizar usuário');
+                throw new \Exception('Erro na transação do banco de dados ao editar usuário.');
             }
 
         } catch (\Exception $e) {
@@ -378,6 +517,22 @@ class Configuracoes extends BaseController
             ]);
         }
 
+        $userModel = auth()->getProvider();
+        $currentUser = auth()->user();
+        $targetUser = $userModel->find($id);
+
+        if (!$targetUser) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Usuário não encontrado.']);
+        }
+
+        // Admin não pode resetar a senha de um superadmin
+        if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin') && $targetUser->inGroup('superadmin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Você não tem permissão para resetar a senha de usuários Super Admin.'
+            ]);
+        }
+
         try {
             $userModel = auth()->getProvider();
             $usuario = $userModel->find($id);
@@ -392,31 +547,31 @@ class Configuracoes extends BaseController
             // Gera senha temporária
             $novaSenha = 'temp' . rand(1000, 9999);
             
-            $userData = [
-                'password' => $novaSenha,
+            // Usa query builder diretamente para atualizar a senha
+            $db = \Config\Database::connect();
+            $passwordHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+            
+            $db->table('users')->where('id', $id)->update([
+                'password_hash' => $passwordHash,
                 'force_pass_reset' => 1
-            ];
+            ]);
 
-            if ($userModel->update($id, $userData)) {
-                // Registra auditoria
-                $this->auditoriaModel->registrarAcao(
-                    'Senha Resetada',
-                    'Usuários',
-                    'Senha resetada para: ' . $usuario['nome'],
-                    null,
-                    null,
-                    null,
-                    ['nova_senha_temporaria' => $novaSenha]
-                );
+            // Registra auditoria
+            $this->auditoriaModel->registrarAcao(
+                'Senha Resetada',
+                'Usuários',
+                'Senha resetada para: ' . ($usuario->nome ?? $usuario->username),
+                null,
+                null,
+                null,
+                ['nova_senha_temporaria' => $novaSenha]
+            );
 
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Senha resetada com sucesso!',
-                    'nova_senha' => $novaSenha
-                ]);
-            } else {
-                throw new \Exception('Erro ao resetar senha');
-            }
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Senha resetada com sucesso!',
+                'nova_senha' => $novaSenha
+            ]);
 
         } catch (\Exception $e) {
             log_message('error', 'Erro ao resetar senha: ' . $e->getMessage());
