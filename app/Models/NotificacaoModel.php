@@ -20,6 +20,7 @@ class NotificacaoModel extends Model
         'modulo',
         'parametros',
         'status',
+        'status_descricao', // <-- adicione aqui
         'data_vencimento',
         'acionada_em',
         'resolvida_em',
@@ -203,7 +204,7 @@ class NotificacaoModel extends Model
     /**
      * Marca notificação como resolvida
      */
-    public function marcarResolvida($id, $usuarioId = null)
+    public function marcarResolvida($id, $usuarioId = null, $descricao = null)
     {
         $data = [
             'status' => 'resolvida',
@@ -213,6 +214,9 @@ class NotificacaoModel extends Model
         if ($usuarioId) {
             $data['usuario_responsavel'] = $usuarioId;
         }
+        if ($descricao) {
+            $data['status_descricao'] = $descricao;
+        }
 
         return $this->update($id, $data);
     }
@@ -220,11 +224,15 @@ class NotificacaoModel extends Model
     /**
      * Cancela notificação
      */
-    public function cancelarNotificacao($id, $motivo = null)
+    public function cancelarNotificacao($id, $motivo = null, $descricao = null)
     {
         $data = [
             'status' => 'cancelada'
         ];
+
+        if ($descricao) {
+            $data['status_descricao'] = $descricao;
+        }
 
         if ($motivo) {
             $metadata = ['motivo_cancelamento' => $motivo];
