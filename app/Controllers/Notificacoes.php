@@ -334,7 +334,9 @@ class Notificacoes extends BaseController
         ];
 
         if ($formato === 'pdf') {
-            // Implementar geração de PDF
+            // Implementar geração de PDF de forma nativa
+            // $dompdf = new \Dompdf\Dompdf(); 
+            // $dompdf->loadHtml(view('notificacoes/relatorio_pdf', $data));
             return view('notificacoes/relatorio_pdf', $data);
         } else {
             return view('notificacoes/relatorio', $data);
