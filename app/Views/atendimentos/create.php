@@ -230,7 +230,7 @@
                                 <i class="bi bi-clipboard-pulse"></i> Consulta de Enfermagem
                             </label>
                             <textarea class="form-control" id="consulta_enfermagem" name="consulta_enfermagem"
-                                rows="3" placeholder="Observações da consulta de enfermagem..."><?= old('consulta_enfermagem') ?></textarea>
+                                rows="3" placeholder="Digite 'SIM' ou 'NÃO' para informar. Caso necessário adicione observações da consulta de enfermagem..."><?= old('consulta_enfermagem') ?></textarea>
                         </div>
 
                         <!-- Hipótese Diagnóstica -->
