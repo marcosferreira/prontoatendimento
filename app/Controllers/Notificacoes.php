@@ -154,19 +154,40 @@ class Notificacoes extends BaseController
         }
 
         $observacao = $this->request->getPost('observacao');
-        $usuarioId = auth()->user()->id ?? null;
+        if (!$observacao) {
+            // Se vier JSON, pega do body
+            $json = $this->request->getJSON(true);
+            $observacao = $json['observacao'] ?? null;
+        }
+        $usuario = auth()->user();
+        $usuarioId = $usuario->id ?? null;
+        $usuarioNome = $usuario->username ?? 'Sistema';
 
-        if ($this->notificacaoModel->marcarResolvida($id, $usuarioId)) {
-            // Registra observação se fornecida
+        // Monta descrição do status
+        $descricaoStatus = $observacao ? $observacao : 'Notificação resolvida manualmente';
+
+        // Atualiza status e descrição
+        if ($this->notificacaoModel->marcarResolvida($id, $usuarioId, $descricaoStatus)) {
+            // Atualiza metadata com histórico
+            $metadata = json_decode($notificacao['metadata'], true) ?: [];
+            $historico = $metadata['historico_status'] ?? [];
+            $historico[] = [
+                'status' => 'resolvida',
+                'descricao' => $descricaoStatus,
+                'usuario' => $usuarioNome,
+                'data' => date('Y-m-d H:i:s')
+            ];
+            $metadata['historico_status'] = $historico;
+
+            // Observação de resolução
             if ($observacao) {
-                $metadata = json_decode($notificacao['metadata'], true) ?: [];
                 $metadata['observacao_resolucao'] = $observacao;
-                $metadata['resolvida_por'] = auth()->user()->username ?? 'Sistema';
-                
-                $this->notificacaoModel->update($id, [
-                    'metadata' => json_encode($metadata)
-                ]);
             }
+            $metadata['resolvida_por'] = $usuarioNome;
+
+            $this->notificacaoModel->update($id, [
+                'metadata' => json_encode($metadata)
+            ]);
 
             return $this->response->setJSON([
                 'success' => true,
@@ -190,8 +211,37 @@ class Notificacoes extends BaseController
         }
 
         $motivo = $this->request->getPost('motivo');
-        
-        if ($this->notificacaoModel->cancelarNotificacao($id, $motivo)) {
+        if (!$motivo) {
+            // Se vier JSON, pega do body
+            $json = $this->request->getJSON(true);
+            $motivo = $json['motivo'] ?? null;
+        }
+        $usuario = auth()->user();
+        $usuarioNome = $usuario->username ?? 'Sistema';
+
+        // Monta descrição do status
+        $descricaoStatus = $motivo ? $motivo : 'Notificação cancelada manualmente';
+
+        $notificacao = $this->notificacaoModel->find($id);
+
+        if ($this->notificacaoModel->cancelarNotificacao($id, $motivo, $descricaoStatus)) {
+            // Atualiza metadata com histórico
+            $metadata = json_decode($notificacao['metadata'], true) ?: [];
+            $historico = $metadata['historico_status'] ?? [];
+            $historico[] = [
+                'status' => 'cancelada',
+                'descricao' => $descricaoStatus,
+                'usuario' => $usuarioNome,
+                'data' => date('Y-m-d H:i:s')
+            ];
+            $metadata['historico_status'] = $historico;
+            $metadata['motivo_cancelamento'] = $motivo;
+            $metadata['cancelada_por'] = $usuarioNome;
+
+            $this->notificacaoModel->update($id, [
+                'metadata' => json_encode($metadata)
+            ]);
+
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Notificação cancelada'

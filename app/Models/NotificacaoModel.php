@@ -20,7 +20,7 @@ class NotificacaoModel extends Model
         'modulo',
         'parametros',
         'status',
-        'status_descricao', // <-- adicione aqui
+        'status_descricao', // já incluso
         'data_vencimento',
         'acionada_em',
         'resolvida_em',

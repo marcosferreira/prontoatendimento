@@ -86,6 +86,10 @@
                                         <span class="badge bg-<?= $notificacao['status'] === 'ativa' ? 'warning' : ($notificacao['status'] === 'resolvida' ? 'success' : 'secondary') ?>">
                                             <?= ucfirst($notificacao['status']) ?>
                                         </span>
+                                        <?php if (!empty($notificacao['status_descricao'])): ?>
+                                            <br>
+                                            <small class="text-muted"><?= esc($notificacao['status_descricao']) ?></small>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="col-md-6">
                                         <strong>Acionada em:</strong><br>
@@ -142,6 +146,7 @@
                                         <strong>Informações Adicionais:</strong><br>
                                         <div class="border rounded p-3 bg-light">
                                             <?php foreach ($notificacao['metadata'] as $chave => $valor): ?>
+                                                <?php if ($chave === 'historico_status') continue; ?>
                                                 <?php if (is_array($valor) || is_object($valor)) continue; ?>
                                                 <div class="row mb-2">
                                                     <div class="col-md-4">
@@ -152,6 +157,27 @@
                                                     </div>
                                                 </div>
                                             <?php endforeach; ?>
+
+                                            <?php if (!empty($notificacao['metadata']['historico_status'])): ?>
+                                                <hr>
+                                                <strong>Histórico de Status:</strong>
+                                                <ul class="list-group mt-2">
+                                                    <?php foreach ($notificacao['metadata']['historico_status'] as $item): ?>
+                                                        <li class="list-group-item small">
+                                                            <span class="badge bg-<?= $item['status'] === 'resolvida' ? 'success' : ($item['status'] === 'cancelada' ? 'danger' : 'secondary') ?>">
+                                                                <?= ucfirst($item['status']) ?>
+                                                            </span>
+                                                            <span class="ms-2"><?= esc($item['descricao'] ?? '') ?></span>
+                                                            <span class="ms-2 text-muted">
+                                                                <?php if (!empty($item['usuario'])): ?>
+                                                                    por <?= esc($item['usuario']) ?>
+                                                                <?php endif; ?>
+                                                                em <?= date('d/m/Y H:i', strtotime($item['data'])) ?>
+                                                            </span>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -305,8 +331,16 @@
                 </div>
                 <div class="mb-3">
                     <label for="motivoCancelamento" class="form-label">Motivo do cancelamento <span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="motivoCancelamento" rows="3" 
-                              placeholder="Explique o motivo do cancelamento..." required></textarea>
+                    <select class="form-select mb-2" id="motivoCancelamento" name="motivo" required>
+                        <option value="">Selecione o motivo</option>
+                        <option value="Falso positivo">Falso positivo</option>
+                        <option value="Notificação duplicada">Notificação duplicada</option>
+                        <option value="Não aplicável">Não aplicável</option>
+                        <option value="Resolvido automaticamente">Resolvido automaticamente</option>
+                        <option value="Outro">Outro motivo</option>
+                    </select>
+                    <textarea class="form-control mt-2" id="motivoCancelamentoDetalhe" name="motivo_detalhe" rows="2"
+                        placeholder="Detalhe o motivo do cancelamento (opcional)"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -370,11 +404,17 @@
     });
 
     document.getElementById('btnConfirmarCancelar').addEventListener('click', function() {
-        const motivo = document.getElementById('motivoCancelamento').value;
+        const motivoSelect = document.getElementById('motivoCancelamento').value;
+        const motivoDetalhe = document.getElementById('motivoCancelamentoDetalhe').value;
 
-        if (!motivo.trim()) {
+        if (!motivoSelect.trim()) {
             showAlert('error', 'Informe o motivo do cancelamento');
             return;
+        }
+
+        let motivoFinal = motivoSelect;
+        if (motivoDetalhe.trim()) {
+            motivoFinal += ' - ' + motivoDetalhe.trim();
         }
 
         fetch(`<?= base_url("notificacoes/cancelar") ?>/${notificacaoAtual}`, {
@@ -384,7 +424,7 @@
                 'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
-                motivo: motivo
+                motivo: motivoFinal
             })
         })
         .then(response => response.json())
