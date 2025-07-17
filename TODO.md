@@ -18,11 +18,11 @@
 ## � CORREÇÕES E MELHORIAS PRIORITÁRIAS
 
 ### 🚨 CRÍTICAS (Resolver Imediatamente)
- [ ] **Criar migração da tabela `notificacoes`** - Sistema detecta mas precisa da estrutura
+ [x] **Criar migração da tabela `notificacoes`** - Sistema detecta mas precisa da estrutura
  [ ] **Implementar índices otimizados** - Performance de consultas BI
  [ ] **Configurar CRON automático** - `0 */2 * * * php spark notificacoes:analisar --quiet`
- [ ] **Validar permissões de usuários** - Sistema de controle de acesso
- [ ] **Corrigir bugs na sidebar** - Badge de notificações críticas
+ [x] **Validar permissões de usuários** - Sistema de controle de acesso
+ [x] **Corrigir bugs na sidebar** - Badge de notificações críticas
 
 ### ⚡ ALTAS (Próximas 2 semanas)
  [ ] **Melhorar algoritmos existentes** - Ajustar thresholds dos 5 tipos implementados
