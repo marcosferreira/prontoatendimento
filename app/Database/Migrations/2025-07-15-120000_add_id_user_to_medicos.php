@@ -21,7 +21,18 @@ class AddIdUserToMedicos extends Migration
 
     public function down()
     {
-        $this->forge->dropForeignKey('medicos', 'medicos_id_user_foreign');
+        // Tenta remover a FK pelo nome padrão ou pelo nome alternativo
+        try {
+            $this->forge->dropForeignKey('medicos', 'medicos_id_user_foreign');
+        } catch (\Throwable $e) {
+            // Se não existir, ignora
+        }
+        // Alternativamente, tenta pelo nome gerado pelo MySQL (caso diferente)
+        try {
+            $this->forge->dropForeignKey('medicos', 'medicos_id_user_foreign_1');
+        } catch (\Throwable $e) {
+            // Se não existir, ignora
+        }
         $this->forge->dropColumn('medicos', 'id_user');
     }
 }

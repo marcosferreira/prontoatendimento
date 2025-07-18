@@ -111,10 +111,11 @@ class NotificacaoAnalyzer
             }
 
             // Se nenhuma análise pôde ser executada, criar notificações de demonstração
-            if ($notificacoesCriadas === 0) {
-                $notificacoesCriadas += $this->criarNotificacoesDemonstracao();
-                $analises['demonstracao'] = ['executada' => true, 'notificacoes' => $notificacoesCriadas];
-            }
+            // TODO: Implementar lógica de demonstração se necessário
+            // if ($notificacoesCriadas === 0) {
+            //     $notificacoesCriadas += $this->criarNotificacoesDemonstracao();
+            //     $analises['demonstracao'] = ['executada' => true, 'notificacoes' => $notificacoesCriadas];
+            // }
 
             log_message('info', "Análise BI concluída. {$notificacoesCriadas} notificações criadas");
 

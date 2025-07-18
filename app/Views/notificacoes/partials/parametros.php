@@ -81,4 +81,19 @@ if (!isset($tipo)) $tipo = 'default';
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
+
+    <?php if (!empty($parametros['atendimentos_vinculados']) && is_array($parametros['atendimentos_vinculados'])): ?>
+        <div class="col-12 mt-3">
+            <small class="text-muted">Atendimentos Vinculados:</small>
+            <ul class="list-group">
+                <?php foreach ($parametros['atendimentos_vinculados'] as $at): ?>
+                    <li class="list-group-item">
+                        <a href="<?= base_url('atendimentos/show/' . $at['id_atendimento']) ?>">
+                            Atendimento #<?= $at['id_atendimento'] ?> - <?= esc($at['paciente_nome'] ?? '') ?> (<?= isset($at['data_atendimento']) ? date('d/m/Y H:i', strtotime($at['data_atendimento'])) : '' ?>)
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 </div>
