@@ -208,7 +208,7 @@
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyAddress()">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyAddress(event)">
                                         <i class="bi bi-clipboard"></i> Copiar Endereço
                                     </button>
                                 </div>
@@ -412,34 +412,30 @@
         new bootstrap.Modal(document.getElementById('deleteModal')).show();
     }
 
-    function copyAddress() {
-        let address = `<?= esc($logradouro['tipo_logradouro'] . ' ' . $logradouro['nome_logradouro'] . ', ' . $logradouro['nome_bairro']) ?>`;
+    function copyAddress(event) {
+        // Seleciona o texto da div de endereço formatado
+        const addressDiv = document.querySelector('.address-format');
+        let address = addressDiv ? addressDiv.innerText.trim() : '';
 
-        <?php if (!empty($logradouro['cidade'])): ?>
-            address += `, <?= esc($logradouro['cidade']) ?>`;
-        <?php endif; ?>
-
-        <?php if (!empty($logradouro['estado'])): ?>
-            address += ` - <?= esc($logradouro['estado']) ?>`;
-        <?php endif; ?>
-
-        <?php if ($logradouro['cep']): ?>
-            address += `, CEP: <?= esc($logradouro['cep']) ?>`;
-        <?php endif; ?>
+        if (!address) {
+            alert('Endereço não encontrado para copiar.');
+            return;
+        }
 
         navigator.clipboard.writeText(address).then(function() {
-            // Show success message
-            const btn = event.target.closest('button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="bi bi-check"></i> Copiado!';
-            btn.classList.remove('btn-outline-secondary');
-            btn.classList.add('btn-success');
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-outline-secondary');
-            }, 2000);
+            // Mostra mensagem de sucesso
+            const btn = event ? event.target.closest('button') : null;
+            if (btn) {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check"></i> Copiado!';
+                btn.classList.remove('btn-outline-secondary');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-secondary');
+                }, 2000);
+            }
         }).catch(function(err) {
             console.error('Erro ao copiar: ', err);
             alert('Erro ao copiar endereço. Tente selecionar e copiar manualmente.');
