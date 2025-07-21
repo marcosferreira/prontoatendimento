@@ -322,14 +322,16 @@
                 <form id="formCancelar">
                     <div class="mb-3">
                         <label for="motivoCancelamento" class="form-label">Motivo do Cancelamento</label>
-                        <select class="form-select" id="motivoCancelamento" name="motivo" required>
+                        <select class="form-select mb-2" id="motivoCancelamento" name="motivo" required>
                             <option value="">Selecione o motivo</option>
-                            <option value="falso_positivo">Falso positivo</option>
-                            <option value="duplicada">Notificação duplicada</option>
-                            <option value="nao_aplicavel">Não aplicável</option>
-                            <option value="resolvido_automaticamente">Resolvido automaticamente</option>
-                            <option value="outro">Outro motivo</option>
+                            <option value="Falso positivo">Falso positivo</option>
+                            <option value="Notificação duplicada">Notificação duplicada</option>
+                            <option value="Não aplicável">Não aplicável</option>
+                            <option value="Resolvido automaticamente">Resolvido automaticamente</option>
+                            <option value="Outro">Outro motivo</option>
                         </select>
+                        <textarea class="form-control mt-2" id="motivoCancelamentoDetalhe" name="motivo_detalhe" rows="2"
+                            placeholder="Detalhe o motivo do cancelamento (opcional)"></textarea>
                     </div>
                 </form>
             </div>
@@ -790,11 +792,18 @@
     }
 
     function confirmarCancelamento() {
-        const motivo = document.getElementById('motivoCancelamento').value;
+        const motivoSelect = document.getElementById('motivoCancelamento').value;
+        const motivoDetalhe = document.getElementById('motivoCancelamentoDetalhe').value;
 
-        if (!motivo.trim()) {
+        if (!motivoSelect.trim()) {
             showAlert('warning', 'Informe o motivo do cancelamento');
             return;
+        }
+
+        // Monta descrição detalhada
+        let motivoFinal = motivoSelect;
+        if (motivoDetalhe.trim()) {
+            motivoFinal += ' - ' + motivoDetalhe.trim();
         }
 
         fetch(`<?= base_url("notificacoes/cancelar") ?>/${notificacaoAtual}`, {
@@ -804,7 +813,7 @@
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify({
-                    motivo: motivo
+                    motivo: motivoFinal
                 })
             })
             .then(response => response.json())

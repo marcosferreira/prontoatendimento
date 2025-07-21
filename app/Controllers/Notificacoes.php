@@ -16,6 +16,63 @@ class Notificacoes extends BaseController
         $this->notificacaoModel = new NotificacaoModel();
         $this->analyzer = new NotificacaoAnalyzer();
     }
+    /**
+     * Registra log de auditoria
+     */
+    protected function logAuditoria($acao, $entidade, $dados)
+    {
+        $auditoriaModel = model('AuditoriaModel');
+        $usuario = auth()->user();
+        $usuarioId = $usuario->id ?? null;
+        $ip = $this->request->getIPAddress();
+        $auditoriaModel->insert([
+            'acao' => $acao,
+            'entidade' => $entidade,
+            'dados_anteriores' => null,
+            'dados_novos' => json_encode($dados),
+            'usuario_id' => $usuarioId,
+            'ip' => $ip,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+    }
+    /**
+     * Cria notificação por conjunto de atendimentos via API
+     * Espera dados da notificação e array de atendimentos
+     */
+    public function criarPorConjunto()
+    {
+        $data = $this->request->getJSON(true);
+        $notificacao = $data['notificacao'] ?? [];
+        $atendimentos = $data['atendimentos'] ?? [];
+
+        if (empty($notificacao) || empty($atendimentos) || !is_array($atendimentos)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Dados insuficientes para criar notificação.'
+            ]);
+        }
+
+        $id = $this->notificacaoModel->criarNotificacaoPorAtendimentos($notificacao, $atendimentos);
+        if (!$id) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Já existe notificação para este conjunto de atendimentos.'
+            ]);
+        }
+
+        // Log de auditoria
+        $this->logAuditoria('CREATE', 'Notificacao', [
+            'id' => $id,
+            'notificacao' => $notificacao,
+            'atendimentos' => $atendimentos
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'id' => $id
+        ]);
+    }
+
 
     /**
      * Dashboard principal das notificações
@@ -70,13 +127,27 @@ class Notificacoes extends BaseController
         // Decodifica dados JSON com validação
         $parametros = json_decode($notificacao['parametros'], true);
         $notificacao['parametros'] = is_array($parametros) ? $parametros : [];
-        
+
         $metadata = json_decode($notificacao['metadata'], true);
         $notificacao['metadata'] = is_array($metadata) ? $metadata : [];
-        
+
+        // Buscar atendimentos vinculados
+        $notificacaoAtendimentoModel = model('NotificacaoAtendimentoModel');
+        $atendimentoModel = model('AtendimentoModel');
+        $vinculos = $notificacaoAtendimentoModel->where('id_notificacao', $id)->findAll();
+        $atendimentosVinculados = [];
+        foreach ($vinculos as $vinculo) {
+            $atendimento = $atendimentoModel->find($vinculo['id_atendimento']);
+            if ($atendimento) {
+                $atendimentosVinculados[] = $atendimento;
+            }
+        }
+        // Adiciona ao array de parâmetros para uso direto na view
+        $notificacao['parametros']['atendimentos_vinculados'] = $atendimentosVinculados;
+
         // Informações complementares baseadas no tipo
         $dadosComplementares = $this->buscarDadosComplementares($notificacao);
-        
+
         // Ações sugeridas
         $acoesSugeridas = $this->gerarAcoesSugeridas($notificacao);
 
@@ -154,19 +225,40 @@ class Notificacoes extends BaseController
         }
 
         $observacao = $this->request->getPost('observacao');
-        $usuarioId = auth()->user()->id ?? null;
+        if (!$observacao) {
+            // Se vier JSON, pega do body
+            $json = $this->request->getJSON(true);
+            $observacao = $json['observacao'] ?? null;
+        }
+        $usuario = auth()->user();
+        $usuarioId = $usuario->id ?? null;
+        $usuarioNome = $usuario->username ?? 'Sistema';
 
-        if ($this->notificacaoModel->marcarResolvida($id, $usuarioId)) {
-            // Registra observação se fornecida
+        // Monta descrição do status
+        $descricaoStatus = $observacao ? $observacao : 'Notificação resolvida manualmente';
+
+        // Atualiza status e descrição
+        if ($this->notificacaoModel->marcarResolvida($id, $usuarioId, $descricaoStatus)) {
+            // Atualiza metadata com histórico
+            $metadata = json_decode($notificacao['metadata'], true) ?: [];
+            $historico = $metadata['historico_status'] ?? [];
+            $historico[] = [
+                'status' => 'resolvida',
+                'descricao' => $descricaoStatus,
+                'usuario' => $usuarioNome,
+                'data' => date('Y-m-d H:i:s')
+            ];
+            $metadata['historico_status'] = $historico;
+
+            // Observação de resolução
             if ($observacao) {
-                $metadata = json_decode($notificacao['metadata'], true) ?: [];
                 $metadata['observacao_resolucao'] = $observacao;
-                $metadata['resolvida_por'] = auth()->user()->username ?? 'Sistema';
-                
-                $this->notificacaoModel->update($id, [
-                    'metadata' => json_encode($metadata)
-                ]);
             }
+            $metadata['resolvida_por'] = $usuarioNome;
+
+            $this->notificacaoModel->update($id, [
+                'metadata' => json_encode($metadata)
+            ]);
 
             return $this->response->setJSON([
                 'success' => true,
@@ -190,8 +282,37 @@ class Notificacoes extends BaseController
         }
 
         $motivo = $this->request->getPost('motivo');
-        
-        if ($this->notificacaoModel->cancelarNotificacao($id, $motivo)) {
+        if (!$motivo) {
+            // Se vier JSON, pega do body
+            $json = $this->request->getJSON(true);
+            $motivo = $json['motivo'] ?? null;
+        }
+        $usuario = auth()->user();
+        $usuarioNome = $usuario->username ?? 'Sistema';
+
+        // Monta descrição do status
+        $descricaoStatus = $motivo ? $motivo : 'Notificação cancelada manualmente';
+
+        $notificacao = $this->notificacaoModel->find($id);
+
+        if ($this->notificacaoModel->cancelarNotificacao($id, $motivo, $descricaoStatus)) {
+            // Atualiza metadata com histórico
+            $metadata = json_decode($notificacao['metadata'], true) ?: [];
+            $historico = $metadata['historico_status'] ?? [];
+            $historico[] = [
+                'status' => 'cancelada',
+                'descricao' => $descricaoStatus,
+                'usuario' => $usuarioNome,
+                'data' => date('Y-m-d H:i:s')
+            ];
+            $metadata['historico_status'] = $historico;
+            $metadata['motivo_cancelamento'] = $motivo;
+            $metadata['cancelada_por'] = $usuarioNome;
+
+            $this->notificacaoModel->update($id, [
+                'metadata' => json_encode($metadata)
+            ]);
+
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Notificação cancelada'
@@ -284,7 +405,9 @@ class Notificacoes extends BaseController
         ];
 
         if ($formato === 'pdf') {
-            // Implementar geração de PDF
+            // Implementar geração de PDF de forma nativa
+            // $dompdf = new \Dompdf\Dompdf(); 
+            // $dompdf->loadHtml(view('notificacoes/relatorio_pdf', $data));
             return view('notificacoes/relatorio_pdf', $data);
         } else {
             return view('notificacoes/relatorio', $data);
@@ -571,13 +694,11 @@ class Notificacoes extends BaseController
     protected function buscarDadosComplementares($notificacao)
     {
         $dados = [];
-
         switch ($notificacao['tipo']) {
             case 'paciente_recorrente':
                 if (isset($notificacao['parametros']['paciente_id'])) {
                     $pacienteModel = new \App\Models\PacienteModel();
                     $dados['paciente'] = $pacienteModel->find($notificacao['parametros']['paciente_id']);
-                    
                     $atendimentoModel = new \App\Models\AtendimentoModel();
                     $dados['atendimentos_recentes'] = $atendimentoModel
                         ->where('id_paciente', $notificacao['parametros']['paciente_id'])
@@ -586,21 +707,17 @@ class Notificacoes extends BaseController
                         ->findAll();
                 }
                 break;
-
             case 'surto_sintomas':
                 if (isset($notificacao['parametros']['bairro_id'])) {
                     $bairroModel = new \App\Models\BairroModel();
                     $dados['bairro'] = $bairroModel->find($notificacao['parametros']['bairro_id']);
-                    
-                    // Busca outros casos similares
                     $dados['casos_similares'] = $this->buscarCasosSimilares(
                         $notificacao['parametros']['bairro_id'],
-                        $notificacao['parametros']['sintoma']
+                        $notificacao['parametros']['sintoma'] ?? ''
                     );
                 }
                 break;
         }
-
         return $dados;
     }
 
@@ -610,7 +727,6 @@ class Notificacoes extends BaseController
     protected function gerarAcoesSugeridas($notificacao)
     {
         $acoes = [];
-
         switch ($notificacao['tipo']) {
             case 'paciente_recorrente':
                 $acoes = [
@@ -646,7 +762,6 @@ class Notificacoes extends BaseController
                     ]
                 ];
                 break;
-
             case 'surto_sintomas':
                 $acoes = [
                     [
@@ -681,7 +796,6 @@ class Notificacoes extends BaseController
                     ]
                 ];
                 break;
-
             case 'alta_demanda':
                 $acoes = [
                     [
@@ -716,7 +830,6 @@ class Notificacoes extends BaseController
                     ]
                 ];
                 break;
-
             case 'estatistica_anomala':
                 $acoes = [
                     [
@@ -751,7 +864,6 @@ class Notificacoes extends BaseController
                     ]
                 ];
                 break;
-
             default:
                 $acoes = [
                     [
@@ -769,7 +881,6 @@ class Notificacoes extends BaseController
                 ];
                 break;
         }
-
         return $acoes;
     }
 

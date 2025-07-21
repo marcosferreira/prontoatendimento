@@ -20,11 +20,13 @@ class NotificacaoModel extends Model
         'modulo',
         'parametros',
         'status',
+        'status_descricao', // já incluso
         'data_vencimento',
         'acionada_em',
         'resolvida_em',
         'usuario_responsavel',
-        'metadata'
+        'metadata',
+        'conjunto_hash'
     ];
 
     // Dates
@@ -41,7 +43,8 @@ class NotificacaoModel extends Model
         'descricao' => 'required',
         'severidade' => 'required|in_list[baixa,media,alta,critica]',
         'modulo' => 'required|max_length[100]',
-        'status' => 'in_list[ativa,resolvida,cancelada]'
+        'status' => 'in_list[ativa,resolvida,cancelada]',
+        'conjunto_hash' => 'permit_empty|max_length[64]'
     ];
 
     protected $validationMessages = [
@@ -88,12 +91,61 @@ class NotificacaoModel extends Model
         if (isset($data['data']['parametros']) && is_array($data['data']['parametros'])) {
             $data['data']['parametros'] = json_encode($data['data']['parametros']);
         }
-
         if (isset($data['data']['metadata']) && is_array($data['data']['metadata'])) {
             $data['data']['metadata'] = json_encode($data['data']['metadata']);
         }
-
         return $data;
+    }
+
+    /**
+     * Cria uma notificação vinculando um conjunto de atendimentos
+     * Evita duplicidade pelo tipo, parametros e conjunto de atendimentos
+     * @param array $data Dados da notificação
+     * @param array $atendimentos IDs dos atendimentos
+     * @return int|false ID da notificação criada ou false
+     */
+    public function criarNotificacaoPorAtendimentos(array $data, array $atendimentos)
+    {
+        // Gera hash do conjunto para evitar duplicidade
+        sort($atendimentos);
+        $hashConjunto = md5(json_encode($atendimentos));
+        $data['conjunto_hash'] = $hashConjunto;
+
+        // Verifica se já existe notificação para esse conjunto
+        $existe = $this->where([
+            'tipo' => $data['tipo'] ?? null,
+            'conjunto_hash' => $hashConjunto,
+            'status !=' => 'Cancelada',
+        ])->first();
+        if ($existe) {
+            return false;
+        }
+
+        // Cria notificação
+        if (!$this->save($data)) {
+            return false;
+        }
+        $idNotificacao = $this->getInsertID();
+
+        // Vincula atendimentos
+        $notificacaoAtendimentoModel = model('NotificacaoAtendimentoModel');
+        foreach ($atendimentos as $idAtendimento) {
+            $notificacaoAtendimentoModel->insert([
+                'id_notificacao' => $idNotificacao,
+                'id_atendimento' => $idAtendimento,
+            ]);
+        }
+        return $idNotificacao;
+    }
+
+    /**
+     * Busca notificações por conjunto de atendimentos
+     */
+    public function buscarPorConjunto(array $atendimentos)
+    {
+        sort($atendimentos);
+        $hashConjunto = md5(json_encode($atendimentos));
+        return $this->where('conjunto_hash', $hashConjunto)->findAll();
     }
 
     /**
@@ -203,7 +255,7 @@ class NotificacaoModel extends Model
     /**
      * Marca notificação como resolvida
      */
-    public function marcarResolvida($id, $usuarioId = null)
+    public function marcarResolvida($id, $usuarioId = null, $descricao = null)
     {
         $data = [
             'status' => 'resolvida',
@@ -213,6 +265,9 @@ class NotificacaoModel extends Model
         if ($usuarioId) {
             $data['usuario_responsavel'] = $usuarioId;
         }
+        if ($descricao) {
+            $data['status_descricao'] = $descricao;
+        }
 
         return $this->update($id, $data);
     }
@@ -220,11 +275,15 @@ class NotificacaoModel extends Model
     /**
      * Cancela notificação
      */
-    public function cancelarNotificacao($id, $motivo = null)
+    public function cancelarNotificacao($id, $motivo = null, $descricao = null)
     {
         $data = [
             'status' => 'cancelada'
         ];
+
+        if ($descricao) {
+            $data['status_descricao'] = $descricao;
+        }
 
         if ($motivo) {
             $metadata = ['motivo_cancelamento' => $motivo];

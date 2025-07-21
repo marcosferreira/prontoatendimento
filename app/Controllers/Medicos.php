@@ -78,7 +78,8 @@ class Medicos extends BaseController
             'especialidade' => 'required|max_length[100]',
             'telefone' => 'permit_empty|max_length[20]',
             'email' => 'permit_empty|valid_email|max_length[255]',
-            'status' => 'required|in_list[Ativo,Inativo]'
+            'status' => 'required|in_list[Ativo,Inativo]',
+            'id_user' => 'permit_empty|is_natural_no_zero|validateUserIsMedicoGroup'
         ];
 
         $messages = [
@@ -107,6 +108,10 @@ class Medicos extends BaseController
             'status' => [
                 'required' => 'O status é obrigatório',
                 'in_list' => 'Status deve ser Ativo ou Inativo'
+            ],
+            'id_user' => [
+                'is_natural_no_zero' => 'Selecione um usuário válido',
+                'validateUserIsMedicoGroup' => 'O usuário selecionado não pertence ao grupo médico'
             ]
         ];
 
@@ -128,7 +133,8 @@ class Medicos extends BaseController
             'especialidade' => $this->request->getPost('especialidade'),
             'telefone' => $this->request->getPost('telefone'),
             'email' => $this->request->getPost('email'),
-            'status' => $this->request->getPost('status')
+            'status' => $this->request->getPost('status'),
+            'id_user' => $this->request->getPost('id_user')
         ];
 
         if ($this->medicoModel->save($data)) {
@@ -227,7 +233,8 @@ class Medicos extends BaseController
             'nome' => 'required|min_length[3]|max_length[255]',
             'crm' => "required|min_length[4]|max_length[20]|is_unique[medicos.crm,id_medico,{$id}]",
             'especialidade' => 'permit_empty|max_length[100]',
-            'status' => 'required|in_list[Ativo,Inativo]'
+            'status' => 'required|in_list[Ativo,Inativo]',
+            'id_user' => 'permit_empty|is_natural_no_zero|validateUserIsMedicoGroup'
         ];
 
         $messages = [
@@ -248,6 +255,10 @@ class Medicos extends BaseController
             'status' => [
                 'required' => 'O status é obrigatório',
                 'in_list' => 'Status deve ser Ativo ou Inativo'
+            ],
+            'id_user' => [
+                'is_natural_no_zero' => 'Selecione um usuário válido',
+                'validateUserIsMedicoGroup' => 'O usuário selecionado não pertence ao grupo médico'
             ]
         ];
 
@@ -259,7 +270,8 @@ class Medicos extends BaseController
             'nome' => $this->request->getPost('nome'),
             'crm' => $this->request->getPost('crm'),
             'especialidade' => $this->request->getPost('especialidade'),
-            'status' => $this->request->getPost('status')
+            'status' => $this->request->getPost('status'),
+            'id_user' => $this->request->getPost('id_user')
         ];
 
         if ($this->medicoModel->update($id, $data)) {

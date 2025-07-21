@@ -455,4 +455,10 @@
         Sistema de Pronto Atendimento Municipal - Relatório de Notificações BI - <?= date('Y') ?>
     </div>
 </body>
+<script>
+    // Dispara automaticamente a impressão ao abrir a página PDF
+    window.addEventListener('DOMContentLoaded', function() {
+        window.print();
+    });
+</script>
 </html>

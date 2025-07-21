@@ -42,6 +42,7 @@ database.default.DBPrefix = pam_
 - Usar `useSoftDeletes = true` para exclusão lógica
 - Sempre definir `primaryKey`, `table`, `allowedFields`
 - Implementar validações apropriadas no model
+- Todos os metodos devem ser colocado após os atributos e construtor
 - Exemplo de estrutura:
 
 ```php

@@ -9,7 +9,7 @@
     columns="max"
     failOnRisky="true"
     failOnWarning="true"
-    cacheDirectory="build/.phpunit.cache">
+    >
     <coverage
         includeUncoveredFiles="true"
         pathCoverage="false"
@@ -32,15 +32,7 @@
         <testdoxText outputFile="build/logs/testdox.txt"/>
         <junit outputFile="build/logs/logfile.xml"/>
     </logging>
-    <source>
-        <include>
-            <directory suffix=".php">./app</directory>
-        </include>
-        <exclude>
-            <directory suffix=".php">./app/Views</directory>
-            <file>./app/Config/Routes.php</file>
-        </exclude>
-    </source>
+    <!-- Removido elemento <source> para compatibilidade -->
     <php>
         <server name="app.baseURL" value="http://example.com/"/>
         <server name="CODEIGNITER_SCREAM_DEPRECATIONS" value="0"/>
@@ -50,14 +42,12 @@
         <const name="CONFIGPATH" value="./app/Config/"/>
         <!-- Directory containing the front controller (index.php) -->
         <const name="PUBLICPATH" value="./public/"/>
-        <!-- Database configuration -->
-        <!-- Uncomment to provide your own database for testing
-            <env name="database.tests.hostname" value="localhost"/>
-            <env name="database.tests.database" value="tests"/>
-            <env name="database.tests.username" value="tests_user"/>
-            <env name="database.tests.password" value=""/>
-            <env name="database.tests.DBDriver" value="MySQLi"/>
-            <env name="database.tests.DBPrefix" value="tests_"/>
-            -->
+        <!-- Configuração do banco de dados para testes -->
+        <env name="database.tests.hostname" value="127.0.0.1"/>
+        <env name="database.tests.database" value="prontoatendimento_db"/>
+        <env name="database.tests.username" value="prontoatendimento"/>
+        <env name="database.tests.password" value="prontoatendimento"/>
+        <env name="database.tests.DBDriver" value="MySQLi"/>
+        <env name="database.tests.DBPrefix" value="pam_"/>
     </php>
 </phpunit>
