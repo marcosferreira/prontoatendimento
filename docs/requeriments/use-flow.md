@@ -4,6 +4,41 @@
 
 Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendimento Municipal, abrangendo desde a chegada do paciente até a finalização do atendimento e geração de relatórios.
 
+## 📊 Diagrama Geral do Fluxo de Atendimento
+
+```mermaid
+flowchart TD
+    A[👤 Paciente chega ao PA] --> B{🔍 Já cadastrado?}
+    B -->|Sim| C[📝 Atualizar dados]
+    B -->|Não| D[📋 Novo cadastro]
+    C --> E[🏥 Triagem - Enfermeiro]
+    D --> E
+    E --> F{🚨 Classificação de Risco}
+    F -->|🔴 Vermelho| G[⚡ Atendimento IMEDIATO]
+    F -->|🟡 Amarelo| H[⏱️ Aguarda 10min]
+    F -->|🟢 Verde| I[⏳ Aguarda 60min]
+    F -->|🔵 Azul| J[⏰ Aguarda 120min]
+    G --> K[👩‍⚕️ Consulta Médica]
+    H --> K
+    I --> K
+    J --> K
+    K --> L{🔬 Precisa exames?}
+    L -->|Sim| M[🧪 Solicitação de Exames]
+    L -->|Não| N[💊 Prescrição]
+    M --> O[📋 Realização de Exames]
+    O --> P[📊 Resultados]
+    P --> N
+    N --> Q{🏠 Desfecho}
+    Q -->|Alta| R[📄 Documentos de Alta]
+    Q -->|Internação| S[🛏️ Transferir para Leito]
+    Q -->|Transferência| T[🚑 Outro Hospital]
+    Q -->|Retorno| U[📅 Agendar Retorno]
+    R --> V[✅ Fim do Atendimento]
+    S --> V
+    T --> V
+    U --> V
+```
+
 ## Fluxos Principais
 
 ### 1. 🚪 Recepção e Triagem
@@ -39,6 +74,29 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 - 🟢 **Verde** - Pouco urgente (60 min)
 - 🔵 **Azul** - Não urgente (120 min)
 
+```mermaid
+stateDiagram-v2
+    [*] --> Chegada
+    Chegada --> Cadastro
+    Cadastro --> Triagem
+    Triagem --> Vermelho: Emergência
+    Triagem --> Amarelo: Urgência
+    Triagem --> Verde: Pouco_Urgente
+    Triagem --> Azul: Não_Urgente
+    
+    Vermelho --> Atendimento_Imediato: 0 min
+    Amarelo --> Fila_Urgente: 10 min
+    Verde --> Fila_Pouco_Urgente: 60 min
+    Azul --> Fila_Não_Urgente: 120 min
+    
+    Atendimento_Imediato --> Consulta_Medica
+    Fila_Urgente --> Consulta_Medica
+    Fila_Pouco_Urgente --> Consulta_Medica
+    Fila_Não_Urgente --> Consulta_Medica
+    
+    Consulta_Medica --> [*]
+```
+
 **Dados da Triagem:**
 - Sinais vitais básicos
 - Queixa principal
@@ -48,6 +106,44 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 - Observações da enfermagem
 
 ### 2. 👩‍⚕️ Atendimento Médico
+
+```mermaid
+sequenceDiagram
+    participant P as 👤 Paciente
+    participant M as 👩‍⚕️ Médico
+    participant S as 💻 Sistema
+    participant L as 🧪 Laboratório
+    participant F as 💊 Farmácia
+    
+    Note over P,F: Fluxo de Atendimento Médico
+    
+    M->>S: Acessa Dashboard
+    S-->>M: Lista pacientes por prioridade
+    M->>S: Seleciona paciente
+    S-->>M: Carrega prontuário/histórico
+    
+    M->>P: Realiza anamnese
+    M->>P: Exame físico
+    M->>S: Registra consulta
+    
+    alt Necessita Exames
+        M->>S: Solicita exames
+        S->>L: Gera solicitação
+        L-->>S: Confirma recebimento
+        P->>L: Realiza exames
+        L->>S: Envia resultados
+        S-->>M: Notifica resultados
+    end
+    
+    alt Prescrição Necessária
+        M->>S: Cria prescrição
+        S->>F: Envia prescrição
+        F-->>P: Dispensa medicamentos
+    end
+    
+    M->>S: Finaliza atendimento
+    S-->>P: Gera documentos de alta
+```
 
 #### 2.1 Consulta Médica
 **Ator:** Médico
@@ -113,6 +209,40 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 
 ### 4. 📋 Finalização do Atendimento
 
+```mermaid
+journey
+    title Jornada Completa do Paciente no Pronto Atendimento
+    section 🚪 Chegada e Recepção
+      Chegar ao PA: 3: Paciente
+      Procurar recepção: 4: Paciente
+      Aguardar atendimento: 2: Paciente
+      Fazer cadastro/atualizar dados: 4: Recepcionista
+      Receber pulseira identificação: 5: Paciente
+    section 🏥 Triagem
+      Aguardar triagem: 3: Paciente
+      Aferir sinais vitais: 4: Enfermeiro
+      Avaliar queixa principal: 5: Enfermeiro
+      Classificar risco: 5: Enfermeiro
+      Orientar sobre espera: 4: Enfermeiro
+    section ⏳ Aguardo por Atendimento
+      Aguardar chamada médica: 2: Paciente
+      Monitorar fila: 3: Sistema
+      Chamar por prioridade: 5: Sistema
+    section 👩‍⚕️ Atendimento Médico
+      Consulta médica: 5: Médico
+      Realizar exames: 4: Técnico
+      Aguardar resultados: 3: Paciente
+      Prescrever medicamentos: 5: Médico
+    section 💊 Medicamentos
+      Ir à farmácia: 4: Paciente
+      Dispensar medicamentos: 5: Farmacêutico
+      Orientar uso: 5: Farmacêutico
+    section 📄 Finalização
+      Receber documentos: 5: Paciente
+      Orientações de alta: 5: Médico
+      Sair do PA: 5: Paciente
+```
+
 #### 4.1 Desfecho do Atendimento
 **Módulo:** Consultas > Finalizar Atendimento
 
@@ -134,6 +264,47 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 ### 5. 📊 Monitoramento e Relatórios
 
 #### 5.1 Dashboard em Tempo Real
+
+```mermaid
+graph TB
+    subgraph "📊 Dashboard Principal"
+        A[👥 Pacientes em Atendimento]
+        B[⏳ Fila de Espera]
+        C[⏱️ Tempo Médio]
+        D[🏥 Lotação Atual]
+        E[🚨 Alertas Críticos]
+    end
+    
+    subgraph "🔴 Emergência - 0 min"
+        F1[Paciente 1]
+        F2[Paciente 2]
+    end
+    
+    subgraph "🟡 Urgente - 10 min"
+        G1[Paciente 3]
+        G2[Paciente 4]
+        G3[Paciente 5]
+    end
+    
+    subgraph "🟢 Pouco Urgente - 60 min"
+        H1[Paciente 6]
+        H2[Paciente 7]
+    end
+    
+    subgraph "🔵 Não Urgente - 120 min"
+        I1[Paciente 8]
+    end
+    
+    B --> F1
+    B --> F2
+    B --> G1
+    B --> G2
+    B --> G3
+    B --> H1
+    B --> H2
+    B --> I1
+```
+
 **Módulo:** Dashboard Principal
 
 **Indicadores Principais:**
@@ -162,6 +333,23 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 **Classificação:** Vermelho
 **Tempo:** Imediato
 
+```mermaid
+flowchart LR
+    A[🚨 Emergência Detectada] --> B[⚡ Bypass Triagem Normal]
+    B --> C[👩‍⚕️ Atendimento Médico Imediato]
+    C --> D[📝 Registro Paralelo de Dados]
+    D --> E{🚑 Necessita SAMU?}
+    E -->|Sim| F[📞 Comunicação SAMU]
+    E -->|Não| G[🏥 Continua Atendimento]
+    F --> H{🏥 Transferência Necessária?}
+    G --> H
+    H -->|UTI| I[🚨 UTI]
+    H -->|Cirurgia| J[⚔️ Centro Cirúrgico]
+    H -->|Estabilizado| K[📋 Conclusão Atendimento]
+    I --> K
+    J --> K
+```
+
 **Fluxo Acelerado:**
 1. Paciente bypassa triagem normal
 2. Atendimento médico imediato
@@ -182,6 +370,44 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 ### 7. 👥 Gestão de Usuários
 
 #### 7.1 Perfis de Acesso
+
+```mermaid
+graph TD
+    A[🔐 Sistema de Autenticação] --> B[👑 Administrador]
+    A --> C[👩‍⚕️ Médico]
+    A --> D[👩‍⚕️ Enfermeiro]
+    A --> E[👩‍💼 Recepcionista]
+    A --> F[💊 Farmacêutico]
+    A --> G[📊 Gestor]
+    
+    B --> B1[✅ Acesso Total]
+    B1 --> B2[Configurações do Sistema]
+    B1 --> B3[Gestão de Usuários]
+    B1 --> B4[Todos os Módulos]
+    
+    C --> C1[🩺 Consultas]
+    C --> C2[💊 Prescrições]
+    C --> C3[📋 Prontuários]
+    C --> C4[🔬 Exames]
+    
+    D --> D1[🏥 Triagem]
+    D --> D2[💉 Medicamentos]
+    D --> D3[🩹 Procedimentos]
+    D --> D4[📊 Sinais Vitais]
+    
+    E --> E1[👤 Cadastro Pacientes]
+    E --> E2[📅 Agendamentos]
+    E --> E3[📞 Atendimento]
+    
+    F --> F1[💊 Dispensação]
+    F --> F2[📦 Controle Estoque]
+    F --> F3[⚠️ Interações]
+    
+    G --> G1[📊 Relatórios]
+    G --> G2[📈 Dashboard]
+    G --> G3[📋 Estatísticas]
+```
+
 - **Administrador:** Acesso total ao sistema
 - **Médico:** Consultas, prescrições, prontuários
 - **Enfermeiro:** Triagem, medicamentos, procedimentos
@@ -190,6 +416,37 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 - **Gestor:** Relatórios, dashboard, estatísticas
 
 #### 7.2 Controle de Acesso
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Usuário
+    participant S as 🔐 Sistema
+    participant DB as 💾 Banco de Dados
+    participant A as 📝 Auditoria
+    
+    U->>S: Login (CPF + Senha)
+    S->>DB: Validar credenciais
+    DB-->>S: Credenciais válidas
+    S->>DB: Verificar perfil de acesso
+    DB-->>S: Permissões do usuário
+    S->>A: Log de login
+    S-->>U: Acesso liberado
+    
+    Note over U,A: Sessão ativa com timeout
+    
+    U->>S: Ação no sistema
+    S->>A: Log da ação
+    S->>DB: Executar operação
+    DB-->>S: Resultado
+    S-->>U: Resposta
+    
+    Note over U,A: Timeout ou logout
+    
+    U->>S: Logout/Timeout
+    S->>A: Log de logout
+    S-->>U: Sessão encerrada
+```
+
 - Login com CPF e senha
 - Sessão com timeout automático
 - Log de auditoria de todas as ações
@@ -211,6 +468,42 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 
 ## Integrações Externas
 
+```mermaid
+graph TB
+    subgraph "🏥 Sistema SisPAM"
+        PA[Pronto Atendimento]
+        DB[(💾 Banco de Dados)]
+        API[🔌 APIs Internas]
+    end
+    
+    subgraph "🌐 Sistemas Externos"
+        DATASUS[🏛️ DATASUS]
+        SAMU[🚑 SAMU]
+        LAB[🧪 Laboratórios]
+        FARM[💊 Farmácia Popular]
+    end
+    
+    subgraph "📱 Comunicação"
+        SMS[📱 SMS]
+        EMAIL[📧 Email]
+        WHATS[💬 WhatsApp]
+        INTERNO[🔔 Sistema Interno]
+    end
+    
+    PA <--> DATASUS
+    PA <--> SAMU
+    PA <--> LAB
+    PA <--> FARM
+    
+    PA --> SMS
+    PA --> EMAIL
+    PA --> WHATS
+    PA --> INTERNO
+    
+    PA <--> DB
+    API <--> PA
+```
+
 ### 9.1 Sistemas de Saúde
 - **DATASUS:** Sincronização de dados SUS
 - **SAMU:** Comunicação de emergências
@@ -224,6 +517,22 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 - **Sistema Interno:** Alertas e avisos
 
 ## Indicadores de Performance
+
+```mermaid
+pie title Distribuição de Classificação de Risco
+    "🔴 Vermelho (Emergência)" : 15
+    "🟡 Amarelo (Urgência)" : 35
+    "🟢 Verde (Pouco Urgente)" : 40
+    "🔵 Azul (Não Urgente)" : 10
+```
+
+```mermaid
+xychart-beta
+    title "Tempo Médio de Atendimento por Classificação"
+    x-axis [Vermelho, Amarelo, Verde, Azul]
+    y-axis "Tempo (minutos)" 0 --> 150
+    bar [5, 25, 75, 130]
+```
 
 ### 10.1 KPIs Operacionais
 - **Tempo médio de espera por classificação**
@@ -252,6 +561,68 @@ Este documento detalha o fluxo de uso do sistema MedSystem para o Pronto Atendim
 - Rastreabilidade de alterações
 - Relatórios de auditoria
 - Monitoramento de acessos suspeitos
+
+## 🗃️ Arquitetura do Sistema
+
+```mermaid
+graph TB
+    subgraph "🖥️ Frontend"
+        UI[Interface do Usuário]
+        JS[JavaScript/jQuery]
+        CSS[Bootstrap 5]
+    end
+    
+    subgraph "⚙️ Backend - CodeIgniter 4"
+        C[Controllers]
+        M[Models]
+        V[Views]
+        F[Filters]
+        H[Helpers]
+    end
+    
+    subgraph "🔐 Autenticação"
+        SHIELD[CodeIgniter Shield]
+        AUTH[Auth System]
+        PERMS[Permissions]
+    end
+    
+    subgraph "💾 Banco de Dados"
+        MYSQL[(MySQL/MariaDB)]
+        TABLES[Tabelas pam_*]
+        MIG[Migrations]
+    end
+    
+    subgraph "📂 Estrutura MVC"
+        direction TB
+        CONT[📋 Controllers]
+        CONT --> PAC[PacientesController]
+        CONT --> ATD[AtendimentosController]
+        CONT --> MED[MedicosController]
+        
+        MOD[🗃️ Models]
+        MOD --> PACM[PacienteModel]
+        MOD --> ATDM[AtendimentoModel]
+        MOD --> MEDM[MedicoModel]
+        
+        VIEW[👁️ Views]
+        VIEW --> PACV[pacientes/]
+        VIEW --> ATDV[atendimentos/]
+        VIEW --> MEDV[medicos/]
+    end
+    
+    UI <--> C
+    C <--> M
+    M <--> MYSQL
+    C --> V
+    V --> UI
+    
+    C <--> SHIELD
+    SHIELD <--> AUTH
+    AUTH <--> PERMS
+    
+    MYSQL --> TABLES
+    TABLES --> MIG
+```
 
 ---
 
