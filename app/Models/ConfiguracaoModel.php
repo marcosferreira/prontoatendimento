@@ -34,7 +34,7 @@ class ConfiguracaoModel extends Model
         'descricao' => 'permit_empty|max_length[255]',
         'tipo' => 'required|in_list[string,integer,boolean,float,json]',
         'categoria' => 'required|max_length[50]',
-        'editavel' => 'permit_empty|boolean'
+        'editavel' => 'permit_empty|in_list[0,1]'
     ];
 
     protected $validationMessages = [
@@ -53,6 +53,9 @@ class ConfiguracaoModel extends Model
         'categoria' => [
             'required' => 'A categoria é obrigatória.',
             'max_length' => 'A categoria deve ter no máximo 50 caracteres.'
+        ],
+        'editavel' => [
+            'in_list' => 'O campo editável deve ser 0 ou 1.'
         ]
     ];
 
