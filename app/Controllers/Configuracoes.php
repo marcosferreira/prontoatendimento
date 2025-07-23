@@ -46,10 +46,8 @@ class Configuracoes extends BaseController
             ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
             ->where('u.deleted_at', null);
 
-        // Se o usuário logado for admin (e não superadmin), não mostrar superadmins
-        if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin')) {
-            $builder->where('gu.group !=', 'superadmin');
-        }
+        // Nunca mostrar superadmins na listagem de usuários
+        $builder->where('gu.group !=', 'superadmin');
         
         $usuarios = $builder->get()->getResultArray();
         
@@ -189,10 +187,8 @@ class Configuracoes extends BaseController
                 ->join('auth_groups_users gu', 'gu.user_id = u.id', 'left')
                 ->where('u.deleted_at', null);
 
-            // Se o usuário logado for admin (e não superadmin), não mostrar superadmins
-            if ($currentUser->inGroup('admin') && !$currentUser->inGroup('superadmin')) {
-                $builder->where('gu.group !=', 'superadmin');
-            }
+            // Nunca mostrar superadmins na listagem de usuários
+            $builder->where('gu.group !=', 'superadmin');
             
             $usuarios = $builder->get()->getResultArray();
             
