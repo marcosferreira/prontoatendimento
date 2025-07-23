@@ -645,23 +645,36 @@ class Configuracoes extends BaseController
         try {
             $tipo = $this->request->getPost('tipo') ?: 'completo';
             
-            // Aqui implementaria a lógica de backup
-            // Por enquanto, simula o processo
+            // Carrega a biblioteca de backup
+            $backupManager = new \App\Libraries\BackupManager();
             
-            $nomeArquivo = 'backup_' . $tipo . '_' . date('Y-m-d_H-i-s') . '.sql';
-            
-            // Registra auditoria
-            $this->auditoriaModel->registrarAcao(
-                'Backup Criado',
-                'Backup',
-                "Backup {$tipo} criado manualmente: {$nomeArquivo}"
-            );
+            // Verifica se mysqldump está disponível
+            if (!$backupManager->verificarMysqldump()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'mysqldump não está disponível. Instale o MySQL client para usar esta funcionalidade.'
+                ]);
+            }
 
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => "Backup {$tipo} criado com sucesso!",
-                'arquivo' => $nomeArquivo
-            ]);
+            $resultado = match($tipo) {
+                'dados' => $backupManager->criarBackupDados('Backup manual via interface'),
+                default => $backupManager->criarBackupCompleto('Backup manual via interface')
+            };
+
+            if ($resultado['sucesso']) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => "Backup {$tipo} criado com sucesso!",
+                    'arquivo' => $resultado['arquivo'],
+                    'tamanho' => $this->formatarTamanho($resultado['tamanho']),
+                    'id' => $resultado['id']
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao criar backup: ' . $resultado['erro']
+                ]);
+            }
 
         } catch (\Exception $e) {
             log_message('error', 'Erro ao criar backup: ' . $e->getMessage());
@@ -669,6 +682,338 @@ class Configuracoes extends BaseController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Erro ao criar backup: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Formatar tamanho de arquivo
+     */
+    private function formatarTamanho(int $bytes): string
+    {
+        if ($bytes === 0) return '0 B';
+        
+        $unidades = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $i = floor(log($bytes, 1024));
+        
+        return round($bytes / pow(1024, $i), 2) . ' ' . $unidades[$i];
+    }
+
+    /**
+     * Obter informações do último backup
+     */
+    public function ultimoBackup(): ResponseInterface
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        try {
+            $backupManager = new \App\Libraries\BackupManager();
+            $ultimoBackup = $backupManager->getUltimoBackup();
+
+            if ($ultimoBackup) {
+                $info = sprintf(
+                    '%s - %s (%s)',
+                    date('d/m/Y H:i:s', strtotime($ultimoBackup['created_at'])),
+                    ucfirst($ultimoBackup['tipo']),
+                    $this->formatarTamanho($ultimoBackup['tamanho'])
+                );
+            } else {
+                $info = 'Nenhum backup realizado ainda';
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'info' => $info
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'info' => 'Erro ao obter informações do backup'
+            ]);
+        }
+    }
+
+    /**
+     * Busca histórico de backups com paginação e detalhes completos
+     */
+    public function historicoBackups(): ResponseInterface
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        try {
+            $backupModel = new \App\Models\BackupModel();
+            
+            $page = (int) $this->request->getGet('page') ?: 1;
+            $limit = (int) $this->request->getGet('limit') ?: 10;
+            
+            $backups = $backupModel->orderBy('created_at', 'DESC')
+                                 ->paginate($limit, 'default', $page);
+
+            $pager = $backupModel->pager;
+
+            // Processa os dados dos backups
+            foreach ($backups as &$backup) {
+                $backup['created_at'] = $backup['created_at'];
+                $backup['tamanho'] = (int)$backup['tamanho'];
+            //     $backup['duracao_segundos'] = (int)$backup['duracao_segundos'];
+            }
+
+            $pagination = [
+                'current_page' => $page,
+                'total_pages' => $pager->getPageCount(),
+                'total_records' => $pager->getTotal(),
+                'per_page' => $limit
+            ];
+
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $backups,
+                'pagination' => $pagination
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao buscar histórico de backups: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao carregar histórico de backups: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Restaurar backup
+     */
+    public function restaurarBackup(): ResponseInterface
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Apenas superadmins podem restaurar backups'
+            ]);
+        }
+
+        try {
+            $arquivo = $this->request->getFile('backup_file');
+            
+            if (!$arquivo || !$arquivo->isValid()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Arquivo de backup inválido'
+                ]);
+            }
+
+            // Verifica extensão
+            $extensoesPermitidas = ['sql', 'backup', 'zip'];
+            if (!in_array($arquivo->getClientExtension(), $extensoesPermitidas)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Tipo de arquivo não suportado'
+                ]);
+            }
+
+            // Move arquivo para pasta temporária
+            $nomeTemp = 'restore_' . time() . '.' . $arquivo->getClientExtension();
+            $caminhoTemp = WRITEPATH . 'uploads/' . $nomeTemp;
+            
+            if (!$arquivo->move(WRITEPATH . 'uploads/', $nomeTemp)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao fazer upload do arquivo'
+                ]);
+            }
+
+            // Executa restauração
+            $backupManager = new \App\Libraries\BackupManager();
+            $resultado = $backupManager->restaurarBackup($caminhoTemp);
+
+            // Remove arquivo temporário
+            @unlink($caminhoTemp);
+
+            if ($resultado['sucesso']) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Backup restaurado com sucesso!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Erro ao restaurar backup: ' . $resultado['erro']
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            // Remove arquivo temporário em caso de erro
+            if (isset($caminhoTemp) && file_exists($caminhoTemp)) {
+                @unlink($caminhoTemp);
+            }
+            
+            log_message('error', 'Erro ao restaurar backup: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao restaurar backup: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Download de backup
+     */
+    public function downloadBackup(int $backupId): ResponseInterface
+    {
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return redirect()->back()->with('error', 'Acesso negado');
+        }
+
+        try {
+            $backupModel = new \App\Models\BackupModel();
+            $backup = $backupModel->find($backupId);
+
+            if (!$backup) {
+                return redirect()->back()->with('error', 'Backup não encontrado');
+            }
+
+            $caminhoArquivo = WRITEPATH . 'backups/' . $backup['nome_arquivo'];
+
+            if (!file_exists($caminhoArquivo)) {
+                return redirect()->back()->with('error', 'Arquivo de backup não encontrado no servidor');
+            }
+
+            return $this->response->download($caminhoArquivo, null);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao fazer download do backup: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erro ao fazer download do backup');
+        }
+    }
+
+    /**
+     * Detalhes de um backup específico
+     */
+    public function detalhesBackup(int $backupId): ResponseInterface
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        // Verifica permissão
+        if (!auth()->user()->inGroup('superadmin', 'admin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Acesso negado'
+            ]);
+        }
+
+        try {
+            $backupModel = new \App\Models\BackupModel();
+            $backup = $backupModel->find($backupId);
+
+            if (!$backup) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Backup não encontrado'
+                ]);
+            }
+
+            // Verifica se o arquivo ainda existe
+            $caminhoArquivo = WRITEPATH . 'backups/' . $backup['nome_arquivo'];
+            $backup['arquivo_existe'] = file_exists($caminhoArquivo);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $backup
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao buscar detalhes do backup: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao carregar detalhes do backup'
+            ]);
+        }
+    }
+
+    /**
+     * Excluir backup
+     */
+    public function excluirBackup(int $backupId): ResponseInterface
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back();
+        }
+
+        // Verifica permissão - apenas superadmin pode excluir backups
+        if (!auth()->user()->inGroup('superadmin')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Apenas superadmins podem excluir backups'
+            ]);
+        }
+
+        try {
+            $backupModel = new \App\Models\BackupModel();
+            $backup = $backupModel->find($backupId);
+
+            if (!$backup) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Backup não encontrado'
+                ]);
+            }
+
+            // Remove o arquivo físico
+            $caminhoArquivo = WRITEPATH . 'backups/' . $backup['nome_arquivo'];
+            if (file_exists($caminhoArquivo)) {
+                if (!unlink($caminhoArquivo)) {
+                    throw new \Exception('Erro ao excluir arquivo físico');
+                }
+            }
+
+            // Remove do banco
+            if (!$backupModel->delete($backupId)) {
+                throw new \Exception('Erro ao excluir registro do backup');
+            }
+
+            // Log de auditoria
+            $this->auditoriaModel->registrarAcao(
+                'DELETE',
+                'Backup',
+                $backupId,
+                "Backup excluído: {$backup['nome_arquivo']}"
+            );
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Backup excluído com sucesso'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao excluir backup: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erro ao excluir backup: ' . $e->getMessage()
             ]);
         }
     }

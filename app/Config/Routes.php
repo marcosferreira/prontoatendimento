@@ -231,6 +231,12 @@ $routes->group('configuracoes', static function ($routes) {
     $routes->post('resetarSenha/(:num)', 'Configuracoes::resetarSenha/$1');
     $routes->get('auditoria', 'Configuracoes::auditoria');
     $routes->post('criarBackup', 'Configuracoes::criarBackup');
+    $routes->get('ultimoBackup', 'Configuracoes::ultimoBackup');
+    $routes->get('historicoBackups', 'Configuracoes::historicoBackups');
+    $routes->post('restaurarBackup', 'Configuracoes::restaurarBackup');
+    $routes->get('downloadBackup/(:num)', 'Configuracoes::downloadBackup/$1');
+    $routes->get('detalhesBackup/(:num)', 'Configuracoes::detalhesBackup/$1');
+    $routes->delete('excluirBackup/(:num)', 'Configuracoes::excluirBackup/$1');
     $routes->post('inicializarConfiguracoes', 'Configuracoes::inicializarConfiguracoes');
 });
 

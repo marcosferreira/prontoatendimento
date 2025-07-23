@@ -69,10 +69,10 @@
                 <p>Realize um backup completo do sistema agora.</p>
                 
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary" id="createFullBackup" onclick="createBackup('completo')">
+                    <button class="btn btn-primary" id="createFullBackup" onclick="configManager.createBackup('completo')">
                         <i class="bi bi-download"></i> Criar Backup Completo
                     </button>
-                    <button class="btn btn-outline-primary" id="createDataBackup" onclick="createBackup('dados')">
+                    <button class="btn btn-outline-primary" id="createDataBackup" onclick="configManager.createBackup('dados')">
                         <i class="bi bi-database"></i> Backup Apenas Dados
                     </button>
                 </div>
@@ -98,14 +98,62 @@
         </div>
         
         <div class="card mt-3">
-            <div class="card-header">
-                <h6><i class="bi bi-list-ul"></i> Histórico de Backups</h6>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-list-ul"></i> Histórico de Backups</h6>
+                <button class="btn btn-sm btn-outline-secondary" onclick="configManager.loadBackupHistory()" title="Atualizar">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
             </div>
             <div class="card-body">
                 <div id="backupHistory">
-                    <div class="text-center">
+                    <div class="text-center text-muted">
                         <i class="bi bi-hourglass-split"></i> Carregando histórico...
                     </div>
+                </div>
+                
+                <!-- Template para item do histórico -->
+                <div id="backupItemTemplate" style="display: none;">
+                    <div class="backup-item border rounded p-3 mb-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="backup-icon me-2"></i>
+                                    <strong class="backup-filename"></strong>
+                                    <span class="backup-status-badge ms-2"></span>
+                                </div>
+                                <div class="backup-details text-muted small">
+                                    <i class="bi bi-calendar3"></i> <span class="backup-date"></span> •
+                                    <i class="bi bi-hdd"></i> <span class="backup-size"></span> •
+                                    <i class="bi bi-clock"></i> <span class="backup-duration"></span>
+                                </div>
+                                <div class="backup-type-info text-muted small mt-1">
+                                    <span class="backup-type-label"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button class="btn btn-outline-primary btn-download" title="Download">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-info btn-details" title="Detalhes">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-delete" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Área para paginação -->
+                <div id="backupPagination" class="mt-3" style="display: none;">
+                    <nav aria-label="Navegação do histórico de backups">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <!-- Paginação será inserida aqui via JavaScript -->
+                        </ul>
+                    </nav>
                 </div>
             </div>
         </div>
