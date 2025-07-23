@@ -4,6 +4,10 @@
  */
 
 class ConfiguracoesManager {
+    // ========================================
+    // CONSTRUCTOR E INICIALIZAÇÃO
+    // ========================================
+    
     constructor() {
         this.baseUrl = window.location.origin;
         this.currentPage = 1;
@@ -16,6 +20,10 @@ class ConfiguracoesManager {
         this.initializeMasks();
         this.loadInitialData();
     }
+
+    // ========================================
+    // EVENT BINDING METHODS
+    // ========================================
 
     bindEvents() {
         // Tab events
@@ -147,6 +155,10 @@ class ConfiguracoesManager {
         });
     }
 
+    // ========================================
+    // INITIALIZATION METHODS
+    // ========================================
+
     initializeMasks() {
         // CPF mask
         const cpfInputs = document.querySelectorAll('input[name="cpf"]');
@@ -195,7 +207,10 @@ class ConfiguracoesManager {
         this.initRestoreBackupForm();
     }
 
-    // System Configuration Methods
+    // ========================================
+    // SYSTEM CONFIGURATION METHODS
+    // ========================================
+
     async saveSystemConfig() {
         const form = document.getElementById('systemConfigForm');
         const formData = new FormData(form);
@@ -288,7 +303,10 @@ class ConfiguracoesManager {
         }
     }
 
-    // User Management Methods
+    // ========================================
+    // USER MANAGEMENT METHODS
+    // ========================================
+
     async createUser() {
         const form = document.getElementById('newUserForm');
         const formData = new FormData(form);
@@ -569,7 +587,10 @@ class ConfiguracoesManager {
         }).join('');
     }
 
-    // Audit Methods
+    // ========================================
+    // AUDIT METHODS
+    // ========================================
+
     async loadAuditLogs(page = 1) {
         const filters = {
             acao: document.getElementById('filterAcao')?.value || '',
@@ -701,31 +722,93 @@ class ConfiguracoesManager {
         this.showAlert('info', 'Funcionalidade em desenvolvimento');
     }
 
-    // Backup Methods
-    async loadBackupHistory() {
+    // ========================================
+    // BACKUP MANAGEMENT METHODS
+    // ========================================
+
+    // async loadBackupHistory() {
+    //     try {
+    //         const response = await fetch(`${this.baseUrl}/configuracoes/historicoBackups`, {
+    //             method: 'GET',
+    //             headers: {
+    //                 'X-Requested-With': 'XMLHttpRequest'
+    //             }
+    //         });
+    //         const result = await response.json();
+
+    //         const historyContainer = document.getElementById('backupHistory');
+    //         if (historyContainer && result.success) {
+    //             historyContainer.innerHTML = result.html;
+    //         }
+    //     } catch (error) {
+    //         console.error('Erro ao carregar histórico de backups:', error);
+    //         const historyContainer = document.getElementById('backupHistory');
+    //         if (historyContainer) {
+    //             historyContainer.innerHTML = '<div class="text-danger">Erro ao carregar histórico</div>';
+    //         }
+    //     }
+
+    //     // Load last backup info
+    //     this.loadLastBackupInfo();
+    // }
+
+    renderEmptyBackupHistory() {
+        const historyContainer = document.getElementById('backupHistory');
+        historyContainer.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">Nenhum backup encontrado</h6>
+                <p class="small">Crie seu primeiro backup usando os botões acima</p>
+            </div>
+        `;
+    }
+
+    async loadBackupHistory(page = 1, limit = 10) {
+        const historyContainer = document.getElementById('backupHistory');
+        
         try {
-            const response = await fetch(`${this.baseUrl}/configuracoes/historicoBackups`);
+            // Mostrar loading
+            historyContainer.innerHTML = `
+                <div class="text-center text-muted">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    Carregando histórico de backups...
+                </div>
+            `;
+
+            const response = await fetch(`${this.baseUrl}/configuracoes/historicoBackups?page=${page}&limit=${limit}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
             const result = await response.json();
 
-            const historyContainer = document.getElementById('backupHistory');
-            if (historyContainer && result.success) {
-                historyContainer.innerHTML = result.html;
+            if (result.success && result.data) {
+                this.renderBackupHistory(result.data, result.pagination);
+            } else {
+                this.renderEmptyBackupHistory();
             }
         } catch (error) {
-            console.error('Erro ao carregar histórico de backups:', error);
-            const historyContainer = document.getElementById('backupHistory');
-            if (historyContainer) {
-                historyContainer.innerHTML = '<div class="text-danger">Erro ao carregar histórico</div>';
-            }
+            console.error('Erro ao carregar histórico:', error);
+            historyContainer.innerHTML = `
+                <div class="text-center text-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Erro ao carregar histórico de backups
+                    <br><small>Verifique se você está logado no sistema</small>
+                </div>
+            `;
         }
-
-        // Load last backup info
-        this.loadLastBackupInfo();
     }
 
     async loadLastBackupInfo() {
         try {
-            const response = await fetch(`${this.baseUrl}/configuracoes/ultimoBackup`);
+            const response = await fetch(`${this.baseUrl}/configuracoes/ultimoBackup`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
             const result = await response.json();
 
             const lastBackupInfo = document.getElementById('lastBackupInfo');
@@ -839,7 +922,291 @@ class ConfiguracoesManager {
         });
     }
 
-    // Utility Methods
+    renderBackupHistory(backups, pagination) {
+        const historyContainer = document.getElementById('backupHistory');
+        
+        if (!backups || backups.length === 0) {
+            this.renderEmptyBackupHistory();
+            return;
+        }
+
+        let html = '';
+        
+        backups.forEach(backup => {
+            const statusClass = backup.status === 'sucesso' ? 'success' : 'danger';
+            const statusIcon = backup.status === 'sucesso' ? 'bi-check-circle' : 'bi-x-circle';
+            const typeIcon = backup.tipo === 'completo' ? 'bi-database-fill' : 'bi-database';
+            const typeLabel = backup.tipo === 'completo' ? 'Backup Completo' : 'Backup de Dados';
+            
+            html += `
+                <div class="backup-item border rounded p-3 mb-2 ${backup.status !== 'sucesso' ? 'border-danger' : ''}">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-1">
+                                <i class="${typeIcon} me-2 text-primary"></i>
+                                <strong>${this.escapeHTML(backup.nome_arquivo)}</strong>
+                                <span class="badge bg-${statusClass} ms-2">
+                                    <i class="${statusIcon}"></i> ${this.ucfirst(backup.status)}
+                                </span>
+                            </div>
+                            <div class="backup-details text-muted small">
+                                <i class="bi bi-calendar3"></i> ${this.formatDateTime(backup.created_at)} •
+                                <i class="bi bi-hdd"></i> ${this.formatFileSize(backup.tamanho)}
+                            </div>
+                            <div class="backup-type-info text-muted small mt-1">
+                                <span class="badge bg-light text-dark">${typeLabel}</span>
+                                ${backup.observacoes ? `• ${this.escapeHTML(backup.observacoes)}` : ''}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                ${backup.status === 'sucesso' ? `
+                                    <button class="btn btn-outline-primary" onclick="configManager.downloadBackup('${backup.id_backup}')" title="Download">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-outline-info" onclick="configManager.showBackupDetails('${backup.id_backup}')" title="Detalhes">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="configManager.deleteBackup('${backup.id_backup}')" title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        historyContainer.innerHTML = html;
+
+        // Renderizar paginação se necessário
+        if (pagination && pagination.total_pages > 1) {
+            this.renderBackupPagination(pagination);
+        } else {
+            document.getElementById('backupPagination').style.display = 'none';
+        }
+    }
+
+    renderBackupPagination(pagination) {
+        const paginationContainer = document.getElementById('backupPagination');
+        const ul = paginationContainer.querySelector('ul');
+        
+        let html = '';
+        
+        // Botão anterior
+        if (pagination.current_page > 1) {
+            html += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="configManager.loadBackupHistory(${pagination.current_page - 1}); return false;">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+        }
+        
+        // Páginas
+        for (let i = 1; i <= pagination.total_pages; i++) {
+            const active = i === pagination.current_page ? 'active' : '';
+            html += `
+                <li class="page-item ${active}">
+                    <a class="page-link" href="#" onclick="configManager.loadBackupHistory(${i}); return false;">
+                        ${i}
+                    </a>
+                </li>
+            `;
+        }
+        
+        // Botão próximo
+        if (pagination.current_page < pagination.total_pages) {
+            html += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="configManager.loadBackupHistory(${pagination.current_page + 1}); return false;">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+        }
+        
+        ul.innerHTML = html;
+        paginationContainer.style.display = 'block';
+    }
+
+    async downloadBackup(backupId) {
+        try {
+            window.location.href = `${this.baseUrl}/configuracoes/downloadBackup/${backupId}`;
+        } catch (error) {
+            console.error('Erro ao fazer download:', error);
+            this.showAlert('error', 'Erro ao fazer download do backup');
+        }
+    }
+
+    async showBackupDetails(backupId) {
+        try {
+            const response = await fetch(`${this.baseUrl}/configuracoes/detalhesBackup/${backupId}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                this.renderBackupDetailsModal(result.data);
+            } else {
+                this.showAlert('error', result.message || 'Erro ao carregar detalhes do backup');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar detalhes:', error);
+            this.showAlert('error', 'Erro ao carregar detalhes do backup');
+        }
+    }
+
+    renderBackupDetailsModal(backup) {
+        const modalId = 'backupDetailsModal';
+        
+        // Remove modal existente se houver
+        const existingModal = document.getElementById(modalId);
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const statusClass = backup.status === 'sucesso' ? 'success' : 'danger';
+        const statusIcon = backup.status === 'sucesso' ? 'bi-check-circle' : 'bi-x-circle';
+        const typeLabel = backup.tipo === 'completo' ? 'Backup Completo' : 'Backup de Dados';
+
+        const modalHtml = `
+            <div class="modal fade" id="${modalId}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-info-circle"></i> Detalhes do Backup
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Informações Gerais</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Arquivo:</strong></td>
+                                            <td>${this.escapeHTML(backup.nome_arquivo)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tipo:</strong></td>
+                                            <td><span class="badge bg-primary">${typeLabel}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Status:</strong></td>
+                                            <td><span class="badge bg-${statusClass}"><i class="${statusIcon}"></i> ${this.ucfirst(backup.status)}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Tamanho:</strong></td>
+                                            <td>${this.formatFileSize(backup.tamanho)}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Timing</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Data/Hora:</strong></td>
+                                            <td>${this.formatDateTime(backup.created_at)}</td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td><strong>Criado em:</strong></td>
+                                            <td>${this.formatDateTime(backup.created_at)}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            ${backup.observacoes ? `
+                                <div class="mt-3">
+                                    <h6>Observações</h6>
+                                    <div class="alert alert-info">
+                                        ${this.escapeHTML(backup.observacoes)}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${backup.erro_msg ? `
+                                <div class="mt-3">
+                                    <h6>Mensagem de Erro</h6>
+                                    <div class="alert alert-danger">
+                                        <code>${this.escapeHTML(backup.erro_msg)}</code>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="modal-footer">
+                            ${backup.status === 'sucesso' ? `
+                                <button type="button" class="btn btn-primary" onclick="configManager.downloadBackup('${backup.id_backup}')">
+                                    <i class="bi bi-download"></i> Download
+                                </button>
+                            ` : ''}
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
+
+        // Remove modal do DOM quando fechado
+        document.getElementById(modalId).addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+
+    async deleteBackup(backupId) {
+        const result = await Swal.fire({
+            title: 'Confirmar Exclusão',
+            text: 'Tem certeza que deseja excluir este backup? Esta ação não pode ser desfeita.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sim, excluir',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const response = await fetch(`${this.baseUrl}/configuracoes/excluirBackup/${backupId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const deleteResult = await response.json();
+
+                if (deleteResult.success) {
+                    this.showAlert('success', deleteResult.message);
+                    this.loadBackupHistory(); // Recarregar lista
+                    this.loadLastBackupInfo(); // Atualizar info do último backup
+                } else {
+                    this.showAlert('error', deleteResult.message);
+                }
+            } catch (error) {
+                console.error('Erro ao excluir backup:', error);
+                this.showAlert('error', 'Erro ao excluir backup');
+            }
+        }
+    }
+
+    // ========================================
+    // UTILITY METHODS
+    // ========================================
+
     generatePassword() {
         const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%';
         let password = '';
@@ -847,6 +1214,15 @@ class ConfiguracoesManager {
             password += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         return password;
+    }
+
+    formatFileSize(bytes) {
+        if (!bytes) return '0 B';
+        
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        
+        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
     }
 
     setButtonLoading(button, loading) {
@@ -968,44 +1344,7 @@ class ConfiguracoesManager {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    // Backup Management Methods
-    async loadBackupHistory(page = 1, limit = 10) {
-        const historyContainer = document.getElementById('backupHistory');
-        
-        try {
-            // Mostrar loading
-            historyContainer.innerHTML = `
-                <div class="text-center text-muted">
-                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-                    Carregando histórico de backups...
-                </div>
-            `;
-
-            const response = await fetch(`${this.baseUrl}/configuracoes/historicoBackups?page=${page}&limit=${limit}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-
-            const result = await response.json();
-
-            if (result.success && result.data) {
-                this.renderBackupHistory(result.data, result.pagination);
-            } else {
-                this.renderEmptyBackupHistory();
-            }
-        } catch (error) {
-            console.error('Erro ao carregar histórico:', error);
-            historyContainer.innerHTML = `
-                <div class="text-center text-danger">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    Erro ao carregar histórico de backups
-                    <br><small>Verifique se você está logado no sistema</small>
-                </div>
-            `;
-        }
-    }
+    
 
     renderBackupHistory(backups, pagination) {
         const historyContainer = document.getElementById('backupHistory');
@@ -1073,16 +1412,7 @@ class ConfiguracoesManager {
         }
     }
 
-    renderEmptyBackupHistory() {
-        const historyContainer = document.getElementById('backupHistory');
-        historyContainer.innerHTML = `
-            <div class="text-center text-muted py-4">
-                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
-                <h6 class="mt-2">Nenhum backup encontrado</h6>
-                <p class="small">Crie seu primeiro backup usando os botões acima</p>
-            </div>
-        `;
-    }
+    
 
     renderBackupPagination(pagination) {
         const paginationContainer = document.getElementById('backupPagination');
@@ -1126,15 +1456,6 @@ class ConfiguracoesManager {
         
         ul.innerHTML = html;
         paginationContainer.style.display = 'block';
-    }
-
-    formatFileSize(bytes) {
-        if (!bytes) return '0 B';
-        
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        
-        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
     }
 
     async downloadBackup(backupId) {

@@ -124,7 +124,6 @@
                                 <div class="backup-details text-muted small">
                                     <i class="bi bi-calendar3"></i> <span class="backup-date"></span> •
                                     <i class="bi bi-hdd"></i> <span class="backup-size"></span> •
-                                    <i class="bi bi-clock"></i> <span class="backup-duration"></span>
                                 </div>
                                 <div class="backup-type-info text-muted small mt-1">
                                     <span class="backup-type-label"></span>
