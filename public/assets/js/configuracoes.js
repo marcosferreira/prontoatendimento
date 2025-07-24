@@ -9,7 +9,13 @@ class ConfiguracoesManager {
     // ========================================
     
     constructor() {
-        this.baseUrl = window.location.origin;
+        // Define baseUrl considerando ambiente local ou produção
+        const origin = window.location.origin;
+        if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+            this.baseUrl = origin;
+        } else {
+            this.baseUrl = origin + '/prontoatendimento/';
+        }
         this.currentPage = 1;
         this.perPage = 50;
         this.init();
