@@ -14,7 +14,11 @@ class ConfiguracoesManager {
         if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
             this.baseUrl = origin;
         } else {
-            this.baseUrl = origin + '/prontoatendimento/';
+            if (window.location.pathname.includes('/prontoatendimento')) {
+                this.baseUrl = origin + '/prontoatendimento/';
+            } else {
+                this.baseUrl = origin;
+            }
         }
         this.currentPage = 1;
         this.perPage = 50;
