@@ -15,7 +15,7 @@ class ConfiguracoesManager {
             this.baseUrl = origin;
         } else {
             if (window.location.pathname.includes('/prontoatendimento')) {
-                this.baseUrl = origin + '/prontoatendimento/';
+                this.baseUrl = origin + '/prontoatendimento';
             } else {
                 this.baseUrl = origin;
             }
