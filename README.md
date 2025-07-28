@@ -16,7 +16,7 @@ Sistema de gestão para Pronto Atendimento desenvolvido em CodeIgniter 4, com fo
 - **Framework:** CodeIgniter 4
 - **Linguagem:** PHP 8.1+
 - **Banco de Dados:** MySQL/MariaDB
-- **Frontend:** Bootstrap, JavaScript
+- **Frontend:** Bootstrap 5+, JavaScript, sweetalert2
 - **CLI:** Comandos personalizados para gestão
 
 ## Documentação
