@@ -137,7 +137,7 @@
                                     <button class="btn btn-outline-info btn-details" title="Detalhes">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
-                                    <button class="btn btn-outline-danger btn-delete" title="Excluir">
+                                    <button class="btn btn-outline-danger btn-delete" title="Excluir" onclick="console.log('Template estático clicado - isso não deveria acontecer')">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>

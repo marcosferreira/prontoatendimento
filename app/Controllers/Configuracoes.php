@@ -982,34 +982,51 @@ class Configuracoes extends BaseController
                 ]);
             }
 
-            // Remove o arquivo físico
-            $caminhoArquivo = WRITEPATH . 'backups/' . $backup['nome_arquivo'];
+            // Determina o caminho do arquivo
+            // Verifica se tem caminho completo ou usa o padrão
+            $caminhoArquivo = !empty($backup['caminho_arquivo']) 
+                ? $backup['caminho_arquivo']
+                : WRITEPATH . 'backups/' . $backup['nome_arquivo'];
+
+            // Remove o arquivo físico se existir
+            $arquivoRemovido = false;
             if (file_exists($caminhoArquivo)) {
-                if (!unlink($caminhoArquivo)) {
-                    throw new \Exception('Erro ao excluir arquivo físico');
+                if (unlink($caminhoArquivo)) {
+                    $arquivoRemovido = true;
+                    log_message('info', "Arquivo de backup removido: {$caminhoArquivo}");
+                } else {
+                    log_message('warning', "Falha ao remover arquivo físico: {$caminhoArquivo}");
+                    throw new \Exception('Erro ao excluir arquivo físico do backup');
                 }
+            } else {
+                log_message('warning', "Arquivo de backup não encontrado: {$caminhoArquivo}");
+                // Continua a execução para remover do banco mesmo sem o arquivo
             }
 
-            // Remove do banco
+            // Remove do banco de dados
             if (!$backupModel->delete($backupId)) {
-                throw new \Exception('Erro ao excluir registro do backup');
+                throw new \Exception('Erro ao excluir registro do backup do banco de dados');
             }
 
             // Log de auditoria
             $this->auditoriaModel->registrarAcao(
                 'DELETE',
                 'Backup',
-                $backupId,
-                "Backup excluído: {$backup['nome_arquivo']}"
+                "Backup excluído: {$backup['nome_arquivo']}" . ($arquivoRemovido ? ' (arquivo físico removido)' : ' (apenas registro do banco)')
             );
+
+            $mensagem = 'Backup excluído com sucesso';
+            if (!$arquivoRemovido && !file_exists($caminhoArquivo)) {
+                $mensagem .= ' (arquivo físico não encontrado)';
+            }
 
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Backup excluído com sucesso'
+                'message' => $mensagem
             ]);
 
         } catch (\Exception $e) {
-            log_message('error', 'Erro ao excluir backup: ' . $e->getMessage());
+            log_message('error', 'Erro ao excluir backup ID ' . $backupId . ': ' . $e->getMessage());
             
             return $this->response->setJSON([
                 'success' => false,

@@ -82,6 +82,35 @@ class ConfiguracoesManager {
         // Audit events
         this.bindAuditEvents();
 
+        // Backup events - event delegation para botões dinâmicos
+        document.addEventListener('click', (e) => {
+            // Verifica se é um botão de exclusão de backup (gerado dinamicamente)
+            const deleteButton = e.target.closest('button[onclick*="deleteBackup"]');
+            if (deleteButton) {
+                console.log('Clique em botão de exclusão detectado via event delegation');
+                
+                // Extrai o ID do backup do atributo onclick
+                const onclickAttr = deleteButton.getAttribute('onclick');
+                const match = onclickAttr.match(/deleteBackup\('([^']+)'\)/);
+                
+                if (match) {
+                    const backupId = match[1];
+                    console.log('ID do backup extraído:', backupId);
+                    
+                    // Previne a execução do onclick original
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Chama nossa função diretamente
+                    if (window.configManager && typeof window.configManager.deleteBackup === 'function') {
+                        window.configManager.deleteBackup(backupId);
+                    } else {
+                        console.error('configManager não está disponível ou método deleteBackup não encontrado');
+                    }
+                }
+            }
+        });
+
         // Password generator
         const generateBtn = document.getElementById('generatePassword');
         if (generateBtn) {
@@ -1177,6 +1206,17 @@ class ConfiguracoesManager {
     }
 
     async deleteBackup(backupId) {
+        console.log('Tentando excluir backup ID:', backupId);
+        
+        // Verifica se SweetAlert2 está disponível
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 não está carregado!');
+            if (confirm('Tem certeza que deseja excluir este backup? Esta ação não pode ser desfeita.')) {
+                this.performBackupDeletion(backupId);
+            }
+            return;
+        }
+        
         const result = await Swal.fire({
             title: 'Confirmar Exclusão',
             text: 'Tem certeza que deseja excluir este backup? Esta ação não pode ser desfeita.',
@@ -1189,27 +1229,43 @@ class ConfiguracoesManager {
         });
 
         if (result.isConfirmed) {
-            try {
-                const response = await fetch(`${this.baseUrl}/configuracoes/excluirBackup/${backupId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
+            this.performBackupDeletion(backupId);
+        }
+    }
 
-                const deleteResult = await response.json();
-
-                if (deleteResult.success) {
-                    this.showAlert('success', deleteResult.message);
-                    this.loadBackupHistory(); // Recarregar lista
-                    this.loadLastBackupInfo(); // Atualizar info do último backup
-                } else {
-                    this.showAlert('error', deleteResult.message);
+    async performBackupDeletion(backupId) {
+        console.log('Executando exclusão do backup ID:', backupId);
+        try {
+            const url = `${this.baseUrl}/configuracoes/excluirBackup/${backupId}`;
+            console.log('URL da requisição:', url);
+            
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                console.error('Erro ao excluir backup:', error);
-                this.showAlert('error', 'Erro ao excluir backup');
+            });
+
+            console.log('Status da resposta:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
+
+            const deleteResult = await response.json();
+            console.log('Resultado da exclusão:', deleteResult);
+
+            if (deleteResult.success) {
+                this.showAlert('success', deleteResult.message);
+                this.loadBackupHistory(); // Recarregar lista
+                this.loadLastBackupInfo(); // Atualizar info do último backup
+            } else {
+                this.showAlert('error', deleteResult.message || 'Erro desconhecido ao excluir backup');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir backup:', error);
+            this.showAlert('error', `Erro ao excluir backup: ${error.message}`);
         }
     }
 
@@ -1602,47 +1658,46 @@ class ConfiguracoesManager {
         });
     }
 
-    async deleteBackup(backupId) {
-        const result = await Swal.fire({
-            title: 'Confirmar Exclusão',
-            text: 'Tem certeza que deseja excluir este backup? Esta ação não pode ser desfeita.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sim, excluir',
-            cancelButtonText: 'Cancelar'
-        });
-
-        if (result.isConfirmed) {
-            try {
-                const response = await fetch(`${this.baseUrl}/configuracoes/excluirBackup/${backupId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const deleteResult = await response.json();
-
-                if (deleteResult.success) {
-                    this.showAlert('success', deleteResult.message);
-                    this.loadBackupHistory(); // Recarregar lista
-                    this.loadLastBackupInfo(); // Atualizar info do último backup
-                } else {
-                    this.showAlert('error', deleteResult.message);
-                }
-            } catch (error) {
-                console.error('Erro ao excluir backup:', error);
-                this.showAlert('error', 'Erro ao excluir backup');
-            }
-        }
-    }
 }
 
 // Variável global para acesso aos métodos
 let configManager;
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 DOM carregado, inicializando ConfigManager...');
     configManager = new ConfiguracoesManager();
+    
+    // Torna disponível globalmente também
+    window.configManager = configManager;
+    
+    console.log('✅ ConfigManager inicializado:', configManager);
+    console.log('📍 Base URL:', configManager.baseUrl);
+    
+    // Verifica se SweetAlert2 está disponível
+    if (typeof Swal !== 'undefined') {
+        console.log('✅ SweetAlert2 carregado corretamente');
+    } else {
+        console.warn('⚠️ SweetAlert2 não está carregado');
+    }
+    
+    // Teste para verificar se está funcionando
+    window.testConfigManager = () => {
+        console.log('=== TESTE DO CONFIG MANAGER ===');
+        console.log('ConfigManager:', window.configManager);
+        console.log('Base URL:', window.configManager?.baseUrl);
+        console.log('deleteBackup method:', typeof window.configManager?.deleteBackup);
+        console.log('SweetAlert2:', typeof Swal);
+        
+        // Teste da modal
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Teste!',
+                text: 'SweetAlert2 está funcionando!',
+                icon: 'success',
+                timer: 2000
+            });
+        }
+    };
+    
+    console.log('🔧 Para testar, execute no console: testConfigManager()');
 });
