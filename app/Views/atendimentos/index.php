@@ -64,9 +64,10 @@
                         <div class="col-md-3">
                             <select id="filtroClassificacao" class="form-select">
                                 <option value="">Todas as Classificações</option>
-                                <option value="Verde" class="text-success">Verde</option>
-                                <option value="Amarelo" class="text-warning">Amarelo</option>
                                 <option value="Vermelho" class="text-danger">Vermelho</option>
+                                <option value="Laranja" style="color: orange;">Laranja</option>
+                                <option value="Amarelo" class="text-warning">Amarelo</option>
+                                <option value="Verde" class="text-success">Verde</option>
                                 <option value="Azul" class="text-info">Azul</option>
                             </select>
                         </div>
@@ -122,7 +123,7 @@
                                             </td>
                                             <td>
                                                 <span class="badge bg-<?=
-                                                                        $atendimento['classificacao_risco'] == 'Verde' ? 'success' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : 'info'))
+                                                                        $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
                                                                         ?>">
                                                     <?= $atendimento['classificacao_risco'] ?>
                                                 </span>

@@ -64,7 +64,7 @@
                                         <div class="info-item">
                                             <strong>Classificação de Risco:</strong>
                                             <span class="badge bg-<?=
-                                                                    $atendimento['classificacao_risco'] == 'Verde' ? 'success' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : 'info'))
+                                                                    $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
                                                                     ?> fs-6">
                                                 <?= $atendimento['classificacao_risco'] ?>
                                             </span>

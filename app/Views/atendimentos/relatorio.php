@@ -62,9 +62,10 @@
                                     <label for="classificacao" class="form-label">Classificação</label>
                                     <select class="form-select" id="classificacao" name="classificacao">
                                         <option value="">Todas as classificações</option>
-                                        <option value="Verde" <?= ($filtros['classificacao'] ?? '') == 'Verde' ? 'selected' : '' ?>>Verde</option>
-                                        <option value="Amarelo" <?= ($filtros['classificacao'] ?? '') == 'Amarelo' ? 'selected' : '' ?>>Amarelo</option>
                                         <option value="Vermelho" <?= ($filtros['classificacao'] ?? '') == 'Vermelho' ? 'selected' : '' ?>>Vermelho</option>
+                                        <option value="Laranja" <?= ($filtros['classificacao'] ?? '') == 'Laranja' ? 'selected' : '' ?>>Laranja</option>
+                                        <option value="Amarelo" <?= ($filtros['classificacao'] ?? '') == 'Amarelo' ? 'selected' : '' ?>>Amarelo</option>
+                                        <option value="Verde" <?= ($filtros['classificacao'] ?? '') == 'Verde' ? 'selected' : '' ?>>Verde</option>
                                         <option value="Azul" <?= ($filtros['classificacao'] ?? '') == 'Azul' ? 'selected' : '' ?>>Azul</option>
                                     </select>
                                 </div>
@@ -208,9 +209,10 @@
                                 <thead>
                                     <tr>
                                         <th>Período</th>
-                                        <th>Verde</th>
-                                        <th>Amarelo</th>
                                         <th>Vermelho</th>
+                                        <th>Laranja</th>
+                                        <th>Amarelo</th>
+                                        <th>Verde</th>
                                         <th>Azul</th>
                                         <th>Total</th>
                                         <th>Taxa Urgência (%)</th>
@@ -221,9 +223,10 @@
                                         <?php foreach ($dadosTabela as $linha): ?>
                                             <tr>
                                                 <td><?= $linha['periodo'] ?></td>
-                                                <td class="text-success"><?= $linha['verde'] ?></td>
-                                                <td class="text-warning"><?= $linha['amarelo'] ?></td>
                                                 <td class="text-danger"><?= $linha['vermelho'] ?></td>
+                                                <td style="color: orange;"><?= $linha['laranja'] ?></td>
+                                                <td class="text-warning"><?= $linha['amarelo'] ?></td>
+                                                <td class="text-success"><?= $linha['verde'] ?></td>
                                                 <td class="text-info"><?= $linha['azul'] ?></td>
                                                 <td><strong><?= $linha['total'] ?></strong></td>
                                                 <td>
@@ -278,13 +281,14 @@
         new Chart(ctxClassificacao, {
             type: 'doughnut',
             data: {
-                labels: classificacaoData.length > 0 ? classificacaoData.map(item => item.classificacao) : ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+                labels: classificacaoData.length > 0 ? classificacaoData.map(item => item.classificacao) : ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
                 datasets: [{
                     data: classificacaoData.length > 0 ? classificacaoData.map(item => item.total) : [0, 0, 0, 0],
                     backgroundColor: [
-                        '#28a745', // Verde
-                        '#ffc107', // Amarelo
                         '#dc3545', // Vermelho
+                        'orange', // Laranja
+                        '#ffc107', // Amarelo
+                        '#28a745', // Verde
                         '#17a2b8' // Azul
                     ]
                 }]

@@ -133,10 +133,11 @@
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
-                                            'Azul' => 'Azul - Não Urgente',
-                                            'Verde' => 'Verde - Pouco Urgente', 
-                                            'Amarelo' => 'Amarelo - Urgente',
-                                            'Vermelho' => 'Vermelho - Muito Urgente'
+                                            'Vermelho' => 'Vermelho - Atendimento imediato (risco de morte)',
+                                            'Laranja' => 'Laranja - Muito urgente (até 10 min)',
+                                            'Amarelo' => 'Amarelo - Urgente (até 50 min)',
+                                            'Verde' => 'Verde - Pouco urgente (até 120 min)',
+                                            'Azul' => 'Azul - Não urgente (até 240 min)'
                                         ];
                                         foreach ($classificacoes as $opcao): ?>
                                             <option value="<?= $opcao ?>" <?= ($atendimento['classificacao_risco'] == $opcao || old('classificacao_risco') == $opcao) ? 'selected' : '' ?>>

@@ -52,7 +52,7 @@ class AtendimentoModel extends Model
         'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
         'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
         'data_atendimento' => 'required|valid_date',
-        'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
+        'classificacao_risco' => 'required|in_list[Verde,Amarelo,Laranja,Vermelho,Azul]',
         'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -77,7 +77,7 @@ class AtendimentoModel extends Model
         ],
         'classificacao_risco' => [
             'required' => 'A classificação de risco é obrigatória',
-            'in_list' => 'Classificação deve ser: Verde, Amarelo, Vermelho ou Azul'
+            'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
         ],
         'hgt_glicemia' => [
             'decimal' => 'Glicemia deve ser um valor decimal',
@@ -207,16 +207,33 @@ class AtendimentoModel extends Model
     }
 
     /**
-     * Lista tipos de classificação de risco
+     * Lista tipos de classificação de risco conforme Protocolo de Manchester
      */
     public function getClassificacoesRisco()
     {
         return [
-            'Azul' => 'Azul - Não urgente',
-            'Verde' => 'Verde - Pouco urgente',
-            'Amarelo' => 'Amarelo - Urgente',
-            'Vermelho' => 'Vermelho - Muito urgente'
+            'Vermelho' => 'Vermelho - Atendimento imediato (risco de morte)',
+            'Laranja'  => 'Laranja - Muito urgente (até 10 min)',
+            'Amarelo'  => 'Amarelo - Urgente (até 50 min)',
+            'Verde'    => 'Verde - Pouco urgente (até 120 min)',
+            'Azul'     => 'Azul - Não urgente (até 240 min)'
         ];
+    }
+
+    /**
+     * Retorna o tempo de espera recomendado (em minutos) para cada classificação de risco
+     * Protocolo de Manchester
+     */
+    public function getTempoEsperaManchester($classificacao)
+    {
+        $tempos = [
+            'Vermelho' => 0,      // imediato
+            'Laranja'  => 10,
+            'Amarelo'  => 50,
+            'Verde'    => 120,
+            'Azul'     => 240
+        ];
+        return $tempos[$classificacao] ?? null;
     }
 
     /**

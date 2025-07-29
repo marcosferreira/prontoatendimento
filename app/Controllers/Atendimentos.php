@@ -87,9 +87,10 @@ class Atendimentos extends BaseController
             'mes' => $this->atendimentoModel->where('MONTH(data_atendimento)', date('m'))
                                            ->where('YEAR(data_atendimento)', date('Y'))
                                            ->countAllResults(),
-            'verde' => $this->atendimentoModel->where('classificacao_risco', 'Verde')->countAllResults(),
-            'amarelo' => $this->atendimentoModel->where('classificacao_risco', 'Amarelo')->countAllResults(),
             'vermelho' => $this->atendimentoModel->where('classificacao_risco', 'Vermelho')->countAllResults(),
+            'laranja' => $this->atendimentoModel->where('classificacao_risco', 'Laranja')->countAllResults(),
+            'amarelo' => $this->atendimentoModel->where('classificacao_risco', 'Amarelo')->countAllResults(),
+            'verde' => $this->atendimentoModel->where('classificacao_risco', 'Verde')->countAllResults(),
             'azul' => $this->atendimentoModel->where('classificacao_risco', 'Azul')->countAllResults(),
             'obitos' => $this->atendimentoModel->where('obito', true)->countAllResults()
         ];
@@ -108,7 +109,7 @@ class Atendimentos extends BaseController
             'data_inicio' => $data_inicio,
             'data_fim' => $data_fim,
             'medico_filtro' => $medico,
-            'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito']
         ];
 
@@ -141,7 +142,7 @@ class Atendimentos extends BaseController
             'exames' => $exames,
             'bairros' => $bairros,
             'logradouros' => $logradouros,
-            'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
             'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
         ];
@@ -158,7 +159,7 @@ class Atendimentos extends BaseController
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
             'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
-            'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
+            'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
@@ -187,7 +188,7 @@ class Atendimentos extends BaseController
             ],
             'classificacao_risco' => [
                 'required' => 'A classificação de risco é obrigatória',
-                'in_list' => 'Classificação deve ser: Verde, Amarelo, Vermelho ou Azul'
+                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
             ],
             'hgt_glicemia' => [
                 'decimal' => 'HGT/Glicemia deve ser um número decimal'
@@ -386,7 +387,7 @@ class Atendimentos extends BaseController
             'exames' => $exames,
             'procedimentos_vinculados' => $procedimentosVinculados,
             'exames_vinculados' => $examesVinculados,
-            'classificacoes' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
             'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
         ];
@@ -409,7 +410,7 @@ class Atendimentos extends BaseController
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
             'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
-            'classificacao_risco' => 'required|in_list[Verde,Amarelo,Vermelho,Azul]',
+            'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
@@ -438,7 +439,7 @@ class Atendimentos extends BaseController
             ],
             'classificacao_risco' => [
                 'required' => 'A classificação de risco é obrigatória',
-                'in_list' => 'Classificação deve ser: Verde, Amarelo, Vermelho ou Azul'
+                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
             ],
             'hgt_glicemia' => [
                 'decimal' => 'HGT/Glicemia deve ser um número decimal'
@@ -591,7 +592,7 @@ class Atendimentos extends BaseController
             'encaminhamentos' => []
         ];
         // Classificação de risco
-        $classificacoes = ['Verde', 'Amarelo', 'Vermelho', 'Azul'];
+        $classificacoes = ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'];
         foreach ($classificacoes as $c) {
             $total = count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == $c));
             $graficos['classificacao'][] = [
@@ -647,9 +648,10 @@ class Atendimentos extends BaseController
             if (!isset($tabelaTemp[$periodo])) {
                 $tabelaTemp[$periodo] = [
                     'periodo' => $periodo,
-                    'verde' => 0,
-                    'amarelo' => 0,
                     'vermelho' => 0,
+                    'laranja' => 0,
+                    'amarelo' => 0,
+                    'verde' => 0,
                     'azul' => 0,
                     'total' => 0
                 ];
@@ -661,7 +663,7 @@ class Atendimentos extends BaseController
             $tabelaTemp[$periodo]['total']++;
         }
         foreach ($tabelaTemp as $linha) {
-            $urgentes = $linha['vermelho'];
+            $urgentes = $linha['vermelho'] + $linha['laranja'];
             $taxa_urgencia = $linha['total'] > 0 ? ($urgentes / $linha['total']) * 100 : 0;
             $linha['taxa_urgencia'] = $taxa_urgencia;
             $dadosTabela[] = $linha;
@@ -675,7 +677,8 @@ class Atendimentos extends BaseController
             'medicos' => $medicos,
             'filtros' => $filtros,
             'graficos' => $graficos,
-            'dadosTabela' => $dadosTabela
+            'dadosTabela' => $dadosTabela,
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul']
         ];
 
         return view('atendimentos/relatorio', $data);
