@@ -13,6 +13,8 @@ if (!function_exists('getClassificacaoRiscoClass')) {
         switch (strtolower($classificacao)) {
             case 'vermelho':
                 return 'high';
+            case 'laranja':
+                return 'very-high';
             case 'amarelo':
                 return 'medium';
             case 'verde':
@@ -34,6 +36,8 @@ if (!function_exists('getClassificacaoRiscoCor')) {
         switch (strtolower($classificacao)) {
             case 'vermelho':
                 return 'danger';
+            case 'laranja':
+                return 'warning';
             case 'amarelo':
                 return 'warning';
             case 'verde':

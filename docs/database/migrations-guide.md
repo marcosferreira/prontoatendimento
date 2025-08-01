@@ -72,7 +72,7 @@ Baseado no modelo de entidades definido em `docs/database/modelo-entidades.md`, 
 - `idx_medico_crm` - Busca por CRM
 
 ### Campos Especiais
-- **Classificação de Risco**: Verde, Amarelo, Vermelho, Azul
+- **Classificação de Risco**: Verde, Amarelo, Laranja, Vermelho, Azul
 - **Status do Médico**: Ativo, Inativo
 - **Tipos de Exame**: laboratorial, imagem, funcional, outros
 - **Status de Exame**: Solicitado, Realizado, Cancelado

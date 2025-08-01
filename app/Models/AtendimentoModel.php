@@ -52,7 +52,7 @@ class AtendimentoModel extends Model
         'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
         'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
         'data_atendimento' => 'required|valid_date',
-        'classificacao_risco' => 'required|in_list[Verde,Amarelo,Laranja,Vermelho,Azul]',
+        'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
         'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -212,11 +212,11 @@ class AtendimentoModel extends Model
     public function getClassificacoesRisco()
     {
         return [
-            'Vermelho' => 'Vermelho - Atendimento imediato (risco de morte)',
-            'Laranja'  => 'Laranja - Muito urgente (até 10 min)',
-            'Amarelo'  => 'Amarelo - Urgente (até 50 min)',
-            'Verde'    => 'Verde - Pouco urgente (até 120 min)',
-            'Azul'     => 'Azul - Não urgente (até 240 min)'
+            'Vermelho' => 'Vermelho - EMERGÊNCIA – atendimento imediato (0 minutos)',
+            'Laranja'  => 'Laranja - MUITO URGENTE – atendimento praticamente imediato (10 minutos)',
+            'Amarelo'  => 'Amarelo - URGENTE – atendimento rápido, mas pode aguardar (60 minutos)',
+            'Verde'    => 'Verde - POUCO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (120 minutos)',
+            'Azul'     => 'Azul - NÃO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (240 minutos)'
         ];
     }
 
@@ -227,11 +227,11 @@ class AtendimentoModel extends Model
     public function getTempoEsperaManchester($classificacao)
     {
         $tempos = [
-            'Vermelho' => 0,      // imediato
-            'Laranja'  => 10,
-            'Amarelo'  => 50,
-            'Verde'    => 120,
-            'Azul'     => 240
+            'Vermelho' => 0,      // EMERGÊNCIA – atendimento imediato
+            'Laranja'  => 10,     // MUITO URGENTE – atendimento praticamente imediato
+            'Amarelo'  => 60,     // URGENTE – pode aguardar
+            'Verde'    => 120,    // POUCO URGENTE
+            'Azul'     => 240     // NÃO URGENTE
         ];
         return $tempos[$classificacao] ?? null;
     }

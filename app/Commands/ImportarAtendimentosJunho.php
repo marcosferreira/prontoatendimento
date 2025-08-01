@@ -414,7 +414,7 @@ class ImportarAtendimentosJunho extends BaseCommand
             if (!empty($classificacaoRisco) && strtoupper($classificacaoRisco) !== 'NÃO') {
                 $classificacaoRisco = ucfirst(strtolower($classificacaoRisco));
             } else {
-                $classificacaoRisco = 'Verde'; // Padrão
+                $classificacaoRisco = 'Azul'; // Padrão
             }
             
             $atendimentoData = [

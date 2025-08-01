@@ -699,9 +699,9 @@ class Ajuda extends BaseController
         <h3>Processo de Triagem de Pacientes</h3>
         <p>A triagem é o primeiro passo do atendimento e determina a prioridade de cada paciente.</p>
         
-        <h4>Classificação de Risco</h4>
+        <h4>Classificação de Risco - Protocolo Manchester</h4>
         <ol>
-            <li><strong>Vermelho (Emergência):</strong> Risco iminente de morte
+            <li><strong>Vermelho (EMERGÊNCIA):</strong> Atendimento imediato (0 minutos)
                 <ul>
                     <li>Parada cardiorrespiratória</li>
                     <li>Trauma grave</li>
@@ -709,21 +709,29 @@ class Ajuda extends BaseController
                     <li>Coma</li>
                 </ul>
             </li>
-            <li><strong>Amarelo (Urgência):</strong> Risco de agravamento
+            <li><strong>Laranja (MUITO URGENTE):</strong> Atendimento praticamente imediato (10 minutos)
+                <ul>
+                    <li>Dor torácica severa</li>
+                    <li>Dificuldade respiratória grave</li>
+                    <li>Convulsões</li>
+                    <li>Hemorragias importantes</li>
+                </ul>
+            </li>
+            <li><strong>Amarelo (URGENTE):</strong> Atendimento rápido, mas pode aguardar (60 minutos)
                 <ul>
                     <li>Dor intensa</li>
                     <li>Febre alta em crianças</li>
                     <li>Dificuldade respiratória moderada</li>
                 </ul>
             </li>
-            <li><strong>Verde (Pouco Urgente):</strong> Sem risco imediato
+            <li><strong>Verde (POUCO URGENTE):</strong> Pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (120 minutos)
                 <ul>
                     <li>Sintomas estáveis</li>
                     <li>Dor leve a moderada</li>
                     <li>Problemas crônicos controlados</li>
                 </ul>
             </li>
-            <li><strong>Azul (Não Urgente):</strong> Casos simples
+            <li><strong>Azul (NÃO URGENTE):</strong> Pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (240 minutos)
                 <ul>
                     <li>Consultas de rotina</li>
                     <li>Renovação de receitas</li>

@@ -33,8 +33,9 @@ class CreateAtendimentoTable extends Migration
             ],
             'classificacao_risco' => [
                 'type'       => 'enum',
-                'constraint' => ['Verde', 'Amarelo', 'Vermelho', 'Azul'],
+                'constraint' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
                 'null'       => false,
+                'comment'    => 'Vermelho (EMERGÊNCIA - 0min), Laranja (MUITO URGENTE - 10min), Amarelo (URGENTE - 60min), Verde (POUCO URGENTE - 120min), Azul (NÃO URGENTE - 240min)',
             ],
             'consulta_enfermagem' => [
                 'type' => 'text',

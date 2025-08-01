@@ -65,7 +65,7 @@
                             <select id="filtroClassificacao" class="form-select">
                                 <option value="">Todas as Classificações</option>
                                 <option value="Vermelho" class="text-danger">Vermelho</option>
-                                <option value="Laranja" style="color: orange;">Laranja</option>
+                                <option value="Laranja" class="text-orange">Laranja</option>
                                 <option value="Amarelo" class="text-warning">Amarelo</option>
                                 <option value="Verde" class="text-success">Verde</option>
                                 <option value="Azul" class="text-info">Azul</option>

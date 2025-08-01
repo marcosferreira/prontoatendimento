@@ -174,10 +174,11 @@
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
-                                            'Azul' => 'Azul - Não Urgente',
-                                            'Verde' => 'Verde - Pouco Urgente', 
-                                            'Amarelo' => 'Amarelo - Urgente',
-                                            'Vermelho' => 'Vermelho - Muito Urgente'
+                                            'Azul' => 'Azul - NÃO URGENTE (240 min)',
+                                            'Verde' => 'Verde - POUCO URGENTE (120 min)', 
+                                            'Amarelo' => 'Amarelo - URGENTE (60 min)',
+                                            'Laranja' => 'Laranja - MUITO URGENTE (10 min)',
+                                            'Vermelho' => 'Vermelho - EMERGÊNCIA (0 min)'
                                         ];
                                         foreach ($classificacoes as $opcao): ?>
                                             <option value="<?= $opcao ?>" <?= old('classificacao_risco') == $opcao ? 'selected' : '' ?>>
@@ -185,10 +186,11 @@
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - Pouco Urgente</option>
-                                        <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - Urgente</option>
-                                        <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - Muito Urgente</option>
-                                        <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - Não Urgente</option>
+                                        <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - POUCO URGENTE (120 min)</option>
+                                        <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - URGENTE (60 min)</option>
+                                        <option value="Laranja" <?= old('classificacao_risco') == 'Laranja' ? 'selected' : '' ?>>Laranja - MUITO URGENTE (10 min)</option>
+                                        <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - EMERGÊNCIA (0 min)</option>
+                                        <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - NÃO URGENTE (240 min)</option>
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">

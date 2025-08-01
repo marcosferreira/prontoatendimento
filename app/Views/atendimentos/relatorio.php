@@ -89,29 +89,40 @@
 
                 <!-- Stats Cards -->
                 <div class="row my-4">
-                    <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
                         <div class="stat-card">
                             <div class="stat-icon bg-primary">
                                 <i class="bi bi-clipboard-check"></i>
                             </div>
                             <div class="stat-content">
                                 <h3><?= $estatisticas['total_atendimentos'] ?? 0 ?></h3>
-                                <p>Total de Atendimentos</p>
+                                <p>Total Atendimentos</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-info">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3><?= $estatisticas['diagnosticos_informados'] ?? 0 ?></h3>
+                                <p>Diagnósticos</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
                         <div class="stat-card">
                             <div class="stat-icon bg-success">
                                 <i class="bi bi-check-circle"></i>
                             </div>
                             <div class="stat-content">
                                 <h3><?= $estatisticas['atendimentos_concluidos'] ?? 0 ?></h3>
-                                <p>Atendimentos Concluídos</p>
+                                <p>Concluídos</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
                         <div class="stat-card">
                             <div class="stat-icon bg-warning">
                                 <i class="bi bi-clock"></i>
@@ -122,7 +133,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-4">
                         <div class="stat-card">
                             <div class="stat-icon bg-danger">
                                 <i class="bi bi-exclamation-triangle"></i>
@@ -130,6 +141,17 @@
                             <div class="stat-content">
                                 <h3><?= $estatisticas['casos_urgentes'] ?? 0 ?></h3>
                                 <p>Casos Urgentes</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-dark">
+                                <i class="bi bi-heartbreak"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3><?= $estatisticas['obitos'] ?? 0 ?></h3>
+                                <p>Óbitos</p>
                             </div>
                         </div>
                     </div>
@@ -172,7 +194,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">
-                                    <i class="bi bi-person-badge"></i> Médicos com Mais Atendimentos
+                                    <i class="bi bi-person-badge"></i> Top 10 Médicos com Mais Atendimentos
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -196,11 +218,27 @@
                     </div>
                 </div>
 
+                <!-- Diagnósticos -->
+                <div class="row my-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-clipboard-data"></i> Top 10 Diagnósticos Mais Comuns
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chartDiagnosticos" width="400" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tabela de Dados -->
                 <div class="card my-4">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
-                            <i class="bi bi-table"></i> Dados Detalhados
+                            <i class="bi bi-table"></i> Dados Detalhados por Período
                         </h5>
                     </div>
                     <div class="card-body">
@@ -223,14 +261,14 @@
                                         <?php foreach ($dadosTabela as $linha): ?>
                                             <tr>
                                                 <td><?= $linha['periodo'] ?></td>
-                                                <td class="text-danger"><?= $linha['vermelho'] ?></td>
-                                                <td style="color: orange;"><?= $linha['laranja'] ?></td>
-                                                <td class="text-warning"><?= $linha['amarelo'] ?></td>
-                                                <td class="text-success"><?= $linha['verde'] ?></td>
-                                                <td class="text-info"><?= $linha['azul'] ?></td>
+                                                <td class="text-danger fw-bold"><?= $linha['vermelho'] ?></td>
+                                                <td style="color: orange;" class="fw-bold"><?= $linha['laranja'] ?></td>
+                                                <td class="text-warning fw-bold"><?= $linha['amarelo'] ?></td>
+                                                <td class="text-success fw-bold"><?= $linha['verde'] ?></td>
+                                                <td class="text-info fw-bold"><?= $linha['azul'] ?></td>
                                                 <td><strong><?= $linha['total'] ?></strong></td>
                                                 <td>
-                                                    <span class="badge bg-<?= $linha['taxa_urgencia'] > 50 ? 'danger' : 'success' ?>">
+                                                    <span class="badge bg-<?= $linha['taxa_urgencia'] > 50 ? 'danger' : ($linha['taxa_urgencia'] > 20 ? 'warning' : 'success') ?>">
                                                         <?= number_format($linha['taxa_urgencia'], 1) ?>%
                                                     </span>
                                                 </td>
@@ -238,7 +276,7 @@
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">
+                                            <td colspan="8" class="text-center text-muted">
                                                 Nenhum dado encontrado para o período selecionado
                                             </td>
                                         </tr>
@@ -265,142 +303,138 @@
         const mensalData = <?= json_encode($graficos['mensal'] ?? []) ?>;
         const medicosData = <?= json_encode($graficos['medicos'] ?? []) ?>;
         const encaminhamentosData = <?= json_encode($graficos['encaminhamentos'] ?? []) ?>;
+        const diagnosticosData = <?= json_encode($graficos['diagnosticos'] ?? []) ?>;
 
         console.log('Dados dos gráficos:', {
             classificacao: classificacaoData,
             mensal: mensalData,
             medicos: medicosData,
-            encaminhamentos: encaminhamentosData
+            encaminhamentos: encaminhamentosData,
+            diagnosticos: diagnosticosData
         });
 
-        // Gráfico de Classificação de Risco (Pie) - sempre criar, mesmo sem dados
-        const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
-        // Altura máxima do gráfico
-        document.getElementById('chartClassificacao').style.maxHeight = '300px';
-        
-        new Chart(ctxClassificacao, {
-            type: 'doughnut',
-            data: {
-                labels: classificacaoData.length > 0 ? classificacaoData.map(item => item.classificacao) : ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
-                datasets: [{
-                    data: classificacaoData.length > 0 ? classificacaoData.map(item => item.total) : [0, 0, 0, 0],
-                    backgroundColor: [
-                        '#dc3545', // Vermelho
-                        'orange', // Laranja
-                        '#ffc107', // Amarelo
-                        '#28a745', // Verde
-                        '#17a2b8' // Azul
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
+        const chartColors = {
+            red: '#dc3545',
+            orange: '#fd7e14',
+            yellow: '#ffc107',
+            green: '#28a745',
+            blue: '#0d6efd',
+            teal: '#20c997',
+            cyan: '#0dcaf0',
+            gray: '#6c757d'
+        };
 
-        // Gráfico Mensal (Line) - sempre criar, mesmo sem dados
-        const ctxMensal = document.getElementById('chartMensal').getContext('2d');
-        // Altura máxima do gráfico
-        document.getElementById('chartMensal').style.maxHeight = '300px';
-        
-        new Chart(ctxMensal, {
-            type: 'line',
-            data: {
-                labels: mensalData.length > 0 ? mensalData.map(item => item.mes) : ['Jan', 'Fev', 'Mar'],
-                datasets: [{
-                    label: 'Atendimentos',
-                    data: mensalData.length > 0 ? mensalData.map(item => item.total) : [0, 0, 0],
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        // Gráfico de Classificação de Risco (Doughnut)
+        if (document.getElementById('chartClassificacao')) {
+            const ctxClassificacao = document.getElementById('chartClassificacao').getContext('2d');
+            document.getElementById('chartClassificacao').style.maxHeight = '300px';
+            new Chart(ctxClassificacao, {
+                type: 'doughnut',
+                data: {
+                    labels: classificacaoData.length > 0 ? classificacaoData.map(item => item.classificacao) : ['Nenhum dado'],
+                    datasets: [{
+                        data: classificacaoData.length > 0 ? classificacaoData.map(item => item.total) : [1],
+                        backgroundColor: classificacaoData.map(item => {
+                            switch(item.classificacao) {
+                                case 'Vermelho': return chartColors.red;
+                                case 'Laranja': return chartColors.orange;
+                                case 'Amarelo': return chartColors.yellow;
+                                case 'Verde': return chartColors.green;
+                                case 'Azul': return chartColors.blue;
+                                default: return chartColors.gray;
+                            }
+                        })
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
 
-        // Gráfico de Médicos (Bar) - sempre criar, mesmo sem dados
-        const ctxMedicos = document.getElementById('chartMedicos').getContext('2d');
-        // Altura máxima do gráfico
-        document.getElementById('chartMedicos').style.maxHeight = '300px';
-        
-        new Chart(ctxMedicos, {
-            type: 'bar',
-            data: {
-                labels: medicosData.length > 0 ? medicosData.map(item => item.medico) : ['Médico 1', 'Médico 2'],
-                datasets: [{
-                    label: 'Atendimentos',
-                    data: medicosData.length > 0 ? medicosData.map(item => item.total) : [0, 0],
-                    backgroundColor: '#28a745'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        // Gráfico Mensal (Line)
+        if (document.getElementById('chartMensal')) {
+            const ctxMensal = document.getElementById('chartMensal').getContext('2d');
+            document.getElementById('chartMensal').style.maxHeight = '300px';
+            new Chart(ctxMensal, {
+                type: 'line',
+                data: {
+                    labels: mensalData.length > 0 ? mensalData.map(item => item.mes) : ['Nenhum dado'],
+                    datasets: [{
+                        label: 'Atendimentos',
+                        data: mensalData.length > 0 ? mensalData.map(item => item.total) : [0],
+                        borderColor: chartColors.blue,
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } } }
+            });
+        }
 
-        // Gráfico de Encaminhamentos (Pie) - sempre criar, mesmo sem dados
-        const ctxEncaminhamentos = document.getElementById('chartEncaminhamentos').getContext('2d');
-        // Altura máxima do gráfico
-        document.getElementById('chartEncaminhamentos').style.maxHeight = '300px';
-        
-        new Chart(ctxEncaminhamentos, {
-            type: 'pie',
-            data: {
-                labels: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.encaminhamento || 'Em Atendimento') : ['Em Atendimento', 'Alta'],
-                datasets: [{
-                    data: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.total) : [0, 0],
-                    backgroundColor: [
-                        '#007bff',
-                        '#28a745',
-                        '#ffc107',
-                        '#dc3545',
-                        '#6f42c1',
-                        '#fd7e14'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
+        // Gráfico de Médicos (Bar)
+        if (document.getElementById('chartMedicos')) {
+            const ctxMedicos = document.getElementById('chartMedicos').getContext('2d');
+            document.getElementById('chartMedicos').style.maxHeight = '300px';
+            new Chart(ctxMedicos, {
+                type: 'bar',
+                data: {
+                    labels: medicosData.length > 0 ? medicosData.map(item => item.medico) : ['Nenhum dado'],
+                    datasets: [{
+                        label: 'Atendimentos',
+                        data: medicosData.length > 0 ? medicosData.map(item => item.total) : [0],
+                        backgroundColor: chartColors.green
+                    }]
+                },
+                options: { responsive: true, indexAxis: 'y', scales: { x: { beginAtZero: true } } }
+            });
+        }
+
+        // Gráfico de Encaminhamentos (Pie)
+        if (document.getElementById('chartEncaminhamentos')) {
+            const ctxEncaminhamentos = document.getElementById('chartEncaminhamentos').getContext('2d');
+            document.getElementById('chartEncaminhamentos').style.maxHeight = '300px';
+            new Chart(ctxEncaminhamentos, {
+                type: 'pie',
+                data: {
+                    labels: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.encaminhamento || 'Não definido') : ['Nenhum dado'],
+                    datasets: [{
+                        data: encaminhamentosData.length > 0 ? encaminhamentosData.map(item => item.total) : [1],
+                        backgroundColor: [chartColors.blue, chartColors.green, chartColors.yellow, chartColors.red, chartColors.teal, chartColors.cyan]
+                    }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        // Gráfico de Diagnósticos (Horizontal Bar)
+        if (document.getElementById('chartDiagnosticos')) {
+            const ctxDiagnosticos = document.getElementById('chartDiagnosticos').getContext('2d');
+            document.getElementById('chartDiagnosticos').style.maxHeight = '400px';
+            new Chart(ctxDiagnosticos, {
+                type: 'bar',
+                data: {
+                    labels: diagnosticosData.length > 0 ? diagnosticosData.map(item => item.diagnostico) : ['Nenhum dado'],
+                    datasets: [{
+                        label: 'Total de Casos',
+                        data: diagnosticosData.length > 0 ? diagnosticosData.map(item => item.total) : [0],
+                        backgroundColor: chartColors.cyan,
+                        borderColor: chartColors.blue,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: { x: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
                 }
-            }
-        });
+            });
+        }
 
         // Função para exportar relatório
         window.exportarRelatorio = function() {
-            const params = new URLSearchParams();
-
-            // Adicionar filtros aos parâmetros
-            const formData = new FormData(document.getElementById('filtrosRelatorio'));
-            for (let [key, value] of formData.entries()) {
-                if (value) {
-                    params.append(key, value);
-                }
-            }
-
+            const params = new URLSearchParams(new FormData(document.getElementById('filtrosRelatorio')));
             params.append('export', '1');
-
-            // Abrir URL de exportação
             window.location.href = `<?= base_url('atendimentos/export') ?>?${params.toString()}`;
         };
 
@@ -408,11 +442,7 @@
         const filterElements = document.querySelectorAll('#filtrosRelatorio select, #filtrosRelatorio input[type="date"]');
         filterElements.forEach(element => {
             element.addEventListener('change', function() {
-                // Debounce para evitar muitas requisições
-                clearTimeout(window.filterTimeout);
-                window.filterTimeout = setTimeout(function() {
-                    document.getElementById('filtrosRelatorio').submit();
-                }, 500);
+                document.getElementById('filtrosRelatorio').submit();
             });
         });
     });
@@ -424,20 +454,22 @@
     .stat-card {
         background: white;
         border-radius: 10px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         display: flex;
         align-items: center;
-        transition: transform 0.2s;
+        transition: all 0.3s ease;
+        border-left: 5px solid var(--bs-primary);
     }
 
     .stat-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
     .stat-icon {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -449,20 +481,27 @@
 
     .stat-content h3 {
         margin: 0;
-        font-size: 2rem;
-        font-weight: bold;
+        font-size: 1.75rem;
+        font-weight: 700;
         color: #2c3e50;
     }
 
     .stat-content p {
         margin: 0;
         color: #7f8c8d;
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
     }
 
-    .chart-container {
-        position: relative;
-        height: 300px;
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #343a40;
     }
 </style>
 <?= $this->endSection() ?>

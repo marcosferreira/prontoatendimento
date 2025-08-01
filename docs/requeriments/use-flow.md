@@ -15,27 +15,29 @@ flowchart TD
     D --> E
     E --> F{🚨 Classificação de Risco}
     F -->|🔴 Vermelho| G[⚡ Atendimento IMEDIATO]
-    F -->|🟡 Amarelo| H[⏱️ Aguarda 10min]
-    F -->|🟢 Verde| I[⏳ Aguarda 60min]
-    F -->|🔵 Azul| J[⏰ Aguarda 120min]
-    G --> K[👩‍⚕️ Consulta Médica]
-    H --> K
-    I --> K
-    J --> K
-    K --> L{🔬 Precisa exames?}
-    L -->|Sim| M[🧪 Solicitação de Exames]
-    L -->|Não| N[💊 Prescrição]
-    M --> O[📋 Realização de Exames]
-    O --> P[📊 Resultados]
-    P --> N
-    N --> Q{🏠 Desfecho}
-    Q -->|Alta| R[📄 Documentos de Alta]
-    Q -->|Internação| S[🛏️ Transferir para Leito]
-    Q -->|Transferência| T[🚑 Outro Hospital]
-    Q -->|Retorno| U[📅 Agendar Retorno]
-    R --> V[✅ Fim do Atendimento]
-    S --> V
-    T --> V
+    F -->|� Laranja| H[⏱️ Aguarda 10min]
+    F -->|�🟡 Amarelo| I[⏳ Aguarda 60min]
+    F -->|🟢 Verde| J[🕐 Aguarda 120min]
+    F -->|🔵 Azul| K[⏰ Aguarda 240min]
+    G --> L[👩‍⚕️ Consulta Médica]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+    L --> M{🔬 Precisa exames?}
+    M -->|Sim| N[🧪 Solicitação de Exames]
+    M -->|Não| O[💊 Prescrição]
+    N --> P[📋 Realização de Exames]
+    P --> Q[📊 Resultados]
+    Q --> O
+    O --> R{🏠 Desfecho}
+    R -->|Alta| S[📄 Documentos de Alta]
+    R -->|Internação| T[🛏️ Transferir para Leito]
+    R -->|Transferência| U[🚑 Outro Hospital]
+    R -->|Retorno| V[📅 Agendar Retorno]
+    S --> W[✅ Fim do Atendimento]
+    T --> W
+    U --> W
     U --> V
 ```
 
@@ -69,10 +71,11 @@ flowchart TD
 **Módulo:** Consultas > Triagem
 
 **Protocolo de Manchester:**
-- 🔴 **Vermelho** - Emergência (0 min)
-- 🟡 **Amarelo** - Urgência (10 min)
-- 🟢 **Verde** - Pouco urgente (60 min)
-- 🔵 **Azul** - Não urgente (120 min)
+- 🔴 **Vermelho** - EMERGÊNCIA – atendimento imediato (0 minutos)
+- 🟠 **Laranja** - MUITO URGENTE – atendimento praticamente imediato (10 minutos)
+- 🟡 **Amarelo** - URGENTE – atendimento rápido, mas pode aguardar (60 minutos)
+- 🟢 **Verde** - POUCO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (120 minutos)
+- 🔵 **Azul** - NÃO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (240 minutos)
 
 ```mermaid
 stateDiagram-v2
@@ -80,16 +83,19 @@ stateDiagram-v2
     Chegada --> Cadastro
     Cadastro --> Triagem
     Triagem --> Vermelho: Emergência
+    Triagem --> Laranja: Muito_Urgente
     Triagem --> Amarelo: Urgência
     Triagem --> Verde: Pouco_Urgente
     Triagem --> Azul: Não_Urgente
     
     Vermelho --> Atendimento_Imediato: 0 min
-    Amarelo --> Fila_Urgente: 10 min
-    Verde --> Fila_Pouco_Urgente: 60 min
-    Azul --> Fila_Não_Urgente: 120 min
+    Laranja --> Fila_Muito_Urgente: 10 min
+    Amarelo --> Fila_Urgente: 60 min
+    Verde --> Fila_Pouco_Urgente: 120 min
+    Azul --> Fila_Não_Urgente: 240 min
     
     Atendimento_Imediato --> Consulta_Medica
+    Fila_Muito_Urgente --> Consulta_Medica
     Fila_Urgente --> Consulta_Medica
     Fila_Pouco_Urgente --> Consulta_Medica
     Fila_Não_Urgente --> Consulta_Medica
@@ -520,8 +526,9 @@ graph TB
 
 ```mermaid
 pie title Distribuição de Classificação de Risco
-    "🔴 Vermelho (Emergência)" : 15
-    "🟡 Amarelo (Urgência)" : 35
+    "🔴 Vermelho (Emergência)" : 10
+    "🟠 Laranja (Muito Urgente)" : 15
+    "🟡 Amarelo (Urgente)" : 25
     "🟢 Verde (Pouco Urgente)" : 40
     "🔵 Azul (Não Urgente)" : 10
 ```
@@ -529,9 +536,9 @@ pie title Distribuição de Classificação de Risco
 ```mermaid
 xychart-beta
     title "Tempo Médio de Atendimento por Classificação"
-    x-axis [Vermelho, Amarelo, Verde, Azul]
-    y-axis "Tempo (minutos)" 0 --> 150
-    bar [5, 25, 75, 130]
+    x-axis [Vermelho, Laranja, Amarelo, Verde, Azul]
+    y-axis "Tempo (minutos)" 0 --> 250
+    bar [0, 10, 60, 120, 240]
 ```
 
 ### 10.1 KPIs Operacionais

@@ -79,6 +79,9 @@ class Home extends BaseController
                 'casos_vermelhos_hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', $hoje)
                                                                  ->where('classificacao_risco', 'Vermelho')
                                                                  ->countAllResults(),
+                'casos_laranjas_hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', $hoje)
+                                                               ->where('classificacao_risco', 'Laranja')
+                                                               ->countAllResults(),
                 'casos_amarelos_hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', $hoje)
                                                                 ->where('classificacao_risco', 'Amarelo')
                                                                 ->countAllResults(),

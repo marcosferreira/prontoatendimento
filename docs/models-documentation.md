@@ -95,7 +95,7 @@ Este documento descreve os models criados para o sistema de pronto atendimento, 
 - `id_paciente` (obrigatório, FK para pacientes)
 - `id_medico` (obrigatório, FK para medicos)
 - `data_atendimento` (obrigatório, datetime)
-- `classificacao_risco` (obrigatório: Verde, Amarelo, Vermelho, Azul)
+- `classificacao_risco` (obrigatório: Verde, Amarelo, Laranja, Vermelho, Azul)
 - `consulta_enfermagem` (opcional, texto)
 - `hgt_glicemia` (opcional, decimal 5,2)
 - `pressao_arterial` (opcional, formato texto)

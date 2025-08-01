@@ -571,6 +571,8 @@ class Atendimentos extends BaseController
             'atendimentos_concluidos' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Finalizado')),
             'em_andamento' => count(array_filter($atendimentos, fn($a) => $a['status'] == 'Em Andamento')),
             'casos_urgentes' => count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == 'Vermelho')),
+            'diagnosticos_informados' => count(array_filter($atendimentos, fn($a) => !empty(trim($a['hipotese_diagnostico'])))),
+            'obitos' => count(array_filter($atendimentos, fn($a) => $a['obito'] == true)),
         ];
 
         // Médicos para filtro
@@ -589,7 +591,8 @@ class Atendimentos extends BaseController
             'classificacao' => [],
             'mensal' => [],
             'medicos' => [],
-            'encaminhamentos' => []
+            'encaminhamentos' => [],
+            'diagnosticos' => []
         ];
         // Classificação de risco
         $classificacoes = ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'];
@@ -600,19 +603,55 @@ class Atendimentos extends BaseController
                 'total' => $total
             ];
         }
-        // Mensal
-        $mensal = [];
-        foreach ($atendimentos as $a) {
-            $mes = date('Y-m', strtotime($a['data_atendimento']));
-            if (!isset($mensal[$mes])) $mensal[$mes] = 0;
-            $mensal[$mes]++;
+        // Atendimentos por período (Mês ou Dia)
+        $startDate = new \DateTime($data_inicio);
+        $endDate = new \DateTime($data_fim);
+        $dateDiff = $endDate->diff($startDate)->days;
+        
+        $graficoMensalTitulo = '';
+        
+        if ($dateDiff > 90) { // Group by month
+            $graficoMensalTitulo = 'Atendimentos por Mês';
+            $periodFormat = 'Y-m';
+            $labelFormat = 'M/Y';
+            $interval = new \DateInterval('P1M');
+            // To include the last month in DatePeriod
+            $endDate->modify('first day of next month');
+        } else { // Group by day
+            $graficoMensalTitulo = 'Atendimentos por Dia';
+            $periodFormat = 'Y-m-d';
+            $labelFormat = 'd/m';
+            $interval = new \DateInterval('P1D');
+            // To include the last day in DatePeriod
+            $endDate->modify('+1 day');
         }
-        foreach ($mensal as $mes => $total) {
-            $graficos['mensal'][] = [
-                'mes' => $mes,
+
+        // Aggregate data from attendances
+        $aggregatedData = [];
+        foreach ($atendimentos as $a) {
+            $key = date($periodFormat, strtotime($a['data_atendimento']));
+            if (!isset($aggregatedData[$key])) {
+                $aggregatedData[$key] = 0;
+            }
+            $aggregatedData[$key]++;
+        }
+
+        // Create a full range of periods to ensure continuity
+        $periodIterator = new \DatePeriod($startDate, $interval, $endDate);
+        
+        $finalChartData = [];
+        foreach ($periodIterator as $date) {
+            $key = $date->format($periodFormat);
+            $label = $date->format($labelFormat);
+            $total = $aggregatedData[$key] ?? 0;
+            
+            $finalChartData[] = [
+                'mes' => $label, // Keep 'mes' key for compatibility
                 'total' => $total
             ];
         }
+
+        $graficos['mensal'] = $finalChartData;
         // Médicos
         $medicosGraf = [];
         foreach ($atendimentos as $a) {
@@ -620,6 +659,8 @@ class Atendimentos extends BaseController
             if (!isset($medicosGraf[$nome])) $medicosGraf[$nome] = 0;
             $medicosGraf[$nome]++;
         }
+        arsort($medicosGraf);
+        $medicosGraf = array_slice($medicosGraf, 0, 10);
         foreach ($medicosGraf as $medicoNome => $total) {
             $graficos['medicos'][] = [
                 'medico' => $medicoNome,
@@ -633,9 +674,29 @@ class Atendimentos extends BaseController
             if (!isset($encaminhamentosGraf[$enc])) $encaminhamentosGraf[$enc] = 0;
             $encaminhamentosGraf[$enc]++;
         }
+        arsort($encaminhamentosGraf);
         foreach ($encaminhamentosGraf as $enc => $total) {
             $graficos['encaminhamentos'][] = [
                 'encaminhamento' => $enc,
+                'total' => $total
+            ];
+        }
+
+        // Diagnósticos mais comuns
+        $diagnosticosGraf = [];
+        foreach ($atendimentos as $a) {
+            $diag = trim($a['hipotese_diagnostico'] ?? '');
+            if (!empty($diag)) {
+                $diag = strtolower($diag);
+                if (!isset($diagnosticosGraf[$diag])) $diagnosticosGraf[$diag] = 0;
+                $diagnosticosGraf[$diag]++;
+            }
+        }
+        arsort($diagnosticosGraf);
+        $diagnosticosGraf = array_slice($diagnosticosGraf, 0, 10);
+        foreach ($diagnosticosGraf as $diag => $total) {
+            $graficos['diagnosticos'][] = [
+                'diagnostico' => ucfirst($diag),
                 'total' => $total
             ];
         }

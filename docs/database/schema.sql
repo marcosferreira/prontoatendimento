@@ -58,7 +58,7 @@ CREATE TABLE atendimento (
     id_paciente INTEGER NOT NULL REFERENCES paciente(id_paciente),
     id_medico INTEGER REFERENCES medico(id_medico),
     data_atendimento TIMESTAMP NOT NULL,
-    classificacao_risco VARCHAR(20) CHECK (classificacao_risco IN ('VERDE', 'AMARELO', 'VERMELHO', 'AZUL')),
+    classificacao_risco VARCHAR(20) CHECK (classificacao_risco IN ('VERDE', 'AMARELO', 'LARANJA', 'VERMELHO', 'AZUL')),
     consulta_enfermagem TEXT,
     hgt_glicemia VARCHAR(20),
     pressao_arterial VARCHAR(20),

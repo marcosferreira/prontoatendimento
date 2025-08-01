@@ -927,3 +927,13 @@ body.sidebar-collapsed .main-content {
         visibility: visible;
     }
 }
+
+
+/* HELPERS TEXT MANCHESTER CLASSIFICATION */
+.text-orange {
+    color: rgb(251, 88, 0);
+}
+
+.bg-orange {
+    background-color: rgb(251, 88, 0);
+}

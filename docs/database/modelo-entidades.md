@@ -38,7 +38,7 @@ Com base nos dados coletados do atendimento diário do pronto atendimento munici
 - **id_paciente** (FK) - Referência para paciente
 - **id_medico** (FK) - Referência para médico
 - **data_atendimento** - Data e hora do atendimento
-- **classificacao_risco** - Classificação de risco (Verde, Amarelo, Vermelho, Azul)
+- **classificacao_risco** - Classificação de risco (Verde, Amarelo, Laranja, Vermelho, Azul)
 - **consulta_enfermagem** - Dados da consulta de enfermagem
 - **hgt_glicemia** - Valor da glicemia
 - **pressao_arterial** - Pressão arterial sistêmica
