@@ -79,14 +79,13 @@
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="cpf" class="form-label">
-                                                    CPF <span class="text-danger">*</span>
+                                                    CPF
                                                 </label>
                                                 <input type="text"
                                                     class="form-control"
                                                     id="cpf"
                                                     name="cpf"
                                                     value="<?= old('cpf') ?>"
-                                                    required
                                                     placeholder="000.000.000-00"
                                                     data-mask="000.000.000-00">
                                             </div>
@@ -336,8 +335,8 @@
                                 <i class="bi bi-info-circle"></i> Informações
                             </h5>
                             <ul class="info-list">
-                                <li><strong>Campos obrigatórios:</strong> Nome, Data de Nascimento, CPF e Sexo</li>
-                                <li><strong>CPF:</strong> Deve ser único no sistema</li>
+                                <li><strong>Campos obrigatórios:</strong> Nome, Data de Nascimento e Sexo</li>
+                                <li><strong>CPF:</strong> Opcional, mas deve ser único no sistema quando informado</li>
                                 <li><strong>Telefone:</strong> Pelo menos um contato é recomendado</li>
                                 <li><strong>SUS:</strong> Número do cartão do SUS se disponível</li>
                                 <li><strong>Responsável:</strong> Obrigatório para menores de 18 anos</li>
@@ -391,12 +390,16 @@
             $('#id_bairro').trigger('change');
         }
 
-        // Validação de CPF
+        // Validação de CPF (apenas quando preenchido)
         $('#cpf').blur(function() {
             var cpf = $(this).val().replace(/\D/g, '');
 
-            if (cpf.length == 11) {
-                if (!validarCPF(cpf)) {
+            // Só validar se CPF foi preenchido
+            if (cpf.length > 0) {
+                if (cpf.length !== 11) {
+                    alert('CPF deve ter 11 dígitos!');
+                    $(this).focus();
+                } else if (!validarCPF(cpf)) {
                     alert('CPF inválido!');
                     $(this).focus();
                 }

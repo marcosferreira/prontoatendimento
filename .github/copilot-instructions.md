@@ -279,3 +279,5 @@ php spark cache:clear
 5. **SEMPRE** validar dados de entrada nos controllers
 6. **SEMPRE** seguir os padrões de nomenclatura estabelecidos
 7. **SEMPRE** considerar relacionamentos existentes ao modificar estruturas
+8. **SEMPRE** manter a documentação atualizada com novas funcionalidades e alterações
+9. **SEMPRE** crie um plano de implementação antes as alterações significativas

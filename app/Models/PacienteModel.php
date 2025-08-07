@@ -51,7 +51,7 @@ class PacienteModel extends Model
     // Validation
     protected $validationRules = [
         'nome' => 'required|max_length[255]',
-        'cpf' => 'required|max_length[14]',
+        'cpf' => 'permit_empty|max_length[14]', // Alterado de required para permit_empty
         'data_nascimento' => 'required|valid_date',
         'sexo' => 'required|in_list[M,F]',
         'email' => 'permit_empty|valid_email|max_length[255]',
@@ -75,7 +75,6 @@ class PacienteModel extends Model
             'max_length' => 'O nome deve ter no máximo 255 caracteres'
         ],
         'cpf' => [
-            'required' => 'O CPF é obrigatório',
             'is_unique' => 'Este CPF já está cadastrado',
             'max_length' => 'O CPF deve ter no máximo 14 caracteres'
         ],
@@ -173,12 +172,12 @@ class PacienteModel extends Model
     }
 
     /**
-     * Regras de validação específicas para inserção (incluindo is_unique para CPF)
+     * Regras de validação específicas para inserção (incluindo is_unique para CPF quando informado)
      */
     public function getInsertValidationRules()
     {
         return array_merge($this->validationRules, [
-            'cpf' => 'required|is_unique[pacientes.cpf]|max_length[14]'
+            'cpf' => 'permit_empty|is_unique[pacientes.cpf]|max_length[14]' // CPF opcional, mas único quando informado
         ]);
     }
 
@@ -188,7 +187,7 @@ class PacienteModel extends Model
     public function getUpdateValidationRules($id)
     {
         return array_merge($this->validationRules, [
-            'cpf' => "required|is_unique[pacientes.cpf,id_paciente,{$id}]|max_length[14]"
+            'cpf' => "permit_empty|is_unique[pacientes.cpf,id_paciente,{$id}]|max_length[14]" // CPF opcional, mas único quando informado
         ]);
     }
 

@@ -107,7 +107,7 @@ class Pacientes extends BaseController
     {
         $rules = [
             'nome' => 'required|min_length[3]|max_length[255]',
-            'cpf' => 'required|exact_length[14]|is_unique[pacientes.cpf]',
+            'cpf' => 'permit_empty|exact_length[14]|is_unique[pacientes.cpf]', // Alterado de required para permit_empty
             'data_nascimento' => 'required|valid_date',
             'sexo' => 'required|in_list[M,F]',
             'email' => 'permit_empty|valid_email',
@@ -127,7 +127,6 @@ class Pacientes extends BaseController
                 'max_length' => 'O nome deve ter no máximo 255 caracteres.'
             ],
             'cpf' => [
-                'required' => 'O CPF é obrigatório.',
                 'exact_length' => 'O CPF deve ter 14 caracteres (formato: 000.000.000-00).',
                 'is_unique' => 'Este CPF já está cadastrado no sistema.'
             ],
@@ -304,7 +303,7 @@ class Pacientes extends BaseController
 
         $rules = [
             'nome' => 'required|min_length[3]|max_length[255]',
-            'cpf' => "required|exact_length[14]|is_unique[pacientes.cpf,id_paciente,{$id}]",
+            'cpf' => "permit_empty|exact_length[14]|is_unique[pacientes.cpf,id_paciente,{$id}]", // Alterado de required para permit_empty
             'data_nascimento' => 'required|valid_date',
             'sexo' => 'required|in_list[M,F]',
             'email' => 'permit_empty|valid_email|max_length[255]',
@@ -328,7 +327,6 @@ class Pacientes extends BaseController
                 'max_length' => 'O nome deve ter no máximo 255 caracteres.'
             ],
             'cpf' => [
-                'required' => 'O CPF é obrigatório.',
                 'exact_length' => 'O CPF deve ter 14 caracteres (formato: 000.000.000-00).',
                 'is_unique' => 'Este CPF já está cadastrado para outro paciente.'
             ],

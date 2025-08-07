@@ -83,7 +83,7 @@
                                         <?php if (isset($pacientes)): ?>
                                             <?php foreach ($pacientes as $paciente): ?>
                                                 <option value="<?= $paciente['id_paciente'] ?>" <?= old('id_paciente') == $paciente['id_paciente'] ? 'selected' : '' ?>>
-                                                    <?= esc($paciente['nome']) ?> - CPF: <?= $paciente['cpf'] ?>
+                                                    <?= esc($paciente['nome']) ?><?= !empty($paciente['cpf']) ? ' - CPF: ' . $paciente['cpf'] : '' ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
@@ -391,13 +391,12 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="modal_cpf" class="form-label">
-                                        CPF <span class="text-danger">*</span>
+                                        CPF
                                     </label>
                                     <input type="text"
                                         class="form-control"
                                         id="modal_cpf"
                                         name="cpf"
-                                        required
                                         placeholder="000.000.000-00">
                                 </div>
                             </div>
@@ -1142,11 +1141,13 @@
                 return;
             }
             
-            // Validar CPF
-            if (cpf.length !== 11 || !validarCPF(cpf)) {
-                alert('CPF inválido. Por favor, verifique.');
-                document.getElementById('modal_cpf').focus();
-                return;
+            // Validar CPF apenas se preenchido
+            if (cpf.length > 0) {
+                if (cpf.length !== 11 || !validarCPF(cpf)) {
+                    alert('CPF inválido. Por favor, verifique.');
+                    document.getElementById('modal_cpf').focus();
+                    return;
+                }
             }
 
             console.log('Validações passaram, enviando requisição...');

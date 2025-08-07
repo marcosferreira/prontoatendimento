@@ -206,10 +206,10 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="modal_cpf" class="form-label">
-                                        CPF <span class="text-danger">*</span>
+                                        CPF
                                     </label>
                                     <input type="text" class="form-control" id="modal_cpf" name="cpf"
-                                        placeholder="000.000.000-00" required>
+                                        placeholder="000.000.000-00">
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -479,17 +479,20 @@
     document.getElementById('novoPacienteForm').addEventListener('submit', function(e) {
         const cpf = document.getElementById('modal_cpf').value.replace(/\D/g, '');
 
-        if (cpf.length !== 11) {
-            e.preventDefault();
-            alert('CPF deve ter 11 dígitos');
-            return;
-        }
+        // Só validar CPF se ele foi preenchido
+        if (cpf.length > 0) {
+            if (cpf.length !== 11) {
+                e.preventDefault();
+                alert('CPF deve ter 11 dígitos');
+                return;
+            }
 
-        // Validação básica de CPF
-        if (!validarCPF(cpf)) {
-            e.preventDefault();
-            alert('CPF inválido');
-            return;
+            // Validação básica de CPF
+            if (!validarCPF(cpf)) {
+                e.preventDefault();
+                alert('CPF inválido');
+                return;
+            }
         }
     });
 
