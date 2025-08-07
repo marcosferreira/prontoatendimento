@@ -128,6 +128,31 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
+                                                <label for="nome_mae" class="form-label">Nome da Mãe</label>
+                                                <input type="text"
+                                                    class="form-control"
+                                                    id="nome_mae"
+                                                    name="nome_mae"
+                                                    value="<?= esc($paciente['nome_mae'] ?? '') ?>"
+                                                    placeholder="Nome completo da mãe">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="nome_pai" class="form-label">Nome do Pai</label>
+                                                <input type="text"
+                                                    class="form-control"
+                                                    id="nome_pai"
+                                                    name="nome_pai"
+                                                    value="<?= esc($paciente['nome_pai'] ?? '') ?>"
+                                                    placeholder="Nome completo do pai">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
                                                 <label for="telefone" class="form-label">Telefone</label>
                                                 <input type="text"
                                                     class="form-control"

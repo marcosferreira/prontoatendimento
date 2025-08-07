@@ -236,6 +236,23 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
+                                    <label for="modal_nome_mae" class="form-label">Nome da Mãe</label>
+                                    <input type="text" class="form-control" id="modal_nome_mae" name="nome_mae"
+                                        placeholder="Nome completo da mãe">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="modal_nome_pai" class="form-label">Nome do Pai</label>
+                                    <input type="text" class="form-control" id="modal_nome_pai" name="nome_pai"
+                                        placeholder="Nome completo do pai">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label for="modal_telefone" class="form-label">Telefone</label>
                                     <input type="text" class="form-control" id="modal_telefone" name="telefone"
                                         placeholder="(00) 0000-0000">

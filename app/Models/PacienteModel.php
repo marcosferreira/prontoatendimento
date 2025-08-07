@@ -29,6 +29,8 @@ class PacienteModel extends Model
         'numero_sus',
         'tipo_sanguineo',
         'nome_responsavel',
+        'nome_mae',
+        'nome_pai',
         'alergias',
         'observacoes'
     ];
@@ -62,6 +64,8 @@ class PacienteModel extends Model
         'complemento' => 'permit_empty|max_length[100]',
         'rg' => 'permit_empty|max_length[20]',
         'nome_responsavel' => 'permit_empty|max_length[255]',
+        'nome_mae' => 'permit_empty|max_length[255]',
+        'nome_pai' => 'permit_empty|max_length[255]',
         'alergias' => 'permit_empty|max_length[1000]',
         'observacoes' => 'permit_empty|max_length[1000]',
         'sus' => 'permit_empty|max_length[15]',

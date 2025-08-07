@@ -176,6 +176,8 @@ class Pacientes extends BaseController
             'id_logradouro' => $id_logradouro,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
+            'nome_mae' => $this->request->getPost('nome_mae'),
+            'nome_pai' => $this->request->getPost('nome_pai'),
             'alergias' => $this->request->getPost('alergias'),
             'observacoes' => $this->request->getPost('observacoes')
         ];
@@ -316,6 +318,8 @@ class Pacientes extends BaseController
             'id_logradouro' => 'permit_empty|is_natural_no_zero',
             'tipo_sanguineo' => 'permit_empty|max_length[5]',
             'nome_responsavel' => 'permit_empty|max_length[255]',
+            'nome_mae' => 'permit_empty|max_length[255]',
+            'nome_pai' => 'permit_empty|max_length[255]',
             'alergias' => 'permit_empty|max_length[1000]',
             'observacoes' => 'permit_empty|max_length[1000]'
         ];
@@ -362,6 +366,8 @@ class Pacientes extends BaseController
             'id_logradouro' => $this->request->getPost('id_logradouro') ?? null,
             'tipo_sanguineo' => $this->request->getPost('tipo_sanguineo'),
             'nome_responsavel' => $this->request->getPost('nome_responsavel'),
+            'nome_mae' => $this->request->getPost('nome_mae'),
+            'nome_pai' => $this->request->getPost('nome_pai'),
             'alergias' => $this->request->getPost('alergias'),
             'observacoes' => $this->request->getPost('observacoes')
         ];
