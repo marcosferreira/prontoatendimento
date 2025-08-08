@@ -176,22 +176,22 @@ class PacienteModel extends Model
     }
 
     /**
-     * Regras de validação específicas para inserção (incluindo is_unique para CPF quando informado)
+     * Regras de validação específicas para inserção
      */
     public function getInsertValidationRules()
     {
         return array_merge($this->validationRules, [
-            'cpf' => 'permit_empty|is_unique[pacientes.cpf]|max_length[14]' // CPF opcional, mas único quando informado
+            'cpf' => 'permit_empty|max_length[14]' // CPF opcional, permite duplicatas
         ]);
     }
 
     /**
-     * Regras de validação específicas para atualização (excluindo o próprio registro do is_unique)
+     * Regras de validação específicas para atualização
      */
     public function getUpdateValidationRules($id)
     {
         return array_merge($this->validationRules, [
-            'cpf' => "permit_empty|is_unique[pacientes.cpf,id_paciente,{$id}]|max_length[14]" // CPF opcional, mas único quando informado
+            'cpf' => 'permit_empty|max_length[14]' // CPF opcional, permite duplicatas
         ]);
     }
 

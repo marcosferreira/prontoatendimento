@@ -123,11 +123,15 @@
                                                 <?= date('d/m/Y H:i', strtotime($atendimento['data_atendimento'])) ?>
                                             </td>
                                             <td>
-                                                <span class="badge bg-<?=
-                                                                        $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
-                                                                        ?>">
-                                                    <?= $atendimento['classificacao_risco'] ?>
-                                                </span>
+                                                <?php if (!empty($atendimento['classificacao_risco'])): ?>
+                                                    <span class="badge bg-<?=
+                                                                            $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
+                                                                            ?>">
+                                                        <?= $atendimento['classificacao_risco'] ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Não classificado</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php if (isset($atendimento['paciente_observacao']) && $atendimento['paciente_observacao'] == 'Sim'): ?>

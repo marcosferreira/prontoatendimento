@@ -166,11 +166,11 @@
                             <!-- Classificação de Risco -->
                             <div class="col-md-6 mb-3">
                                 <label for="classificacao_risco" class="form-label">
-                                    <i class="bi bi-exclamation-triangle"></i> Classificação de Risco *
+                                    <i class="bi bi-exclamation-triangle"></i> Classificação de Risco
                                 </label>
                                 <select class="form-select <?= session('validation') && session('validation')->hasError('classificacao_risco') ? 'is-invalid' : '' ?>" 
-                                        id="classificacao_risco" name="classificacao_risco" required>
-                                    <option value="">Selecione a classificação</option>
+                                        id="classificacao_risco" name="classificacao_risco">
+                                    <option value="">Selecione a classificação (opcional)</option>
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
@@ -194,7 +194,7 @@
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Por favor, selecione a classificação de risco.' ?>
+                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'A classificação de risco é opcional.' ?>
                                 </div>
                             </div>
                         </div>

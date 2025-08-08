@@ -53,7 +53,7 @@ class AtendimentoModel extends Model
         'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
         'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
         'data_atendimento' => 'required|valid_date',
-        'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
+        'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
         'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -78,7 +78,7 @@ class AtendimentoModel extends Model
             'valid_date' => 'Data de atendimento inválida'
         ],
         'classificacao_risco' => [
-            'required' => 'A classificação de risco é obrigatória',
+            'permit_empty' => 'A classificação de risco é opcional',
             'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
         ],
         'hgt_glicemia' => [
