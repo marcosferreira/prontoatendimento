@@ -38,7 +38,7 @@ class Exames extends BaseController
 
         // Estatísticas por tipo
         $stats = [
-            'total' => $this->exameModel->countAll(),
+            'total' => $this->exameModel->countAllResults(),
             'laboratorial' => $this->exameModel->where('tipo', 'laboratorial')->countAllResults(),
             'imagem' => $this->exameModel->where('tipo', 'imagem')->countAllResults(),
             'funcional' => $this->exameModel->where('tipo', 'funcional')->countAllResults(),

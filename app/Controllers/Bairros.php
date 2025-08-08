@@ -32,7 +32,7 @@ class Bairros extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->bairroModel->countAll(),
+            'total' => $this->bairroModel->countAllResults(),
             'hoje' => $this->bairroModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->bairroModel->where('MONTH(created_at)', date('m'))
                                       ->where('YEAR(created_at)', date('Y'))

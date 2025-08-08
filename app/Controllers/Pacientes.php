@@ -44,7 +44,7 @@ class Pacientes extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->pacienteModel->countAll(),
+            'total' => $this->pacienteModel->countAllResults(),
             'hoje' => $this->pacienteModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->pacienteModel->where('MONTH(created_at)', date('m'))
                                         ->where('YEAR(created_at)', date('Y'))
@@ -394,9 +394,12 @@ class Pacientes extends BaseController
             return redirect()->to('pacientes')->with('error', 'Paciente não encontrado.');
         }
 
-        // Verificar se tem atendimentos vinculados
+        // Verificar se tem atendimentos vinculados (incluindo soft deleted)
         $db = \Config\Database::connect();
-        $atendimentos = $db->table('atendimentos')->where('id_paciente', $id)->countAllResults();
+        $atendimentos = $db->table('atendimentos')
+                          ->where('id_paciente', $id)
+                          ->where('deleted_at IS NULL') // Apenas atendimentos não excluídos
+                          ->countAllResults();
 
         if ($atendimentos > 0) {
             return redirect()->to('pacientes')->with('error', 'Não é possível excluir este paciente pois possui atendimentos vinculados.');
@@ -407,6 +410,23 @@ class Pacientes extends BaseController
         } else {
             return redirect()->to('pacientes')->with('error', 'Erro ao excluir paciente.');
         }
+    }
+
+    /**
+     * Verifica se o paciente possui atendimentos (via AJAX)
+     */
+    public function checkAtendimentos($id)
+    {
+        $db = \Config\Database::connect();
+        $count = $db->table('atendimentos')
+                   ->where('id_paciente', $id)
+                   ->where('deleted_at IS NULL')
+                   ->countAllResults();
+
+        return $this->response->setJSON([
+            'hasAtendimentos' => $count > 0,
+            'count' => $count
+        ]);
     }
 
     /**

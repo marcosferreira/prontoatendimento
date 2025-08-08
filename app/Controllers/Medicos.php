@@ -33,7 +33,7 @@ class Medicos extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->medicoModel->countAll(),
+            'total' => $this->medicoModel->countAllResults(),
             'ativos' => $this->medicoModel->where('status', 'Ativo')->countAllResults(),
             'inativos' => $this->medicoModel->where('status', 'Inativo')->countAllResults(),
             'hoje' => $this->medicoModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),

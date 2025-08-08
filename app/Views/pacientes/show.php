@@ -30,8 +30,13 @@
                         class="btn btn-warning me-2">
                         <i class="bi bi-pencil"></i> Editar
                     </a>
-                    <button type="button" class="btn btn-outline-primary" onclick="printPacienteCard()">
+                    <button type="button" class="btn btn-outline-primary me-2" onclick="printPacienteCard()">
                         <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" 
+                        onclick="confirmarExclusaoPacienteShow(<?= $paciente['id_paciente'] ?>, '<?= esc($paciente['nome']) ?>')"
+                        title="Excluir Paciente">
+                        <i class="bi bi-trash"></i> Excluir
                     </button>
                 </div>
             </div>
@@ -487,6 +492,91 @@
         box-shadow: var(--shadow);
     }
 </style>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="modalConfirmarExclusaoPacienteShow" tabindex="-1" aria-labelledby="modalConfirmarExclusaoPacienteShowLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmarExclusaoPacienteShowLabel">
+                    <i class="bi bi-exclamation-triangle text-danger"></i> Confirmar Exclusão
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja excluir o paciente <strong id="pacienteExclusaoNomeShow"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita. Todos os dados do paciente serão perdidos permanentemente.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form id="formExclusaoPacienteShow" method="POST" class="d-inline">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Excluir Paciente
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Aviso - Paciente com Atendimentos -->
+<div class="modal fade" id="modalPacienteComAtendimentosShow" tabindex="-1" aria-labelledby="modalPacienteComAtendimentosShowLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPacienteComAtendimentosShowLabel">
+                    <i class="bi bi-exclamation-circle text-warning"></i> Exclusão Não Permitida
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>O paciente <strong id="pacienteComAtendimentosNomeShow"></strong> não pode ser excluído pois possui <strong id="pacienteComAtendimentosCountShow"></strong> atendimento(s) vinculado(s).</p>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Sugestão:</strong> Para manter a integridade dos dados médicos, pacientes com atendimentos não podem ser excluídos. Você pode editar os dados do paciente se necessário.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function printPacienteCard() {
+    window.open('<?= base_url('pacientes/print/' . $paciente['id_paciente']) ?>', '_blank');
+}
+
+// Função para confirmar exclusão de paciente na view de detalhes
+function confirmarExclusaoPacienteShow(id, nome) {
+    // Verificar se o paciente possui atendimentos
+    fetch(`<?= base_url('pacientes') ?>/${id}/check-atendimentos`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.hasAtendimentos) {
+                // Mostrar modal de aviso se houver atendimentos
+                document.getElementById('pacienteComAtendimentosNomeShow').textContent = nome;
+                document.getElementById('pacienteComAtendimentosCountShow').textContent = data.count;
+                new bootstrap.Modal(document.getElementById('modalPacienteComAtendimentosShow')).show();
+            } else {
+                // Mostrar modal de confirmação se não houver atendimentos
+                document.getElementById('pacienteExclusaoNomeShow').textContent = nome;
+                document.getElementById('formExclusaoPacienteShow').action = `<?= base_url('pacientes') ?>/${id}`;
+                new bootstrap.Modal(document.getElementById('modalConfirmarExclusaoPacienteShow')).show();
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao verificar dados do paciente');
+        });
+}
+</script>
 
 <?= $this->endSection() ?>
 

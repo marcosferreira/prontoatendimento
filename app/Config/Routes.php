@@ -22,10 +22,13 @@ $routes->group('pacientes', static function ($routes) {
     $routes->post('update/(:num)', 'Pacientes::update/$1');
     $routes->post('(:num)/update', 'Pacientes::update/$1'); // Rota alternativa para update
     $routes->get('delete/(:num)', 'Pacientes::delete/$1');
+    $routes->delete('(:num)', 'Pacientes::delete/$1'); // Rota para DELETE via formulário
+    $routes->post('(:num)/delete', 'Pacientes::delete/$1'); // Rota alternativa para exclusão
     
     // AJAX routes
     $routes->get('search', 'Pacientes::search');
     $routes->get('modal/(:num)', 'Pacientes::modal/$1');
+    $routes->get('(:num)/check-atendimentos', 'Pacientes::checkAtendimentos/$1');
     $routes->post('validate-cpf', 'Pacientes::validateCpf');
     $routes->get('logradouros-por-bairro', 'Pacientes::getLogradourosByBairro');
     
@@ -144,6 +147,7 @@ $routes->group('atendimentos', static function ($routes) {
     $routes->get('edit/(:num)', 'Atendimentos::edit/$1');
     $routes->post('update/(:num)', 'Atendimentos::update/$1');
     $routes->delete('delete/(:num)', 'Atendimentos::delete/$1');
+    $routes->post('(:num)/delete', 'Atendimentos::delete/$1'); // Rota alternativa para exclusão
     
     // Relatórios
     $routes->get('relatorio', 'Atendimentos::relatorio');

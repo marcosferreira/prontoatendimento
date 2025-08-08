@@ -62,7 +62,7 @@ class AtendimentoProcedimentos extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->atendimentoProcedimentoModel->countAll(),
+            'total' => $this->atendimentoProcedimentoModel->countAllResults(),
             'hoje' => $this->atendimentoProcedimentoModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->atendimentoProcedimentoModel->where('MONTH(created_at)', date('m'))
                                                       ->where('YEAR(created_at)', date('Y'))

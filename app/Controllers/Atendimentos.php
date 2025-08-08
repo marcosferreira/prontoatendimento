@@ -82,7 +82,7 @@ class Atendimentos extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->atendimentoModel->countAll(),
+            'total' => $this->atendimentoModel->countAllResults(),
             'hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->atendimentoModel->where('MONTH(data_atendimento)', date('m'))
                                            ->where('YEAR(data_atendimento)', date('Y'))

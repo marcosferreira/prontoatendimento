@@ -54,7 +54,7 @@ class Logradouros extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->logradouroModel->countAll(),
+            'total' => $this->logradouroModel->countAllResults(),
             'hoje' => $this->logradouroModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->logradouroModel->where('MONTH(created_at)', date('m'))
                                           ->where('YEAR(created_at)', date('Y'))

@@ -33,7 +33,7 @@ class Procedimentos extends BaseController
 
         // Estatísticas
         $stats = [
-            'total' => $this->procedimentoModel->countAll(),
+            'total' => $this->procedimentoModel->countAllResults(),
             'hoje' => $this->procedimentoModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->procedimentoModel->where('MONTH(created_at)', date('m'))
                                             ->where('YEAR(created_at)', date('Y'))

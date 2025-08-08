@@ -38,6 +38,9 @@
                         <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
                             <i class="bi bi-printer"></i> Imprimir
                         </button>
+                        <button type="button" class="btn btn-danger" onclick="confirmarExclusao(<?= $atendimento['id_atendimento'] ?>)">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
                     </div>
                 </div>
 
@@ -331,6 +334,91 @@
 </div>
 
 <?= $this->endSection() ?>
+
+<!-- Modal de confirmação de exclusão -->
+<div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-labelledby="modalConfirmarExclusaoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmarExclusaoLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Tem certeza?</h5>
+                    <p>Esta ação não pode ser desfeita. O atendimento será excluído permanentemente.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarExclusaoBtn">Excluir Atendimento</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let atendimentoParaExcluir = null;
+
+function confirmarExclusao(id) {
+    atendimentoParaExcluir = id;
+    const modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
+    modal.show();
+}
+
+document.getElementById('confirmarExclusaoBtn').addEventListener('click', function() {
+    if (atendimentoParaExcluir) {
+        fetch(`<?= base_url('atendimentos/delete/') ?>${atendimentoParaExcluir}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', data.success || 'Atendimento excluído com sucesso!');
+                // Redirecionar para lista de atendimentos após 1.5 segundos
+                setTimeout(() => {
+                    window.location.href = '<?= base_url('atendimentos') ?>';
+                }, 1500);
+            } else {
+                showAlert('error', data.error || 'Erro ao excluir atendimento');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Erro ao excluir atendimento');
+        })
+        .finally(() => {
+            bootstrap.Modal.getInstance(document.getElementById('modalConfirmarExclusao')).hide();
+            atendimentoParaExcluir = null;
+        });
+    }
+});
+
+function showAlert(type, message) {
+    const alertsContainer = document.querySelector('.alerts-container') || document.body;
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    alertsContainer.appendChild(alertDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
 
 <?= $this->section('styles') ?>
 <style>
