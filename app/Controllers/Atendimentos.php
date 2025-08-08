@@ -160,7 +160,7 @@ class Atendimentos extends BaseController
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
             'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
-            'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
+            'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
@@ -189,7 +189,6 @@ class Atendimentos extends BaseController
                 'regex_match' => 'Data do atendimento deve estar no formato AAAA-MM-DDTHH:MM (ex: 2024-12-25T14:30). Use o seletor de data/hora.'
             ],
             'classificacao_risco' => [
-                'required' => 'A classificação de risco é obrigatória',
                 'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
             ],
             'hgt_glicemia' => [
@@ -237,13 +236,19 @@ class Atendimentos extends BaseController
             $temperatura = $this->request->getPost('temperatura');
             $pressaoArterial = $this->request->getPost('pressao_arterial');
             $encaminhamento = $this->request->getPost('encaminhamento');
+            $classificacaoRisco = $this->request->getPost('classificacao_risco');
+            
+            // Se classificação de risco estiver vazia, definir como "Azul" (padrão)
+            if (empty($classificacaoRisco)) {
+                $classificacaoRisco = 'Azul';
+            }
 
             // Salvar o atendimento
             $atendimentoData = [
                 'id_paciente' => $this->request->getPost('id_paciente'),
                 'id_medico' => $this->request->getPost('id_medico'),
                 'data_atendimento' => $dataAtendimento,
-                'classificacao_risco' => $this->request->getPost('classificacao_risco'),
+                'classificacao_risco' => $classificacaoRisco,
                 'consulta_enfermagem' => $this->request->getPost('consulta_enfermagem'),
                 'hgt_glicemia' => (!empty($hgtGlicemia) && is_numeric($hgtGlicemia)) ? (float)$hgtGlicemia : null,
                 'pressao_arterial' => !empty($pressaoArterial) ? trim($pressaoArterial) : null,

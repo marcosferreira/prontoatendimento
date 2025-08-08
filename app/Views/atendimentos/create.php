@@ -170,7 +170,6 @@
                                 </label>
                                 <select class="form-select <?= session('validation') && session('validation')->hasError('classificacao_risco') ? 'is-invalid' : '' ?>" 
                                         id="classificacao_risco" name="classificacao_risco">
-                                    <option value="">Selecione a classificação (opcional)</option>
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
@@ -180,22 +179,26 @@
                                             'Laranja' => 'Laranja - MUITO URGENTE (10 min)',
                                             'Vermelho' => 'Vermelho - EMERGÊNCIA (0 min)'
                                         ];
+                                        $defaultValue = old('classificacao_risco', 'Azul'); // Padrão: Azul
                                         foreach ($classificacoes as $opcao): ?>
-                                            <option value="<?= $opcao ?>" <?= old('classificacao_risco') == $opcao ? 'selected' : '' ?>>
+                                            <option value="<?= $opcao ?>" <?= $defaultValue == $opcao ? 'selected' : '' ?>>
                                                 <?= $descricoes[$opcao] ?? $opcao ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
+                                        <option value="Azul" <?= old('classificacao_risco', 'Azul') == 'Azul' ? 'selected' : '' ?>>Azul - NÃO URGENTE (240 min)</option>
                                         <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - POUCO URGENTE (120 min)</option>
                                         <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - URGENTE (60 min)</option>
                                         <option value="Laranja" <?= old('classificacao_risco') == 'Laranja' ? 'selected' : '' ?>>Laranja - MUITO URGENTE (10 min)</option>
                                         <option value="Vermelho" <?= old('classificacao_risco') == 'Vermelho' ? 'selected' : '' ?>>Vermelho - EMERGÊNCIA (0 min)</option>
-                                        <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - NÃO URGENTE (240 min)</option>
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'A classificação de risco é opcional.' ?>
+                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Classificação padrão: Azul - NÃO URGENTE' ?>
                                 </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Classificação padrão: Azul - NÃO URGENTE (240 min)
+                                </small>
                             </div>
                         </div>
 
@@ -858,6 +861,29 @@
             }
         }
 
+        // Function to show default classification notification
+        function showDefaultClassificationNotification() {
+            const classificacaoSelect = document.getElementById('classificacao_risco');
+            
+            // Check if no classification is pre-selected and show notification
+            if (classificacaoSelect.value === 'Azul') {
+                const container = classificacaoSelect.closest('.mb-3');
+                const smallElement = container.querySelector('small.form-text');
+                
+                if (smallElement) {
+                    // Add a temporary visual highlight
+                    smallElement.style.color = '#0d6efd';
+                    smallElement.style.fontWeight = 'bold';
+                    
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        smallElement.style.color = '';
+                        smallElement.style.fontWeight = '';
+                    }, 3000);
+                }
+            }
+        }
+
         // Form validation and submit handling
         (function() {
             'use strict';
@@ -935,6 +961,9 @@
 
         // Pre-select fields based on URL parameters
         preSelectFromUrlParams();
+
+        // Show default classification notification
+        showDefaultClassificationNotification();
 
         // Add visual feedback for pre-selected fields
         function highlightPreSelectedFields() {
