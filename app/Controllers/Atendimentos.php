@@ -144,7 +144,8 @@ class Atendimentos extends BaseController
             'logradouros' => $logradouros,
             'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
-            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
+            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso'],
+            'paciente_observacao_opcoes' => ['Sim', 'Não']
         ];
 
         return view('atendimentos/create', $data);
@@ -168,7 +169,8 @@ class Atendimentos extends BaseController
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
             'obito' => 'permit_empty|in_list[0,1]',
-            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
+            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]',
+            'paciente_observacao' => 'permit_empty|in_list[Sim,Não]'
         ];
 
         $messages = [
@@ -250,7 +252,8 @@ class Atendimentos extends BaseController
                 'observacao' => $this->request->getPost('observacao'),
                 'encaminhamento' => !empty($encaminhamento) ? $encaminhamento : null,
                 'obito' => $this->request->getPost('obito') ? 1 : 0,
-                'status' => $this->request->getPost('status') ?? 'Em Andamento'
+                'status' => $this->request->getPost('status') ?? 'Em Andamento',
+                'paciente_observacao' => $this->request->getPost('paciente_observacao') ?? 'Não'
             ];
 
             $idAtendimento = $this->atendimentoModel->skipValidation(true)->insert($atendimentoData);
@@ -389,7 +392,8 @@ class Atendimentos extends BaseController
             'exames_vinculados' => $examesVinculados,
             'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
-            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso']
+            'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso'],
+            'paciente_observacao_opcoes' => ['Sim', 'Não']
         ];
 
         return view('atendimentos/edit', $data);
@@ -419,7 +423,8 @@ class Atendimentos extends BaseController
             'observacao' => 'permit_empty',
             'encaminhamento' => 'permit_empty|in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
             'obito' => 'permit_empty|in_list[0,1]',
-            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
+            'status' => 'permit_empty|in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]',
+            'paciente_observacao' => 'permit_empty|in_list[Sim,Não]'
         ];
 
         $messages = [
@@ -458,6 +463,9 @@ class Atendimentos extends BaseController
             ],
             'status' => [
                 'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
+            ],
+            'paciente_observacao' => [
+                'in_list' => 'Paciente observação deve ser: Sim ou Não'
             ]
         ];
 
@@ -492,7 +500,8 @@ class Atendimentos extends BaseController
             'observacao' => $this->request->getPost('observacao'),
             'encaminhamento' => !empty($encaminhamento) ? $encaminhamento : null,
             'obito' => $this->request->getPost('obito') ? 1 : 0,
-            'status' => $this->request->getPost('status') ?: 'Em Andamento'
+            'status' => $this->request->getPost('status') ?: 'Em Andamento',
+            'paciente_observacao' => $this->request->getPost('paciente_observacao') ?: 'Não'
         ];
 
         if ($this->atendimentoModel->skipValidation(true)->update($id, $data)) {

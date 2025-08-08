@@ -25,7 +25,8 @@ class AtendimentoModel extends Model
         'observacao',
         'encaminhamento',
         'obito',
-        'status'
+        'status',
+        'paciente_observacao'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -57,7 +58,8 @@ class AtendimentoModel extends Model
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
         'obito' => 'in_list[0,1]',
-        'status' => 'in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]'
+        'status' => 'in_list[Em Andamento,Finalizado,Cancelado,Aguardando,Suspenso]',
+        'paciente_observacao' => 'in_list[Sim,Não]'
     ];
     
     protected $validationMessages = [
@@ -89,6 +91,12 @@ class AtendimentoModel extends Model
         ],
         'status' => [
             'in_list' => 'Status deve ser: Em Andamento, Finalizado, Cancelado, Aguardando ou Suspenso'
+        ],
+        'paciente_observacao' => [
+            'in_list' => 'Paciente observação deve ser: Sim ou Não'
+        ],
+        'paciente_observacao' => [
+            'max_length' => 'Observação do paciente deve ter no máximo 1000 caracteres'
         ]
     ];
     
@@ -312,5 +320,43 @@ class AtendimentoModel extends Model
                    ->where('atendimentos.id_paciente', $idPaciente)
                    ->orderBy('atendimentos.data_atendimento', 'DESC')
                    ->findAll();
+    }
+
+    /**
+     * Busca pacientes em observação clínica
+     */
+    public function getPacientesEmObservacao()
+    {
+        return $this->select('atendimentos.*, pacientes.nome as nome_paciente, pacientes.cpf, medicos.nome as nome_medico, medicos.crm')
+                   ->join('pacientes', 'pacientes.id_paciente = atendimentos.id_paciente')
+                   ->join('medicos', 'medicos.id_medico = atendimentos.id_medico', 'left')
+                   ->where('atendimentos.paciente_observacao', 'Sim')
+                   ->where('atendimentos.status', 'Em Andamento')
+                   ->orderBy('atendimentos.data_atendimento', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Verifica se um paciente está em observação
+     */
+    public function isPacienteEmObservacao($idPaciente)
+    {
+        $result = $this->where('id_paciente', $idPaciente)
+                      ->where('status', 'Em Andamento')
+                      ->where('paciente_observacao', 'Sim')
+                      ->first();
+        
+        return !empty($result);
+    }
+
+    /**
+     * Lista opções para paciente em observação
+     */
+    public function getOpcoesPacienteObservacao()
+    {
+        return [
+            'Sim' => 'Sim',
+            'Não' => 'Não'
+        ];
     }
 }

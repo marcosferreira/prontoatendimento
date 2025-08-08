@@ -101,6 +101,7 @@
                                     <th>Médico</th>
                                     <th>Data/Hora</th>
                                     <th>Classificação</th>
+                                    <th>Em observação</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
@@ -127,6 +128,15 @@
                                                                         ?>">
                                                     <?= $atendimento['classificacao_risco'] ?>
                                                 </span>
+                                            </td>
+                                            <td>
+                                                <?php if (isset($atendimento['paciente_observacao']) && $atendimento['paciente_observacao'] == 'Sim'): ?>
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-eye"></i> Em Observação
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="text-muted"><?php echo $atendimento['paciente_observacao']?></span>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php if ($atendimento['obito']): ?>

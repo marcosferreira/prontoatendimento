@@ -283,6 +283,32 @@
                                 </small>
                             </div>
 
+                            <!-- Paciente em Observação -->
+                            <div class="col-md-6 mb-3">
+                                <label for="paciente_observacao" class="form-label">
+                                    <i class="bi bi-eye"></i> Paciente em Observação
+                                </label>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('paciente_observacao') ? 'is-invalid' : '' ?>" 
+                                        id="paciente_observacao" name="paciente_observacao">
+                                    <?php if (isset($paciente_observacao_opcoes)): ?>
+                                        <?php foreach ($paciente_observacao_opcoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= old('paciente_observacao', 'Não') == $opcao ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Não" <?= old('paciente_observacao', 'Não') == 'Não' ? 'selected' : '' ?>>Não</option>
+                                        <option value="Sim" <?= old('paciente_observacao') == 'Sim' ? 'selected' : '' ?>>Sim</option>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">
+                                    <?= session('validation') && session('validation')->hasError('paciente_observacao') ? session('validation')->getError('paciente_observacao') : 'Por favor, selecione se o paciente está em observação.' ?>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Indica se o paciente requer observação clínica
+                                </small>
+                            </div>
+
                             <!-- Encaminhamento -->
                             <div class="col-md-6 mb-3">
                                 <label for="encaminhamento" class="form-label">

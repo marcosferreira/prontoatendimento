@@ -82,6 +82,16 @@
                                             <?php endif; ?>
                                         </div>
                                         <div class="info-item">
+                                            <strong>Paciente em Observação:</strong>
+                                            <?php if (isset($atendimento['paciente_observacao']) && $atendimento['paciente_observacao'] == 'Sim'): ?>
+                                                <span class="badge bg-warning text-dark fs-6">
+                                                    <i class="bi bi-eye"></i> Sim
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-muted">Não</span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="info-item">
                                             <strong>Criado em:</strong>
                                             <span><?= date('d/m/Y H:i', strtotime($atendimento['created_at'])) ?></span>
                                         </div>

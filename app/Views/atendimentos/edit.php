@@ -215,10 +215,10 @@
                                 rows="3" placeholder="Observações gerais..."><?= old('observacao', $atendimento['observacao']) ?></textarea>
                         </div>
 
-                        <!-- Status do Atendimento e Encaminhamento -->
+                        <!-- Status do Atendimento, Paciente Observação e Encaminhamento -->
                         <div class="row">
                             <!-- Status do Atendimento -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="status" class="form-label">
                                     <i class="bi bi-activity"></i> Status do Atendimento *
                                 </label>
@@ -243,8 +243,34 @@
                                 </div>
                             </div>
 
+                            <!-- Paciente em Observação -->
+                            <div class="col-md-4 mb-3">
+                                <label for="paciente_observacao" class="form-label">
+                                    <i class="bi bi-eye"></i> Paciente em Observação
+                                </label>
+                                <select class="form-select <?= session('validation') && session('validation')->hasError('paciente_observacao') ? 'is-invalid' : '' ?>" 
+                                        id="paciente_observacao" name="paciente_observacao">
+                                    <?php if (isset($paciente_observacao_opcoes)): ?>
+                                        <?php foreach ($paciente_observacao_opcoes as $opcao): ?>
+                                            <option value="<?= $opcao ?>" <?= (($atendimento['paciente_observacao'] ?? 'Não') == $opcao || old('paciente_observacao') == $opcao) ? 'selected' : '' ?>>
+                                                <?= $opcao ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="Não" <?= (($atendimento['paciente_observacao'] ?? 'Não') == 'Não' || old('paciente_observacao') == 'Não') ? 'selected' : '' ?>>Não</option>
+                                        <option value="Sim" <?= (($atendimento['paciente_observacao'] ?? 'Não') == 'Sim' || old('paciente_observacao') == 'Sim') ? 'selected' : '' ?>>Sim</option>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="invalid-feedback">
+                                    <?= session('validation') && session('validation')->hasError('paciente_observacao') ? session('validation')->getError('paciente_observacao') : 'Por favor, selecione se o paciente está em observação.' ?>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Indica se o paciente requer observação clínica
+                                </small>
+                            </div>
+
                             <!-- Encaminhamento -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="encaminhamento" class="form-label">
                                     <i class="bi bi-arrow-right-circle"></i> Encaminhamento
                                 </label>
