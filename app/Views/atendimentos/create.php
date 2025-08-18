@@ -173,20 +173,22 @@
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
+                                            'Sem classificação' => 'Sem classificação - Quando não há enfermeiro presente',
                                             'Azul' => 'Azul - NÃO URGENTE (240 min)',
                                             'Verde' => 'Verde - POUCO URGENTE (120 min)', 
                                             'Amarelo' => 'Amarelo - URGENTE (60 min)',
                                             'Laranja' => 'Laranja - MUITO URGENTE (10 min)',
                                             'Vermelho' => 'Vermelho - EMERGÊNCIA (0 min)'
                                         ];
-                                        $defaultValue = old('classificacao_risco', 'Azul'); // Padrão: Azul
+                                        $defaultValue = old('classificacao_risco', 'Sem classificação'); // Padrão: Sem classificação
                                         foreach ($classificacoes as $opcao): ?>
                                             <option value="<?= $opcao ?>" <?= $defaultValue == $opcao ? 'selected' : '' ?>>
                                                 <?= $descricoes[$opcao] ?? $opcao ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <option value="Azul" <?= old('classificacao_risco', 'Azul') == 'Azul' ? 'selected' : '' ?>>Azul - NÃO URGENTE (240 min)</option>
+                                        <option value="Sem classificação" <?= old('classificacao_risco', 'Sem classificação') == 'Sem classificação' ? 'selected' : '' ?>>Sem classificação - Quando não há enfermeiro presente</option>
+                                        <option value="Azul" <?= old('classificacao_risco') == 'Azul' ? 'selected' : '' ?>>Azul - NÃO URGENTE (240 min)</option>
                                         <option value="Verde" <?= old('classificacao_risco') == 'Verde' ? 'selected' : '' ?>>Verde - POUCO URGENTE (120 min)</option>
                                         <option value="Amarelo" <?= old('classificacao_risco') == 'Amarelo' ? 'selected' : '' ?>>Amarelo - URGENTE (60 min)</option>
                                         <option value="Laranja" <?= old('classificacao_risco') == 'Laranja' ? 'selected' : '' ?>>Laranja - MUITO URGENTE (10 min)</option>
@@ -194,10 +196,10 @@
                                     <?php endif; ?>
                                 </select>
                                 <div class="invalid-feedback">
-                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Classificação padrão: Azul - NÃO URGENTE' ?>
+                                    <?= session('validation') && session('validation')->hasError('classificacao_risco') ? session('validation')->getError('classificacao_risco') : 'Classificação padrão: Sem classificação' ?>
                                 </div>
                                 <small class="form-text text-muted">
-                                    <i class="bi bi-info-circle"></i> Classificação padrão: Azul - NÃO URGENTE (240 min)
+                                    <i class="bi bi-info-circle"></i> Classificação padrão: Sem classificação (quando não há enfermeiro presente)
                                 </small>
                             </div>
                         </div>
@@ -866,13 +868,13 @@
             const classificacaoSelect = document.getElementById('classificacao_risco');
             
             // Check if no classification is pre-selected and show notification
-            if (classificacaoSelect.value === 'Azul') {
+            if (classificacaoSelect.value === 'Sem classificação') {
                 const container = classificacaoSelect.closest('.mb-3');
                 const smallElement = container.querySelector('small.form-text');
                 
                 if (smallElement) {
                     // Add a temporary visual highlight
-                    smallElement.style.color = '#0d6efd';
+                    smallElement.style.color = '#6c757d';
                     smallElement.style.fontWeight = 'bold';
                     
                     // Remove highlight after 3 seconds

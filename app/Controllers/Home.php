@@ -91,6 +91,9 @@ class Home extends BaseController
                 'casos_azuis_hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', $hoje)
                                                              ->where('classificacao_risco', 'Azul')
                                                              ->countAllResults(),
+                'casos_sem_classificacao_hoje' => $this->atendimentoModel->where('DATE(data_atendimento)', $hoje)
+                                                                        ->where('classificacao_risco', 'Sem classificação')
+                                                                        ->countAllResults(),
                 
                 // Médicos
                 'total_medicos' => $this->medicoModel->countAllResults(),
@@ -193,9 +196,11 @@ class Home extends BaseController
             'atendimentos_mes' => 0,
             'atendimentos_em_andamento' => 0,
             'casos_vermelhos_hoje' => 0,
+            'casos_laranjas_hoje' => 0,
             'casos_amarelos_hoje' => 0,
             'casos_verdes_hoje' => 0,
             'casos_azuis_hoje' => 0,
+            'casos_sem_classificacao_hoje' => 0,
             'total_medicos' => 0,
             'medicos_ativos' => 0,
             'total_bairros' => 0,

@@ -144,24 +144,32 @@
                         <div class="section-card">
                             <h2 class="section-title">
                                 <i class="bi bi-pie-chart"></i>
-                                Classificação de Risco - Hoje
+                                Classificação de Risco - Hoje (Protocolo Manchester)
                             </h2>
                             <div class="stats-grid">
                                 <div class="stat-item stat-danger">
                                     <div class="stat-number"><?= $stats['casos_vermelhos_hoje'] ?></div>
-                                    <div class="stat-label">Vermelho (Crítico)</div>
+                                    <div class="stat-label">Vermelho (Emergência - 0min)</div>
+                                </div>
+                                <div class="stat-item stat-orange">
+                                    <div class="stat-number"><?= $stats['casos_laranjas_hoje'] ?></div>
+                                    <div class="stat-label">Laranja (Muito Urgente - 10min)</div>
                                 </div>
                                 <div class="stat-item stat-warning">
                                     <div class="stat-number"><?= $stats['casos_amarelos_hoje'] ?></div>
-                                    <div class="stat-label">Amarelo (Urgente)</div>
+                                    <div class="stat-label">Amarelo (Urgente - 60min)</div>
                                 </div>
                                 <div class="stat-item stat-success">
                                     <div class="stat-number"><?= $stats['casos_verdes_hoje'] ?></div>
-                                    <div class="stat-label">Verde (Pouco Urgente)</div>
+                                    <div class="stat-label">Verde (Pouco Urgente - 120min)</div>
                                 </div>
                                 <div class="stat-item stat-info">
                                     <div class="stat-number"><?= $stats['casos_azuis_hoje'] ?></div>
-                                    <div class="stat-label">Azul (Não Urgente)</div>
+                                    <div class="stat-label">Azul (Não Urgente - 240min)</div>
+                                </div>
+                                <div class="stat-item stat-secondary">
+                                    <div class="stat-number"><?= $stats['casos_sem_classificacao_hoje'] ?? 0 ?></div>
+                                    <div class="stat-label">Sem Classificação</div>
                                 </div>
                             </div>
                         </div>

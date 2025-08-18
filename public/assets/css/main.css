@@ -558,7 +558,7 @@ body.sidebar-collapsed .main-content {
 /* Stats Grid Enhancements */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
 }
@@ -579,6 +579,10 @@ body.sidebar-collapsed .main-content {
 
 .stat-item.stat-danger {
     border-left: 4px solid var(--danger-color);
+}
+
+.stat-item.stat-orange {
+    border-left: 4px solid #ff8c00;
 }
 
 .stat-item.stat-warning {
@@ -602,6 +606,10 @@ body.sidebar-collapsed .main-content {
 
 .stat-danger .stat-number {
     color: var(--danger-color);
+}
+
+.stat-orange .stat-number {
+    color: #ff8c00;
 }
 
 .stat-warning .stat-number {

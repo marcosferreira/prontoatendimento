@@ -53,7 +53,7 @@ class AtendimentoModel extends Model
         'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
         'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
         'data_atendimento' => 'required|valid_date',
-        'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
+        'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul,Sem classificação]',
         'hgt_glicemia' => 'decimal|greater_than_equal_to[0]|less_than_equal_to[999.99]',
         'pressao_arterial' => 'max_length[20]',
         'encaminhamento' => 'in_list[Alta,Internação,Transferência,Especialista,Retorno,Óbito]',
@@ -79,7 +79,7 @@ class AtendimentoModel extends Model
         ],
         'classificacao_risco' => [
             'permit_empty' => 'A classificação de risco é opcional',
-            'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
+            'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde, Azul ou Sem classificação'
         ],
         'hgt_glicemia' => [
             'decimal' => 'Glicemia deve ser um valor decimal',
@@ -224,7 +224,8 @@ class AtendimentoModel extends Model
             'Laranja'  => 'Laranja - MUITO URGENTE – atendimento praticamente imediato (10 minutos)',
             'Amarelo'  => 'Amarelo - URGENTE – atendimento rápido, mas pode aguardar (60 minutos)',
             'Verde'    => 'Verde - POUCO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (120 minutos)',
-            'Azul'     => 'Azul - NÃO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (240 minutos)'
+            'Azul'     => 'Azul - NÃO URGENTE – pode aguardar atendimento ou ser encaminhado para outros serviços de saúde (240 minutos)',
+            'Sem classificação' => 'Sem classificação - Quando não há enfermeiro presente para realizar a triagem'
         ];
     }
 
@@ -239,7 +240,8 @@ class AtendimentoModel extends Model
             'Laranja'  => 10,     // MUITO URGENTE – atendimento praticamente imediato
             'Amarelo'  => 60,     // URGENTE – pode aguardar
             'Verde'    => 120,    // POUCO URGENTE
-            'Azul'     => 240     // NÃO URGENTE
+            'Azul'     => 240,    // NÃO URGENTE
+            'Sem classificação' => null  // Sem tempo definido quando não há classificação
         ];
         return $tempos[$classificacao] ?? null;
     }

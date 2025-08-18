@@ -92,6 +92,7 @@ class Atendimentos extends BaseController
             'amarelo' => $this->atendimentoModel->where('classificacao_risco', 'Amarelo')->countAllResults(),
             'verde' => $this->atendimentoModel->where('classificacao_risco', 'Verde')->countAllResults(),
             'azul' => $this->atendimentoModel->where('classificacao_risco', 'Azul')->countAllResults(),
+            'sem_classificacao' => $this->atendimentoModel->where('classificacao_risco', 'Sem classificação')->countAllResults(),
             'obitos' => $this->atendimentoModel->where('obito', true)->countAllResults()
         ];
 
@@ -109,7 +110,7 @@ class Atendimentos extends BaseController
             'data_inicio' => $data_inicio,
             'data_fim' => $data_fim,
             'medico_filtro' => $medico,
-            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul', 'Sem classificação'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito']
         ];
 
@@ -142,7 +143,7 @@ class Atendimentos extends BaseController
             'exames' => $exames,
             'bairros' => $bairros,
             'logradouros' => $logradouros,
-            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul', 'Sem classificação'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
             'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso'],
             'paciente_observacao_opcoes' => ['Sim', 'Não']
@@ -160,7 +161,7 @@ class Atendimentos extends BaseController
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
             'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
-            'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
+            'classificacao_risco' => 'permit_empty|in_list[Vermelho,Laranja,Amarelo,Verde,Azul,Sem classificação]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
@@ -189,7 +190,7 @@ class Atendimentos extends BaseController
                 'regex_match' => 'Data do atendimento deve estar no formato AAAA-MM-DDTHH:MM (ex: 2024-12-25T14:30). Use o seletor de data/hora.'
             ],
             'classificacao_risco' => [
-                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
+                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde, Azul ou Sem classificação'
             ],
             'hgt_glicemia' => [
                 'decimal' => 'HGT/Glicemia deve ser um número decimal'
@@ -395,7 +396,7 @@ class Atendimentos extends BaseController
             'exames' => $exames,
             'procedimentos_vinculados' => $procedimentosVinculados,
             'exames_vinculados' => $examesVinculados,
-            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'],
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul', 'Sem classificação'],
             'encaminhamentos' => ['Alta', 'Internação', 'Transferência', 'Especialista', 'Retorno', 'Óbito'],
             'status_opcoes' => ['Em Andamento', 'Finalizado', 'Cancelado', 'Aguardando', 'Suspenso'],
             'paciente_observacao_opcoes' => ['Sim', 'Não']
@@ -419,7 +420,7 @@ class Atendimentos extends BaseController
             'id_paciente' => 'required|integer|is_not_unique[pacientes.id_paciente]',
             'id_medico' => 'required|integer|is_not_unique[medicos.id_medico]',
             'data_atendimento' => 'required|regex_match[/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/]',
-            'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul]',
+            'classificacao_risco' => 'required|in_list[Vermelho,Laranja,Amarelo,Verde,Azul,Sem classificação]',
             'consulta_enfermagem' => 'permit_empty',
             'hgt_glicemia' => 'permit_empty|decimal',
             'pressao_arterial' => 'permit_empty|max_length[20]',
@@ -449,7 +450,7 @@ class Atendimentos extends BaseController
             ],
             'classificacao_risco' => [
                 'required' => 'A classificação de risco é obrigatória',
-                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde ou Azul'
+                'in_list' => 'Classificação deve ser: Vermelho, Laranja, Amarelo, Verde, Azul ou Sem classificação'
             ],
             'hgt_glicemia' => [
                 'decimal' => 'HGT/Glicemia deve ser um número decimal'
@@ -609,7 +610,7 @@ class Atendimentos extends BaseController
             'diagnosticos' => []
         ];
         // Classificação de risco
-        $classificacoes = ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul'];
+        $classificacoes = ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul', 'Sem classificação'];
         foreach ($classificacoes as $c) {
             $total = count(array_filter($atendimentos, fn($a) => $a['classificacao_risco'] == $c));
             $graficos['classificacao'][] = [
@@ -753,7 +754,7 @@ class Atendimentos extends BaseController
             'filtros' => $filtros,
             'graficos' => $graficos,
             'dadosTabela' => $dadosTabela,
-            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul']
+            'classificacoes' => ['Vermelho', 'Laranja', 'Amarelo', 'Verde', 'Azul', 'Sem classificação']
         ];
 
         return view('atendimentos/relatorio', $data);

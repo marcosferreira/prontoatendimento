@@ -66,14 +66,16 @@
                                         </div>
                                         <div class="info-item">
                                             <strong>Classificação de Risco:</strong>
-                                            <?php if (!empty($atendimento['classificacao_risco'])): ?>
+                                            <?php if (!empty($atendimento['classificacao_risco']) && $atendimento['classificacao_risco'] != 'Sem classificação'): ?>
                                                 <span class="badge bg-<?=
                                                                         $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
                                                                         ?> fs-6">
                                                     <?= $atendimento['classificacao_risco'] ?>
                                                 </span>
                                             <?php else: ?>
-                                                <span class="badge bg-secondary fs-6">Não classificado</span>
+                                                <span class="badge bg-secondary fs-6">
+                                                    <i class="bi bi-question-circle"></i> Sem classificação
+                                                </span>
                                             <?php endif; ?>
                                         </div>
                                     </div>

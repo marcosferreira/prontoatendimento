@@ -133,6 +133,7 @@
                                     <?php if (isset($classificacoes)): ?>
                                         <?php 
                                         $descricoes = [
+                                            'Sem classificação' => 'Sem classificação - Quando não há enfermeiro presente',
                                             'Vermelho' => 'Vermelho - EMERGÊNCIA (0 min)',
                                             'Laranja' => 'Laranja - MUITO URGENTE (10 min)',
                                             'Amarelo' => 'Amarelo - URGENTE (60 min)',
@@ -145,6 +146,7 @@
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
+                                        <option value="Sem classificação" <?= ($atendimento['classificacao_risco'] == 'Sem classificação' || old('classificacao_risco') == 'Sem classificação') ? 'selected' : '' ?>>Sem classificação - Quando não há enfermeiro presente</option>
                                         <option value="Verde" <?= ($atendimento['classificacao_risco'] == 'Verde' || old('classificacao_risco') == 'Verde') ? 'selected' : '' ?>>Verde - POUCO URGENTE (120 min)</option>
                                         <option value="Amarelo" <?= ($atendimento['classificacao_risco'] == 'Amarelo' || old('classificacao_risco') == 'Amarelo') ? 'selected' : '' ?>>Amarelo - URGENTE (60 min)</option>
                                         <option value="Laranja" <?= ($atendimento['classificacao_risco'] == 'Laranja' || old('classificacao_risco') == 'Laranja') ? 'selected' : '' ?>>Laranja - MUITO URGENTE (10 min)</option>

@@ -67,6 +67,7 @@
                                         <option value="Amarelo" <?= ($filtros['classificacao'] ?? '') == 'Amarelo' ? 'selected' : '' ?>>Amarelo</option>
                                         <option value="Verde" <?= ($filtros['classificacao'] ?? '') == 'Verde' ? 'selected' : '' ?>>Verde</option>
                                         <option value="Azul" <?= ($filtros['classificacao'] ?? '') == 'Azul' ? 'selected' : '' ?>>Azul</option>
+                                        <option value="Sem classificação" <?= ($filtros['classificacao'] ?? '') == 'Sem classificação' ? 'selected' : '' ?>>Sem classificação</option>
                                     </select>
                                 </div>
                             </div>
@@ -252,6 +253,7 @@
                                         <th>Amarelo</th>
                                         <th>Verde</th>
                                         <th>Azul</th>
+                                        <th>Sem Classificação</th>
                                         <th>Total</th>
                                         <th>Taxa Urgência (%)</th>
                                     </tr>
@@ -266,6 +268,7 @@
                                                 <td class="text-warning fw-bold"><?= $linha['amarelo'] ?></td>
                                                 <td class="text-success fw-bold"><?= $linha['verde'] ?></td>
                                                 <td class="text-info fw-bold"><?= $linha['azul'] ?></td>
+                                                <td class="text-muted fw-bold"><?= $linha['sem_classificacao'] ?? 0 ?></td>
                                                 <td><strong><?= $linha['total'] ?></strong></td>
                                                 <td>
                                                     <span class="badge bg-<?= $linha['taxa_urgencia'] > 50 ? 'danger' : ($linha['taxa_urgencia'] > 20 ? 'warning' : 'success') ?>">
@@ -341,6 +344,7 @@
                                 case 'Amarelo': return chartColors.yellow;
                                 case 'Verde': return chartColors.green;
                                 case 'Azul': return chartColors.blue;
+                                case 'Sem classificação': return chartColors.gray;
                                 default: return chartColors.gray;
                             }
                         })

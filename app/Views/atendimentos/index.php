@@ -69,6 +69,7 @@
                                 <option value="Amarelo" class="text-warning">Amarelo</option>
                                 <option value="Verde" class="text-success">Verde</option>
                                 <option value="Azul" class="text-info">Azul</option>
+                                <option value="Sem classificação" class="text-muted">Sem classificação</option>
                             </select>
                         </div>
                         <div class="col-md-3">
@@ -123,14 +124,16 @@
                                                 <?= date('d/m/Y H:i', strtotime($atendimento['data_atendimento'])) ?>
                                             </td>
                                             <td>
-                                                <?php if (!empty($atendimento['classificacao_risco'])): ?>
+                                                <?php if (!empty($atendimento['classificacao_risco']) && $atendimento['classificacao_risco'] != 'Sem classificação'): ?>
                                                     <span class="badge bg-<?=
                                                                             $atendimento['classificacao_risco'] == 'Vermelho' ? 'danger' : ($atendimento['classificacao_risco'] == 'Laranja' ? 'orange' : ($atendimento['classificacao_risco'] == 'Amarelo' ? 'warning' : ($atendimento['classificacao_risco'] == 'Verde' ? 'success' : 'info')))
                                                                             ?>">
                                                         <?= $atendimento['classificacao_risco'] ?>
                                                     </span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-secondary">Não classificado</span>
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-question-circle"></i> Sem classificação
+                                                    </span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
@@ -138,8 +141,10 @@
                                                     <span class="badge bg-warning text-dark">
                                                         <i class="bi bi-eye"></i> Em Observação
                                                     </span>
+                                                <?php elseif (isset($atendimento['paciente_observacao'])): ?>
+                                                    <span class="text-muted"><?= esc($atendimento['paciente_observacao']) ?></span>
                                                 <?php else: ?>
-                                                    <span class="text-muted"><?php echo $atendimento['paciente_observacao']?></span>
+                                                    <span class="text-muted">-</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
