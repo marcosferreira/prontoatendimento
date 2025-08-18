@@ -63,7 +63,7 @@ $routes->group('logradouros', static function ($routes) {
     $routes->post('/', 'Logradouros::store');
     $routes->get('(:num)', 'Logradouros::show/$1');
     $routes->get('(:num)/edit', 'Logradouros::edit/$1');
-    $routes->put('(:num)', 'Logradouros::update/$1');
+    $routes->put('(:num)/update', 'Logradouros::update/$1');
     $routes->post('(:num)/update', 'Logradouros::update/$1');
     $routes->delete('(:num)', 'Logradouros::delete/$1');
     $routes->get('delete/(:num)', 'Logradouros::delete/$1');
