@@ -58,6 +58,9 @@
                                                     <button type="button" class="btn btn-outline-warning btn-sm" onclick="editExame(<?= $exame['id_exame'] ?>)" title="Editar">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteExame(<?= $exame['id_exame'] ?>)" title="Excluir">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -160,7 +163,29 @@
         window.location.href = `<?= base_url('exames') ?>/${id}`;
     }
     function editExame(id) {
-        window.location.href = `<?= base_url('exames') ?>/${id}/edit`;
+        window.location.href = `<?= base_url('exames') ?>/edit/${id}`;
+    }
+    function deleteExame(id) {
+        if (confirm('Tem certeza que deseja excluir este exame?')) {
+            fetch(`<?= base_url('exames') ?>/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Erro ao excluir exame: ' + (data.message || 'Tente novamente.'));
+                }
+            })
+            .catch(() => {
+                alert('Erro ao excluir exame. Tente novamente.');
+            });
+        }
     }
 </script>
 
