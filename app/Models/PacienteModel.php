@@ -32,7 +32,10 @@ class PacienteModel extends Model
         'nome_mae',
         'nome_pai',
         'alergias',
-        'observacoes'
+        'observacoes',
+        'cidade_externa',
+        'logradouro_externo',
+        'cep_externo'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -70,7 +73,10 @@ class PacienteModel extends Model
         'observacoes' => 'permit_empty|max_length[1000]',
         'sus' => 'permit_empty|max_length[15]',
         'idade' => 'permit_empty|integer|greater_than_equal_to[0]|less_than[200]',
-        'id_logradouro' => 'permit_empty|is_natural_no_zero'
+        'id_logradouro' => 'permit_empty|is_natural_no_zero',
+        'cidade_externa' => 'permit_empty|max_length[100]',
+        'logradouro_externo' => 'permit_empty|max_length[255]',
+        'cep_externo' => 'permit_empty|max_length[10]'
     ];
     
     protected $validationMessages = [
@@ -267,5 +273,126 @@ class PacienteModel extends Model
         }
 
         return $pacientes;
+    }
+
+    /**
+     * Verifica se o paciente reside em outra cidade
+     */
+    public function isEnderecoExterno($paciente)
+    {
+        return !empty($paciente['cidade_externa']);
+    }
+
+    /**
+     * Retorna o endereço completo do paciente (local ou externo)
+     */
+    public function getEnderecoCompleto($paciente)
+    {
+        if ($this->isEnderecoExterno($paciente)) {
+            // Endereço externo
+            $endereco = $paciente['logradouro_externo'] ?? '';
+            if (!empty($paciente['numero'])) {
+                $endereco .= ', ' . $paciente['numero'];
+            }
+            if (!empty($paciente['complemento'])) {
+                $endereco .= ' - ' . $paciente['complemento'];
+            }
+            if (!empty($paciente['cidade_externa'])) {
+                $endereco .= ' - ' . $paciente['cidade_externa'];
+            }
+            if (!empty($paciente['cep_externo'])) {
+                $endereco .= ' - CEP: ' . $paciente['cep_externo'];
+            }
+        } else {
+            // Endereço local com logradouro cadastrado
+            $endereco = '';
+            if (!empty($paciente['tipo_logradouro']) && !empty($paciente['nome_logradouro'])) {
+                $endereco = ($paciente['tipo_logradouro'] ?? '') . ' ' . $paciente['nome_logradouro'];
+            }
+            if (!empty($paciente['numero'])) {
+                $endereco .= ', ' . $paciente['numero'];
+            }
+            if (!empty($paciente['complemento'])) {
+                $endereco .= ' - ' . $paciente['complemento'];
+            }
+            if (!empty($paciente['nome_bairro'])) {
+                $endereco .= ' - ' . $paciente['nome_bairro'];
+            }
+            if (!empty($paciente['cep'])) {
+                $endereco .= ' - CEP: ' . $paciente['cep'];
+            }
+        }
+
+        return trim($endereco, ' -,');
+    }
+
+    /**
+     * Retorna a cidade do paciente (local ou externa)
+     */
+    public function getCidadePaciente($paciente)
+    {
+        return $this->isEnderecoExterno($paciente) 
+            ? $paciente['cidade_externa'] 
+            : ($paciente['cidade'] ?? 'Cidade Local');
+    }
+
+    /**
+     * Retorna apenas pacientes de cidades externas
+     */
+    public function getPacientesExternos($limit = null, $offset = null)
+    {
+        $builder = $this->select('pacientes.*, logradouros.tipo_logradouro, logradouros.nome_logradouro, bairros.nome_bairro')
+                        ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                        ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
+                        ->where('pacientes.cidade_externa IS NOT NULL')
+                        ->where('pacientes.cidade_externa !=', '')
+                        ->orderBy('pacientes.nome', 'ASC');
+        
+        if ($limit !== null) {
+            $builder->limit($limit, $offset);
+        }
+        
+        return $builder->findAll();
+    }
+
+    /**
+     * Retorna pacientes de uma cidade externa específica
+     */
+    public function getPacientesExternosPorCidade($cidade, $limit = null, $offset = null)
+    {
+        $builder = $this->select('pacientes.*, logradouros.tipo_logradouro, logradouros.nome_logradouro, bairros.nome_bairro')
+                        ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                        ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
+                        ->where('pacientes.cidade_externa', $cidade)
+                        ->orderBy('pacientes.nome_paciente', 'ASC');
+        
+        if ($limit !== null) {
+            $builder->limit($limit, $offset);
+        }
+        
+        return $builder->findAll();
+    }
+
+    /**
+     * Retorna estatísticas das cidades externas
+     */
+    public function getEstatisticasCidadesExternas()
+    {
+        return $this->select('cidade_externa, COUNT(*) as total_pacientes')
+                   ->where('cidade_externa IS NOT NULL')
+                   ->where('cidade_externa !=', '')
+                   ->groupBy('cidade_externa')
+                   ->orderBy('total_pacientes', 'DESC')
+                   ->findAll();
+    }
+
+    /**
+     * Conta total de pacientes externos
+     */
+    public function countPacientesExternos()
+    {
+        return $this->where('cidade_externa IS NOT NULL')
+                   ->where('cidade_externa !=', '')
+                   ->countAllResults();
     }
 }

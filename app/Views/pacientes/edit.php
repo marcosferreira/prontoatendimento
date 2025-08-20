@@ -210,56 +210,112 @@
                                         <i class="bi bi-geo-alt"></i> Endereço
                                     </h5>
 
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="id_bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="id_bairro" name="id_bairro" required>
-                                                    <option value="">Selecione o bairro</option>
-                                                    <?php if (isset($bairros) && !empty($bairros)): ?>
-                                                        <?php foreach ($bairros as $bairro): ?>
-                                                            <?php
-                                                            $selected = '';
-                                                            // Se o paciente tem logradouro, buscar o bairro do logradouro
-                                                            if (isset($paciente['id_logradouro']) && !empty($paciente['id_logradouro'])) {
-                                                                // Buscar o bairro do logradouro atual
-                                                                $bairroLogradouro = null;
-                                                                if (isset($logradouros)) {
-                                                                    foreach ($logradouros as $log) {
-                                                                        if ($log['id_logradouro'] == $paciente['id_logradouro']) {
-                                                                            $bairroLogradouro = $log['id_bairro'];
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-                                                                if ($bairroLogradouro == $bairro['id_bairro']) {
-                                                                    $selected = 'selected';
-                                                                }
-                                                            }
-                                                            ?>
-                                                            <option value="<?= $bairro['id_bairro'] ?>" <?= $selected ?>>
-                                                                <?= esc($bairro['nome_bairro']) ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
+                                    <!-- Tipo de Endereço -->
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label class="form-label">Tipo de Endereço</label>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="tipo_endereco" id="endereco_local_edit" value="local" 
+                                                    <?= empty($paciente['cidade_externa']) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="endereco_local_edit">
+                                                    Endereço Local (Cidade Municipal)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="tipo_endereco" id="endereco_externo_edit" value="externo"
+                                                    <?= !empty($paciente['cidade_externa']) ? 'checked' : '' ?>>
+                                                <label class="form-check-label" for="endereco_externo_edit">
+                                                    Outra Cidade
+                                                </label>
                                             </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label for="id_logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="id_logradouro" name="id_logradouro" required>
-                                                    <option value="">Selecione o logradouro</option>
-                                                    <?php if (isset($logradouros) && !empty($logradouros)): ?>
-                                                        <?php foreach ($logradouros as $logradouro): ?>
-                                                            <option value="<?= $logradouro['id_logradouro'] ?>"
-                                                                data-bairro="<?= $logradouro['id_bairro'] ?>"
-                                                                <?= (($paciente['id_logradouro'] ?? '') == $logradouro['id_logradouro']) ? 'selected' : '' ?>>
-                                                                <?= esc($logradouro['tipo_logradouro']) ?> <?= esc($logradouro['nome_logradouro']) ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
+                                    </div>
+
+                                    <!-- Endereço Local -->
+                                    <div id="endereco_local_fields_edit" style="display: <?= empty($paciente['cidade_externa']) ? 'block' : 'none' ?>;">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="id_bairro" class="form-label">Bairro</label>
+                                                    <select class="form-select" id="id_bairro" name="id_bairro">
+                                                        <option value="">Selecione o bairro</option>
+                                                        <?php if (isset($bairros) && !empty($bairros)): ?>
+                                                            <?php foreach ($bairros as $bairro): ?>
+                                                                <?php
+                                                                $selected = '';
+                                                                // Se o paciente tem logradouro, buscar o bairro do logradouro
+                                                                if (isset($paciente['id_logradouro']) && !empty($paciente['id_logradouro'])) {
+                                                                    // Buscar o bairro do logradouro atual
+                                                                    $bairroLogradouro = null;
+                                                                    if (isset($logradouros)) {
+                                                                        foreach ($logradouros as $log) {
+                                                                            if ($log['id_logradouro'] == $paciente['id_logradouro']) {
+                                                                                $bairroLogradouro = $log['id_bairro'];
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if ($bairroLogradouro == $bairro['id_bairro']) {
+                                                                        $selected = 'selected';
+                                                                    }
+                                                                }
+                                                                ?>
+                                                                <option value="<?= $bairro['id_bairro'] ?>" <?= $selected ?>>
+                                                                    <?= esc($bairro['nome_bairro']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="mb-3">
+                                                    <label for="id_logradouro" class="form-label">Logradouro</label>
+                                                    <select class="form-select" id="id_logradouro" name="id_logradouro">
+                                                        <option value="">Selecione o logradouro</option>
+                                                        <?php if (isset($logradouros) && !empty($logradouros)): ?>
+                                                            <?php foreach ($logradouros as $logradouro): ?>
+                                                                <option value="<?= $logradouro['id_logradouro'] ?>"
+                                                                    data-bairro="<?= $logradouro['id_bairro'] ?>"
+                                                                    <?= (($paciente['id_logradouro'] ?? '') == $logradouro['id_logradouro']) ? 'selected' : '' ?>>
+                                                                    <?= esc($logradouro['tipo_logradouro']) ?> <?= esc($logradouro['nome_logradouro']) ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        <?php endif; ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Endereço Externo -->
+                                    <div id="endereco_externo_fields_edit" style="display: <?= !empty($paciente['cidade_externa']) ? 'block' : 'none' ?>;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cidade_externa" class="form-label">Cidade <span class="text-danger">*</span></label>
+                                                    <input type="text" class="form-control" id="cidade_externa" name="cidade_externa"
+                                                        value="<?= esc($paciente['cidade_externa'] ?? '') ?>"
+                                                        placeholder="Nome da cidade">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="cep_externo" class="form-label">CEP</label>
+                                                    <input type="text" class="form-control" id="cep_externo" name="cep_externo"
+                                                        value="<?= esc($paciente['cep_externo'] ?? '') ?>"
+                                                        placeholder="00000-000">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="logradouro_externo" class="form-label">Endereço Completo</label>
+                                                    <input type="text" class="form-control" id="logradouro_externo" name="logradouro_externo"
+                                                        value="<?= esc($paciente['logradouro_externo'] ?? '') ?>"
+                                                        placeholder="Rua/Avenida, Bairro">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -502,6 +558,42 @@
         $('#cpf').mask('000.000.000-00');
         $('#telefone').mask('(00) 0000-0000');
         $('#celular').mask('(00) 00000-0000');
+        $('#cep_externo').mask('00000-000');
+
+        // Controlar exibição dos campos de endereço
+        const enderecoLocalRadio = document.getElementById('endereco_local_edit');
+        const enderecoExternoRadio = document.getElementById('endereco_externo_edit');
+        const enderecoLocalFields = document.getElementById('endereco_local_fields_edit');
+        const enderecoExternoFields = document.getElementById('endereco_externo_fields_edit');
+
+        enderecoLocalRadio.addEventListener('change', function() {
+            if (this.checked) {
+                enderecoLocalFields.style.display = 'block';
+                enderecoExternoFields.style.display = 'none';
+                
+                // Limpar campos externos
+                document.getElementById('cidade_externa').value = '';
+                document.getElementById('logradouro_externo').value = '';
+                document.getElementById('cep_externo').value = '';
+                
+                // Remover required dos campos externos
+                document.getElementById('cidade_externa').required = false;
+            }
+        });
+
+        enderecoExternoRadio.addEventListener('change', function() {
+            if (this.checked) {
+                enderecoLocalFields.style.display = 'none';
+                enderecoExternoFields.style.display = 'block';
+                
+                // Limpar campos locais
+                document.getElementById('id_bairro').value = '';
+                document.getElementById('id_logradouro').value = '';
+                
+                // Adicionar required ao campo cidade externa
+                document.getElementById('cidade_externa').required = true;
+            }
+        });
 
         // Filtrar logradouros por bairro
         $('#id_bairro').change(function() {

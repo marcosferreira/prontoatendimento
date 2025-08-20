@@ -86,8 +86,8 @@
                                     <th scope="col">CPF</th>
                                     <th scope="col">SUS</th>
                                     <th scope="col">Idade</th>
-                                    <th scope="col">Logradouro</th>
-                                    <th scope="col">Bairro</th>
+                                    <th scope="col">Endereço</th>
+                                    <th scope="col">Cidade</th>
                                     <th scope="col">Cadastro</th>
                                     <th scope="col">Ações</th>
                                 </tr>
@@ -109,11 +109,38 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td><?= esc($paciente['cpf']) ?></td>
-                                            <td><?= esc($paciente['sus'] ?? '-') ?></td>
+                                            <td><?= esc($paciente['cpf'] ?? '-') ?></td>
+                                            <td><?= esc($paciente['numero_sus'] ?? '-') ?></td>
                                             <td><?= esc($paciente['idade'] ?? '-') ?> anos</td>
-                                            <td><?= esc($paciente['nome_logradouro'] ?? '-') ?></td>
-                                            <td><?= esc($paciente['nome_bairro'] ?? '-') ?></td>
+                                            <td>
+                                                <?php 
+                                                    // Endereço completo
+                                                    if (!empty($paciente['cidade_externa'])):
+                                                        // Endereço externo
+                                                        echo esc($paciente['logradouro_externo'] ?? 'Não informado');
+                                                    else:
+                                                        // Endereço local
+                                                        if (!empty($paciente['nome_logradouro'])):
+                                                            echo esc(($paciente['tipo_logradouro'] ?? '') . ' ' . $paciente['nome_logradouro']);
+                                                            if (!empty($paciente['numero'])):
+                                                                echo ', ' . esc($paciente['numero']);
+                                                            endif;
+                                                        else:
+                                                            echo 'Não informado';
+                                                        endif;
+                                                    endif;
+                                                ?>
+                                            </td>
+                                            <td>
+                                                <?php 
+                                                    // Cidade
+                                                    if (!empty($paciente['cidade_externa'])):
+                                                        echo '<span class="badge bg-info">' . esc($paciente['cidade_externa']) . '</span>';
+                                                    else:
+                                                        echo esc($paciente['nome_bairro'] ?? 'Local');
+                                                    endif;
+                                                ?>
+                                            </td>
                                             <td><?= date('d/m/Y', strtotime($paciente['created_at'])) ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
@@ -296,30 +323,82 @@
                             <i class="bi bi-geo-alt"></i> Endereço
                         </h6>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="modal_id_bairro" class="form-label">Bairro <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="modal_id_bairro" name="id_bairro" required>
-                                        <option value="">Selecione o bairro</option>
-                                        <?php if (isset($bairros)): ?>
-                                            <?php foreach ($bairros as $bairro): ?>
-                                                <option value="<?= $bairro['id_bairro'] ?>"><?= esc($bairro['nome_bairro']) ?></option>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </select>
+                        <!-- Tipo de Endereço -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label">Tipo de Endereço</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo_endereco" id="endereco_local" value="local" checked>
+                                    <label class="form-check-label" for="endereco_local">
+                                        Endereço Local (Cidade Municipal)
+                                    </label>
                                 </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label for="modal_id_logradouro" class="form-label">Logradouro <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="modal_id_logradouro" name="id_logradouro" required>
-                                        <option value="">Primeiro selecione o bairro</option>
-                                    </select>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo_endereco" id="endereco_externo" value="externo">
+                                    <label class="form-check-label" for="endereco_externo">
+                                        Outra Cidade
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Endereço Local -->
+                        <div id="endereco_local_fields">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="modal_id_bairro" class="form-label">Bairro</label>
+                                        <select class="form-select" id="modal_id_bairro" name="id_bairro">
+                                            <option value="">Selecione o bairro</option>
+                                            <?php if (isset($bairros)): ?>
+                                                <?php foreach ($bairros as $bairro): ?>
+                                                    <option value="<?= $bairro['id_bairro'] ?>"><?= esc($bairro['nome_bairro']) ?></option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="modal_id_logradouro" class="form-label">Logradouro</label>
+                                        <select class="form-select" id="modal_id_logradouro" name="id_logradouro">
+                                            <option value="">Primeiro selecione o bairro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Endereço Externo -->
+                        <div id="endereco_externo_fields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal_cidade_externa" class="form-label">Cidade <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="modal_cidade_externa" name="cidade_externa"
+                                            placeholder="Nome da cidade">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="modal_cep_externo" class="form-label">CEP</label>
+                                        <input type="text" class="form-control" id="modal_cep_externo" name="cep_externo"
+                                            placeholder="00000-000">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label for="modal_logradouro_externo" class="form-label">Endereço Completo</label>
+                                        <input type="text" class="form-control" id="modal_logradouro_externo" name="logradouro_externo"
+                                            placeholder="Rua/Avenida, Bairro">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Número e Complemento (ambos os tipos) -->
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="mb-3">
@@ -503,6 +582,42 @@
         applyMask('modal_cpf', '000.000.000-00');
         applyMask('modal_telefone', '(00) 0000-0000');
         applyMask('modal_celular', '(00) 00000-0000');
+        applyMask('modal_cep_externo', '00000-000');
+
+        // Controlar exibição dos campos de endereço
+        const enderecoLocalRadio = document.getElementById('endereco_local');
+        const enderecoExternoRadio = document.getElementById('endereco_externo');
+        const enderecoLocalFields = document.getElementById('endereco_local_fields');
+        const enderecoExternoFields = document.getElementById('endereco_externo_fields');
+
+        enderecoLocalRadio.addEventListener('change', function() {
+            if (this.checked) {
+                enderecoLocalFields.style.display = 'block';
+                enderecoExternoFields.style.display = 'none';
+                
+                // Limpar campos externos
+                document.getElementById('modal_cidade_externa').value = '';
+                document.getElementById('modal_logradouro_externo').value = '';
+                document.getElementById('modal_cep_externo').value = '';
+                
+                // Remover required dos campos externos
+                document.getElementById('modal_cidade_externa').required = false;
+            }
+        });
+
+        enderecoExternoRadio.addEventListener('change', function() {
+            if (this.checked) {
+                enderecoLocalFields.style.display = 'none';
+                enderecoExternoFields.style.display = 'block';
+                
+                // Limpar campos locais
+                document.getElementById('modal_id_bairro').value = '';
+                document.getElementById('modal_id_logradouro').value = '';
+                
+                // Adicionar required ao campo cidade externa
+                document.getElementById('modal_cidade_externa').required = true;
+            }
+        });
 
         // Filtrar logradouros por bairro
         document.getElementById('modal_id_bairro').addEventListener('change', function() {

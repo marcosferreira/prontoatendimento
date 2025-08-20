@@ -28,6 +28,10 @@
                 <i class="bi bi-signpost"></i>
                 <span>Logradouros</span>
             </a>
+            <a href="<?php echo base_url('pacientes/externos'); ?>" class="nav-item <?= (strpos(current_url(), 'pacientes/externos') !== false) ? 'active' : '' ?>" data-tooltip="Pacientes Externos">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Pacientes Externos</span>
+            </a>
             <a href="<?php echo base_url('medicos'); ?>" class="nav-item <?= (strpos(current_url(), 'medicos') !== false) ? 'active' : '' ?>" data-tooltip="Médicos">
                 <i class="bi bi-person-vcard"></i>
                 <span>Médicos</span>

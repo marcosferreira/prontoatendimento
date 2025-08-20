@@ -117,7 +117,10 @@ class Pacientes extends BaseController
             'numero' => 'permit_empty|max_length[10]',
             'complemento' => 'permit_empty|max_length[100]',
             'id_logradouro' => 'permit_empty|is_natural_no_zero',
-            'observacoes' => 'permit_empty|max_length[1000]'
+            'observacoes' => 'permit_empty|max_length[1000]',
+            'cidade_externa' => 'permit_empty|max_length[100]',
+            'logradouro_externo' => 'permit_empty|max_length[255]',
+            'cep_externo' => 'permit_empty|max_length[10]'
         ];
 
         $messages = [
@@ -179,7 +182,10 @@ class Pacientes extends BaseController
             'nome_mae' => $this->request->getPost('nome_mae'),
             'nome_pai' => $this->request->getPost('nome_pai'),
             'alergias' => $this->request->getPost('alergias'),
-            'observacoes' => $this->request->getPost('observacoes')
+            'observacoes' => $this->request->getPost('observacoes'),
+            'cidade_externa' => $this->request->getPost('cidade_externa'),
+            'logradouro_externo' => $this->request->getPost('logradouro_externo'),
+            'cep_externo' => $this->request->getPost('cep_externo')
         ];
 
         if ($this->pacienteModel->save($data)) {
@@ -321,7 +327,10 @@ class Pacientes extends BaseController
             'nome_mae' => 'permit_empty|max_length[255]',
             'nome_pai' => 'permit_empty|max_length[255]',
             'alergias' => 'permit_empty|max_length[1000]',
-            'observacoes' => 'permit_empty|max_length[1000]'
+            'observacoes' => 'permit_empty|max_length[1000]',
+            'cidade_externa' => 'permit_empty|max_length[100]',
+            'logradouro_externo' => 'permit_empty|max_length[255]',
+            'cep_externo' => 'permit_empty|max_length[10]'
         ];
 
         $messages = [
@@ -369,7 +378,10 @@ class Pacientes extends BaseController
             'nome_mae' => $this->request->getPost('nome_mae'),
             'nome_pai' => $this->request->getPost('nome_pai'),
             'alergias' => $this->request->getPost('alergias'),
-            'observacoes' => $this->request->getPost('observacoes')
+            'observacoes' => $this->request->getPost('observacoes'),
+            'cidade_externa' => $this->request->getPost('cidade_externa'),
+            'logradouro_externo' => $this->request->getPost('logradouro_externo'),
+            'cep_externo' => $this->request->getPost('cep_externo')
         ];
 
         if ($this->pacienteModel->update($id, $data)) {
@@ -616,5 +628,50 @@ class Pacientes extends BaseController
                                             ->findAll();
 
         return $this->response->setJSON($logradouros);
+    }
+
+    /**
+     * Lista pacientes de cidades externas
+     */
+    public function pacientesExternos()
+    {
+        $cidadeFiltro = $this->request->getGet('cidade');
+        $search = $this->request->getGet('search');
+
+        // Buscar pacientes externos
+        if ($cidadeFiltro) {
+            $pacientes = $this->pacienteModel->getPacientesExternosPorCidade($cidadeFiltro);
+        } else {
+            $pacientes = $this->pacienteModel->getPacientesExternos();
+        }
+
+        // Filtrar por busca se especificado
+        if ($search && !empty($pacientes)) {
+            $pacientes = array_filter($pacientes, function($paciente) use ($search) {
+                return stripos($paciente['nome'], $search) !== false ||
+                       stripos($paciente['cpf'], $search) !== false ||
+                       stripos($paciente['cidade_externa'], $search) !== false;
+            });
+        }
+
+        // Estatísticas das cidades externas
+        $estatisticasCidades = $this->pacienteModel->getEstatisticasCidadesExternas();
+        $totalExternos = $this->pacienteModel->countPacientesExternos();
+
+        // Preparar lista de cidades para filtro
+        $cidades = array_column($estatisticasCidades, 'cidade_externa');
+
+        $data = [
+            'title' => 'Pacientes de Outras Cidades',
+            'description' => 'Lista de pacientes cadastrados em cidades externas.',
+            'pacientes' => $pacientes,
+            'estatisticas' => $estatisticasCidades,
+            'total_externos' => $totalExternos,
+            'cidades' => $cidades,
+            'cidade_filtro' => $cidadeFiltro,
+            'search' => $search
+        ];
+
+        return view('pacientes/externos', $data);
     }
 }

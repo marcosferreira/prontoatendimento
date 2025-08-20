@@ -97,7 +97,22 @@
                                 <div class="info-group">
                                     <label>Endereço Completo:</label>
                                     <p>
-                                        <?php if (!empty($paciente['nome_logradouro'])): ?>
+                                        <?php if (!empty($paciente['cidade_externa'])): ?>
+                                            <!-- Endereço externo -->
+                                            <?= esc($paciente['logradouro_externo'] ?? 'Não informado') ?>
+                                            <?php if (!empty($paciente['numero'])): ?>
+                                                , <?= esc($paciente['numero']) ?>
+                                            <?php endif; ?>
+                                            <?php if (!empty($paciente['complemento'])): ?>
+                                                - <?= esc($paciente['complemento']) ?>
+                                            <?php endif; ?>
+                                            <br><strong>Cidade:</strong> <?= esc($paciente['cidade_externa']) ?> 
+                                            <span class="badge bg-info ms-2">Externa</span>
+                                            <?php if (!empty($paciente['cep_externo'])): ?>
+                                                <br><strong>CEP:</strong> <?= esc($paciente['cep_externo']) ?>
+                                            <?php endif; ?>
+                                        <?php elseif (!empty($paciente['nome_logradouro'])): ?>
+                                            <!-- Endereço local -->
                                             <?= esc($paciente['tipo_logradouro'] ?? '') ?> <?= esc($paciente['nome_logradouro']) ?>
                                             <?php if (!empty($paciente['numero'])): ?>
                                                 , <?= esc($paciente['numero']) ?>
@@ -106,13 +121,13 @@
                                                 - <?= esc($paciente['complemento']) ?>
                                             <?php endif; ?>
                                             <?php if (!empty($paciente['nome_bairro'])): ?>
-                                                <br>Bairro: <?= esc($paciente['nome_bairro']) ?>
+                                                <br><strong>Bairro:</strong> <?= esc($paciente['nome_bairro']) ?>
                                             <?php endif; ?>
                                             <?php if (!empty($paciente['cidade'])): ?>
-                                                <br>Cidade: <?= esc($paciente['cidade']) ?>
+                                                <br><strong>Cidade:</strong> <?= esc($paciente['cidade']) ?>
                                             <?php endif; ?>
                                             <?php if (!empty($paciente['cep'])): ?>
-                                                <br>CEP: <?= esc($paciente['cep']) ?>
+                                                <br><strong>CEP:</strong> <?= esc($paciente['cep']) ?>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             Não informado

@@ -193,7 +193,21 @@
                 <div class="info-item">
                     <span class="info-label">Endereço Completo:</span>
                     <span class="info-value">
-                        <?php if (!empty($paciente['nome_logradouro'])): ?>
+                        <?php if (!empty($paciente['cidade_externa'])): ?>
+                            <!-- Endereço externo -->
+                            <?= esc($paciente['logradouro_externo'] ?? 'Não informado') ?>
+                            <?php if (!empty($paciente['numero'])): ?>
+                                , <?= esc($paciente['numero']) ?>
+                            <?php endif; ?>
+                            <?php if (!empty($paciente['complemento'])): ?>
+                                - <?= esc($paciente['complemento']) ?>
+                            <?php endif; ?>
+                            - <?= esc($paciente['cidade_externa']) ?>
+                            <?php if (!empty($paciente['cep_externo'])): ?>
+                                - CEP: <?= esc($paciente['cep_externo']) ?>
+                            <?php endif; ?>
+                        <?php elseif (!empty($paciente['nome_logradouro'])): ?>
+                            <!-- Endereço local -->
                             <?= esc($paciente['tipo_logradouro'] ?? '') ?> <?= esc($paciente['nome_logradouro']) ?>
                             <?php if (!empty($paciente['numero'])): ?>
                                 , <?= esc($paciente['numero']) ?>
@@ -212,6 +226,16 @@
                             <?php endif; ?>
                         <?php else: ?>
                             Não informado
+                        <?php endif; ?>
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Cidade:</span>
+                    <span class="info-value">
+                        <?php if (!empty($paciente['cidade_externa'])): ?>
+                            <?= esc($paciente['cidade_externa']) ?> (Externa)
+                        <?php else: ?>
+                            <?= esc($paciente['nome_bairro'] ?? 'Local') ?>
                         <?php endif; ?>
                     </span>
                 </div>

@@ -11,6 +11,7 @@ $routes->get('/test-email', 'Home::testEmail');
 // Rotas de Pacientes
 $routes->group('pacientes', static function ($routes) {
     $routes->get('/', 'Pacientes::index');
+    $routes->get('externos', 'Pacientes::pacientesExternos'); // Nova rota para pacientes externos
     $routes->get('create', 'Pacientes::create');
     $routes->post('store', 'Pacientes::store');
     $routes->get('show/(:num)', 'Pacientes::show/$1');
