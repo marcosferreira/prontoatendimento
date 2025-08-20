@@ -61,7 +61,7 @@
             <!-- Content -->
             <div class="content-wrapper">
                 <div class="section-card">
-                    <div class="section-header">
+                    <div class="section-header mb-2">
                         <h3 class="section-title">
                             <i class="bi bi-list-ul"></i>
                             Lista de Pacientes
@@ -87,7 +87,7 @@
                                     <th scope="col">SUS</th>
                                     <th scope="col">Idade</th>
                                     <th scope="col">Endereço</th>
-                                    <th scope="col">Cidade</th>
+                                    <th scope="col">Bairro/Cidade</th>
                                     <th scope="col">Cadastro</th>
                                     <th scope="col">Ações</th>
                                 </tr>
