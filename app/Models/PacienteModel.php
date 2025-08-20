@@ -161,6 +161,30 @@ class PacienteModel extends Model
     }
 
     /**
+     * Busca pacientes com seus logradouros com paginação
+     */
+    public function getPacientesWithLogradouroPaginated($perPage = 20)
+    {
+        $query = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.tipo_logradouro, logradouros.cep, logradouros.cidade, bairros.nome_bairro, bairros.area')
+                      ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                      ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
+                      ->orderBy('pacientes.nome', 'ASC');
+
+        $pacientes = $query->paginate($perPage);
+
+        // Calcular idade para cada paciente se necessário
+        foreach ($pacientes as &$paciente) {
+            if (isset($paciente['data_nascimento'])) {
+                $dataNascimento = new \DateTime($paciente['data_nascimento']);
+                $hoje = new \DateTime();
+                $paciente['idade'] = $hoje->diff($dataNascimento)->y;
+            }
+        }
+
+        return $pacientes;
+    }
+
+    /**
      * Busca um paciente específico com seu logradouro
      */
     public function getPacienteWithLogradouro($id)
@@ -262,6 +286,35 @@ class PacienteModel extends Model
         }
 
         $pacientes = $query->findAll();
+
+        // Calcular idade para cada paciente se necessário
+        foreach ($pacientes as &$paciente) {
+            if (isset($paciente['data_nascimento'])) {
+                $dataNascimento = new \DateTime($paciente['data_nascimento']);
+                $hoje = new \DateTime();
+                $paciente['idade'] = $hoje->diff($dataNascimento)->y;
+            }
+        }
+
+        return $pacientes;
+    }
+
+    /**
+     * Busca pacientes por nome ou CPF com paginação
+     */
+    public function buscarPacientesPaginated($termo, $perPage = 20)
+    {
+        $query = $this->select('pacientes.*, logradouros.nome_logradouro, logradouros.tipo_logradouro, logradouros.cep, logradouros.cidade, bairros.nome_bairro, bairros.area')
+                      ->join('logradouros', 'logradouros.id_logradouro = pacientes.id_logradouro', 'left')
+                      ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro', 'left')
+                      ->groupStart()
+                          ->like('pacientes.nome', $termo)
+                          ->orLike('pacientes.cpf', $termo)
+                          ->orLike('pacientes.numero_sus', $termo)
+                      ->groupEnd()
+                      ->orderBy('pacientes.nome', 'ASC');
+
+        $pacientes = $query->paginate($perPage);
 
         // Calcular idade para cada paciente se necessário
         foreach ($pacientes as &$paciente) {

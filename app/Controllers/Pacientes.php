@@ -35,21 +35,30 @@ class Pacientes extends BaseController
     public function index()
     {
         $search = $this->request->getGet('search');
+        $perPage = 20; // Definir quantos registros por página
         
         if ($search) {
-            $pacientes = $this->pacienteModel->buscarPacientes($search);
+            $pacientes = $this->pacienteModel->buscarPacientesPaginated($search, $perPage);
         } else {
-            $pacientes = $this->pacienteModel->getPacientesWithLogradouro();
+            $pacientes = $this->pacienteModel->getPacientesWithLogradouroPaginated($perPage);
         }
 
-        // Estatísticas
+        // Obter o objeto pager
+        $pager = $this->pacienteModel->pager;
+
+        // Estatísticas - criar novas instâncias do model para cada consulta
         $stats = [
-            'total' => $this->pacienteModel->countAllResults(),
+            'total' => $this->pacienteModel->countAll(),
             'hoje' => $this->pacienteModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->pacienteModel->where('MONTH(created_at)', date('m'))
                                         ->where('YEAR(created_at)', date('Y'))
                                         ->countAllResults(),
-            'ano' => $this->pacienteModel->where('YEAR(created_at)', date('Y'))->countAllResults()
+            'idade_media' => round(
+                $this->pacienteModel
+                    ->select('(AVG(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE()))) as idade_media')
+                    ->where('data_nascimento IS NOT NULL')
+                    ->first()['idade_media'] ?? 0
+            )
         ];
 
         $bairros = $this->bairroModel->findAll();
@@ -63,6 +72,7 @@ class Pacientes extends BaseController
             'title' => 'Pacientes',
             'description' => 'Gerenciar Pacientes',
             'pacientes' => $pacientes,
+            'pager' => $pager,
             'stats' => $stats,
             'bairros' => $bairros,
             'logradouros' => $logradouros,

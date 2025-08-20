@@ -300,7 +300,7 @@ body.sidebar-collapsed .main-content {
 }
 
 .content-wrapper {
-    padding: 2.5rem;
+    padding: 0 2rem;
     background: var(--white);
 }
 

@@ -30,34 +30,6 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="row m-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-item">
-                        <div class="stat-number"><?= isset($stats['total']) ? $stats['total'] : '0' ?></div>
-                        <div class="stat-label">Total de Pacientes</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-item">
-                        <div class="stat-number"><?= isset($stats['hoje']) ? $stats['hoje'] : '0' ?></div>
-                        <div class="stat-label">Cadastrados Hoje</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-item">
-                        <div class="stat-number"><?= isset($stats['mes']) ? $stats['mes'] : '0' ?></div>
-                        <div class="stat-label">Este Mês</div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="stat-item">
-                        <div class="stat-number"><?= isset($stats['idade_media']) ? $stats['idade_media'] : '0' ?></div>
-                        <div class="stat-label">Idade Média</div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Content -->
             <div class="content-wrapper">
                 <div class="section-card">
@@ -191,6 +163,36 @@
                     <?php endif; ?>
                 </div>
             </div>
+
+            
+            <!-- Stats Cards -->
+            <div class="row m-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['total']) ? $stats['total'] : '0' ?></div>
+                        <div class="stat-label">Total de Pacientes</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['hoje']) ? $stats['hoje'] : '0' ?></div>
+                        <div class="stat-label">Cadastrados Hoje</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['mes']) ? $stats['mes'] : '0' ?></div>
+                        <div class="stat-label">Este Mês</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-item">
+                        <div class="stat-number"><?= isset($stats['idade_media']) ? $stats['idade_media'] : '0' ?></div>
+                        <div class="stat-label">Idade Média</div>
+                    </div>
+                </div>
+            </div>
+
             <?= $this->include('components/footer') ?>
         </div>
     </main>
@@ -554,26 +556,27 @@
 </div>
 
 <script>
-    // Busca de pacientes
+    // Busca de pacientes via servidor (compatível com paginação)
+    let searchTimeout;
     document.getElementById('searchPaciente').addEventListener('keyup', function() {
-        const filter = this.value.toLowerCase();
-        const table = document.getElementById('pacientesTable');
-        const rows = table.getElementsByTagName('tr');
-
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
-
-            for (let j = 0; j < cells.length - 1; j++) { // Exclui a coluna de ações
-                if (cells[j].textContent.toLowerCase().includes(filter)) {
-                    found = true;
-                    break;
-                }
+        clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(() => {
+            const searchTerm = this.value.trim();
+            const currentUrl = new URL(window.location.href);
+            
+            if (searchTerm.length > 0) {
+                currentUrl.searchParams.set('search', searchTerm);
+            } else {
+                currentUrl.searchParams.delete('search');
             }
-
-            row.style.display = found ? '' : 'none';
-        }
+            
+            // Remove página atual para começar da primeira página na busca
+            currentUrl.searchParams.delete('page');
+            
+            // Redirecionar para a URL com o termo de busca
+            window.location.href = currentUrl.toString();
+        }, 500); // Delay de 500ms para evitar muitas requisições
     });
 
     // Configurar máscaras e validações quando o modal for aberto
@@ -789,6 +792,16 @@
                 alert('Erro ao verificar dados do paciente');
             });
     }
+
+    // Preservar termo de busca ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchTerm = urlParams.get('search');
+        
+        if (searchTerm) {
+            document.getElementById('searchPaciente').value = searchTerm;
+        }
+    });
 </script>
 
 <!-- Estilos para o modal -->
@@ -817,6 +830,41 @@
     .modal-xl .modal-body {
         max-height: 70vh;
         overflow-y: auto;
+    }
+
+    /* Estilos para paginação */
+    .pagination .page-link {
+        border-radius: 0.375rem;
+        margin: 0 2px;
+        padding: 0.5rem 0.75rem;
+        color: #0d6efd;
+        border: 1px solid #dee2e6;
+        transition: all 0.15s ease-in-out;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #e9ecef;
+        border-color: #0d6efd;
+        color: #0a58ca;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+        font-weight: 600;
+    }
+
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+        border-radius: 0.375rem;
+    }
+
+    /* Informações da paginação */
+    .pagination-info {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
     }
 </style>
 
