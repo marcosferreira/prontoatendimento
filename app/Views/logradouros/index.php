@@ -17,93 +17,53 @@
                 <p class="subtitle">Gerenciamento de Logradouros Cadastrados</p>
             </div>
 
+            <!-- Action Bar -->
+            <div class="action-bar">
+                <div class="action-left m-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="search-container position-relative">
+                                <input type="text" id="searchLogradouro" class="form-control search-input pe-5"
+                                    placeholder="Buscar por nome, CEP ou bairro..." value="<?= esc($search ?? '') ?>">
+                                <i class="bi bi-search search-icon position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" id="filterBairro">
+                                <option value="">Todos os bairros</option>
+                                <?php foreach ($bairros as $bairro): ?>
+                                    <option value="<?= $bairro['id_bairro'] ?>" <?= ($bairro_selecionado == $bairro['id_bairro']) ? 'selected' : '' ?>>
+                                        <?= esc($bairro['nome_bairro']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-right m-4">
+                    <a href="<?= base_url('logradouros/create') ?>" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Novo Logradouro
+                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="<?= base_url('logradouros/export') ?>">
+                                    <i class="bi bi-download"></i> Exportar CSV
+                                </a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="<?= base_url('logradouros') ?>">
+                                    <i class="bi bi-list"></i> Ver Todos
+                                </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <div class="content-wrapper">
-                <!-- Action Bar -->
-                <div class="action-bar">
-                    <div class="action-left m-4">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="search-container position-relative">
-                                    <input type="text" id="searchLogradouro" class="form-control search-input pe-5"
-                                        placeholder="Buscar por nome, CEP ou bairro..." value="<?= esc($search ?? '') ?>">
-                                    <i class="bi bi-search search-icon position-absolute top-50 end-0 translate-middle-y me-3"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <select class="form-select" id="filterBairro">
-                                    <option value="">Todos os bairros</option>
-                                    <?php foreach ($bairros as $bairro): ?>
-                                        <option value="<?= $bairro['id_bairro'] ?>" <?= ($bairro_selecionado == $bairro['id_bairro']) ? 'selected' : '' ?>>
-                                            <?= esc($bairro['nome_bairro']) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="action-right m-4">
-                        <a href="<?= base_url('logradouros/create') ?>" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Novo Logradouro
-                        </a>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="bi bi-three-dots"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="<?= base_url('logradouros/export') ?>">
-                                        <i class="bi bi-download"></i> Exportar CSV
-                                    </a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="<?= base_url('logradouros') ?>">
-                                        <i class="bi bi-list"></i> Ver Todos
-                                    </a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-primary">
-                            <i class="bi bi-signpost"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3><?= $stats['total'] ?></h3>
-                            <p>Total de Logradouros</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon bg-success">
-                            <i class="bi bi-calendar-day"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3><?= $stats['hoje'] ?></h3>
-                            <p>Cadastrados Hoje</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon bg-info">
-                            <i class="bi bi-calendar-month"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3><?= $stats['mes'] ?></h3>
-                            <p>Este Mês</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon bg-warning">
-                            <i class="bi bi-calendar-year"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3><?= $stats['ano'] ?></h3>
-                            <p>Este Ano</p>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Flash Messages -->
                 <?php if (session()->getFlashdata('success')): ?>
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -227,6 +187,55 @@
                                 <?php endif; ?>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <!-- Pagination -->
+                <?php if (isset($pager)): ?>
+                    <div class="d-flex justify-content-center mt-4">
+                        <?= $pager->links() ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row m-4">
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="bi bi-signpost"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><?= $stats['total'] ?></h3>
+                            <p>Total de Logradouros</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="bi bi-calendar-day"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><?= $stats['hoje'] ?></h3>
+                            <p>Cadastrados Hoje</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info">
+                            <i class="bi bi-calendar-month"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><?= $stats['mes'] ?></h3>
+                            <p>Este Mês</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i class="bi bi-calendar-year"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3><?= $stats['ano'] ?></h3>
+                            <p>Este Ano</p>
+                        </div>
                     </div>
                 </div>
             </div>

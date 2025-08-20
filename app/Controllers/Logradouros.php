@@ -35,21 +35,29 @@ class Logradouros extends BaseController
                                                        ->orLike('logradouros.cep', $search)
                                                    ->groupEnd()
                                                    ->orderBy('logradouros.tipo_logradouro, logradouros.nome_logradouro')
-                                                   ->findAll();
+                                                   ->paginate(10);
             } elseif ($search) {
-                $logradouros = $this->logradouroModel->searchLogradouros($search);
+                $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro, bairros.area')
+                                                   ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                                   ->groupStart()
+                                                       ->like('logradouros.nome_logradouro', $search)
+                                                       ->orLike('logradouros.cep', $search)
+                                                       ->orLike('bairros.nome_bairro', $search)
+                                                   ->groupEnd()
+                                                   ->orderBy('logradouros.tipo_logradouro, logradouros.nome_logradouro')
+                                                   ->paginate(10);
             } else {
-                $logradouros = $this->logradouroModel->getLogradourosByBairro($bairro);
-                // Adicionar informações do bairro
-                $logradouros = array_map(function($logradouro) {
-                    $bairroInfo = $this->bairroModel->find($logradouro['id_bairro']);
-                    $logradouro['nome_bairro'] = $bairroInfo['nome_bairro'];
-                    $logradouro['area'] = $bairroInfo['area'];
-                    return $logradouro;
-                }, $logradouros);
+                $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro, bairros.area')
+                                                   ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                                   ->where('logradouros.id_bairro', $bairro)
+                                                   ->orderBy('logradouros.tipo_logradouro, logradouros.nome_logradouro')
+                                                   ->paginate(10);
             }
         } else {
-            $logradouros = $this->logradouroModel->getLogradourosWithBairro();
+            $logradouros = $this->logradouroModel->select('logradouros.*, bairros.nome_bairro, bairros.area')
+                                               ->join('bairros', 'bairros.id_bairro = logradouros.id_bairro')
+                                               ->orderBy('logradouros.tipo_logradouro, logradouros.nome_logradouro')
+                                               ->paginate(10);
         }
 
         // Estatísticas
@@ -68,6 +76,7 @@ class Logradouros extends BaseController
         $data = [
             'title' => 'Logradouros',
             'description' => 'Gerenciar Logradouros',
+            'pager' => $this->logradouroModel->pager,
             'logradouros' => $logradouros,
             'bairros' => $bairros,
             'stats' => $stats,
