@@ -48,7 +48,7 @@ class Pacientes extends BaseController
 
         // Estatísticas - criar novas instâncias do model para cada consulta
         $stats = [
-            'total' => $this->pacienteModel->countAll(),
+            'total' => $this->pacienteModel->countAllResults(),
             'hoje' => $this->pacienteModel->where('DATE(created_at)', date('Y-m-d'))->countAllResults(),
             'mes' => $this->pacienteModel->where('MONTH(created_at)', date('m'))
                                         ->where('YEAR(created_at)', date('Y'))

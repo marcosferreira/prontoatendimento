@@ -277,8 +277,9 @@ php spark cache:clear
 3. **SEMPRE** implementar validações nos models
 4. **SEMPRE** usar logs de auditoria para ações importantes
 5. **SEMPRE** validar dados de entrada nos controllers
-6. **SEMPRE** seguir os padrões de nomenclatura estabelecidos
-7. **SEMPRE** considerar relacionamentos existentes ao modificar estruturas
-8. **SEMPRE** manter a documentação atualizada com novas funcionalidades e alterações
-9. **SEMPRE** crie um plano de implementação antes as alterações significativas
-10. **SEMPRE** implemente javascript vanilla sempre que possível, evitando bibliotecas desnecessárias, nunca utilize JQuery
+6. **SEMPRE** usar o método .countAllResults() para manter a quantidade baseada no soft delete
+7. **SEMPRE** seguir os padrões de nomenclatura estabelecidos
+8. **SEMPRE** considerar relacionamentos existentes ao modificar estruturas
+9. **SEMPRE** manter a documentação atualizada com novas funcionalidades e alterações
+10. **SEMPRE** crie um plano de implementação antes as alterações significativas
+11. **SEMPRE** implemente javascript vanilla sempre que possível, evitando bibliotecas desnecessárias, nunca utilize JQuery
