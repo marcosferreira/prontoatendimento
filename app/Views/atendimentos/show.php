@@ -38,7 +38,7 @@
                         <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
                             <i class="bi bi-printer"></i> Imprimir
                         </button>
-                        <button type="button" class="btn btn-danger" onclick="confirmarExclusao(<?= $atendimento['id_atendimento'] ?>)">
+                        <button type="button" class="btn btn-danger" id="btnExcluir" data-atendimento-id="<?= $atendimento['id_atendimento'] ?>">
                             <i class="bi bi-trash"></i> Excluir
                         </button>
                     </div>
@@ -339,8 +339,6 @@
     </main>
 </div>
 
-<?= $this->endSection() ?>
-
 <!-- Modal de confirmação de exclusão -->
 <div class="modal fade" id="modalConfirmarExclusao" tabindex="-1" aria-labelledby="modalConfirmarExclusaoLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -364,67 +362,116 @@
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
-let atendimentoParaExcluir = null;
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - iniciando script de exclusão');
+    
+    let atendimentoParaExcluir = null;
 
-function confirmarExclusao(id) {
-    atendimentoParaExcluir = id;
-    const modal = new bootstrap.Modal(document.getElementById('modalConfirmarExclusao'));
-    modal.show();
-}
+    function confirmarExclusao(id) {
+        console.log('confirmarExclusao chamado com ID:', id);
+        atendimentoParaExcluir = id;
+        const modalElement = document.getElementById('modalConfirmarExclusao');
+        console.log('Modal element found:', modalElement);
+        
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        } else {
+            console.error('Modal não encontrado!');
+        }
+    }
 
-document.getElementById('confirmarExclusaoBtn').addEventListener('click', function() {
-    if (atendimentoParaExcluir) {
-        fetch(`<?= base_url('atendimentos/delete/') ?>${atendimentoParaExcluir}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showAlert('success', data.success || 'Atendimento excluído com sucesso!');
-                // Redirecionar para lista de atendimentos após 1.5 segundos
-                setTimeout(() => {
-                    window.location.href = '<?= base_url('atendimentos') ?>';
-                }, 1500);
-            } else {
-                showAlert('error', data.error || 'Erro ao excluir atendimento');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showAlert('error', 'Erro ao excluir atendimento');
-        })
-        .finally(() => {
-            bootstrap.Modal.getInstance(document.getElementById('modalConfirmarExclusao')).hide();
-            atendimentoParaExcluir = null;
+    // Event listener para o botão de excluir
+    const btnExcluir = document.getElementById('btnExcluir');
+    console.log('Botão excluir encontrado:', btnExcluir);
+    
+    if (btnExcluir) {
+        btnExcluir.addEventListener('click', function() {
+            console.log('Botão excluir clicado');
+            const atendimentoId = this.getAttribute('data-atendimento-id');
+            console.log('ID do atendimento:', atendimentoId);
+            confirmarExclusao(parseInt(atendimentoId));
         });
+    } else {
+        console.error('Botão excluir não encontrado!');
+    }
+
+    // Event listener para confirmar a exclusão
+    const confirmarExclusaoBtn = document.getElementById('confirmarExclusaoBtn');
+    console.log('Botão confirmar exclusão encontrado:', confirmarExclusaoBtn);
+    
+    if (confirmarExclusaoBtn) {
+        confirmarExclusaoBtn.addEventListener('click', function() {
+            console.log('Botão confirmar exclusão clicado, ID:', atendimentoParaExcluir);
+            
+            if (atendimentoParaExcluir) {
+                fetch(`<?= base_url('atendimentos/delete/') ?>${atendimentoParaExcluir}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                    }
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        showAlert('success', data.success || 'Atendimento excluído com sucesso!');
+                        // Redirecionar para lista de atendimentos após 1.5 segundos
+                        setTimeout(() => {
+                            window.location.href = '<?= base_url('atendimentos') ?>';
+                        }, 1500);
+                    } else {
+                        showAlert('error', data.error || 'Erro ao excluir atendimento');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('error', 'Erro ao excluir atendimento');
+                })
+                .finally(() => {
+                    const modalElement = document.getElementById('modalConfirmarExclusao');
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                    atendimentoParaExcluir = null;
+                });
+            }
+        });
+    } else {
+        console.error('Botão confirmar exclusão não encontrado!');
+    }
+
+    function showAlert(type, message) {
+        const alertsContainer = document.querySelector('.alerts-container') || document.body;
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        alertsContainer.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
     }
 });
-
-function showAlert(type, message) {
-    const alertsContainer = document.querySelector('.alerts-container') || document.body;
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    alertsContainer.appendChild(alertDiv);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 5000);
-}
 </script>
+<?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
 <style>
