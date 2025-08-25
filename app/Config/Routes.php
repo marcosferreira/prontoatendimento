@@ -36,6 +36,11 @@ $routes->group('pacientes', static function ($routes) {
     // Print and export
     $routes->get('print/(:num)', 'Pacientes::print/$1');
     $routes->get('export', 'Pacientes::export');
+    
+    // Relatórios
+    $routes->get('relatorios', 'Pacientes::relatorios');
+    $routes->get('relatorios-api', 'Pacientes::relatoriosApi');
+    $routes->post('exportar-relatorios', 'Pacientes::exportarRelatorios');
 });
 
 // Rotas de Bairros

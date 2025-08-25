@@ -81,6 +81,10 @@
         
         <div class="nav-section">
             <div class="nav-section-title">Relatórios</div>
+            <a href="<?php echo base_url('pacientes/relatorios'); ?>" class="nav-item <?= (strpos(current_url(), 'pacientes/relatorios') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Pacientes">
+                <i class="bi bi-people-fill"></i>
+                <span>Rel. Pacientes</span>
+            </a>
             <a href="<?php echo base_url('atendimentos/relatorio'); ?>" class="nav-item <?= (strpos(current_url(), 'atendimentos/relatorio') !== false) ? 'active' : '' ?>" data-tooltip="Relatório de Atendimentos">
                 <i class="bi bi-bar-chart"></i>
                 <span>Rel. Atendimentos</span>
