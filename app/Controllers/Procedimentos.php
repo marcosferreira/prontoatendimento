@@ -99,6 +99,13 @@ class Procedimentos extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Dados inválidos',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
@@ -109,8 +116,25 @@ class Procedimentos extends BaseController
         ];
 
         if ($this->procedimentoModel->save($data)) {
+            if ($this->request->isAJAX()) {
+                $insertId = $this->procedimentoModel->getInsertID();
+                $procedimento = $this->procedimentoModel->find($insertId);
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Procedimento cadastrado com sucesso!',
+                    'id_procedimento' => $insertId,
+                    'nome' => $procedimento['nome'],
+                    'codigo' => $procedimento['codigo']
+                ]);
+            }
             return redirect()->to('/procedimentos')->with('success', 'Procedimento cadastrado com sucesso!');
         } else {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Erro ao cadastrar procedimento'
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Erro ao cadastrar procedimento.');
         }
     }

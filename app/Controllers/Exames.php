@@ -105,6 +105,13 @@ class Exames extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Dados inválidos',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('validation', $this->validator);
         }
 
@@ -116,8 +123,26 @@ class Exames extends BaseController
         ];
 
         if ($this->exameModel->save($data)) {
+            if ($this->request->isAJAX()) {
+                $insertId = $this->exameModel->getInsertID();
+                $exame = $this->exameModel->find($insertId);
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Exame cadastrado com sucesso!',
+                    'id_exame' => $insertId,
+                    'nome' => $exame['nome'],
+                    'codigo' => $exame['codigo'],
+                    'tipo' => $exame['tipo']
+                ]);
+            }
             return redirect()->to('/exames')->with('success', 'Exame cadastrado com sucesso!');
         } else {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'error' => 'Erro ao cadastrar exame'
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Erro ao cadastrar exame.');
         }
     }

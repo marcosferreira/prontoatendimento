@@ -258,6 +258,57 @@
                                 rows="3" placeholder="Observações gerais..."><?= old('observacao') ?></textarea>
                         </div>
 
+                        <!-- Procedimentos e Exames -->
+                        <div class="row">
+                            <!-- Procedimentos -->
+                            <div class="col-md-6 mb-3">
+                                <label for="procedimentos" class="form-label">
+                                    <i class="bi bi-clipboard-check"></i> Procedimentos
+                                </label>
+                                <div class="input-group">
+                                    <select class="form-select" id="procedimentos" name="procedimentos[]" multiple>
+                                        <?php if (isset($procedimentos)): ?>
+                                            <?php foreach ($procedimentos as $procedimento): ?>
+                                                <option value="<?= $procedimento['id_procedimento'] ?>">
+                                                    <?= esc($procedimento['nome']) ?><?= !empty($procedimento['codigo']) ? ' - ' . $procedimento['codigo'] : '' ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#novoProcedimentoModal" title="Cadastrar novo procedimento">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Mantenha Ctrl pressionado para selecionar múltiplos procedimentos
+                                </small>
+                            </div>
+
+                            <!-- Exames -->
+                            <div class="col-md-6 mb-3">
+                                <label for="exames" class="form-label">
+                                    <i class="bi bi-clipboard2-pulse"></i> Exames
+                                </label>
+                                <div class="input-group">
+                                    <select class="form-select" id="exames" name="exames[]" multiple>
+                                        <?php if (isset($exames)): ?>
+                                            <?php foreach ($exames as $exame): ?>
+                                                <option value="<?= $exame['id_exame'] ?>">
+                                                    <?= esc($exame['nome']) ?> - <?= ucfirst($exame['tipo']) ?><?= !empty($exame['codigo']) ? ' (' . $exame['codigo'] . ')' : '' ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#novoExameModal" title="Cadastrar novo exame">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle"></i> Mantenha Ctrl pressionado para selecionar múltiplos exames
+                                </small>
+                            </div>
+                        </div>
+
                         <!-- Status do Atendimento -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -268,13 +319,13 @@
                                         id="status" name="status" required>
                                     <?php if (isset($status_opcoes)): ?>
                                         <?php foreach ($status_opcoes as $opcao): ?>
-                                            <option value="<?= $opcao ?>" <?= old('status', 'Em Andamento') == $opcao ? 'selected' : '' ?>>
+                                            <option value="<?= $opcao ?>" <?= old('status', 'Finalizado') == $opcao ? 'selected' : '' ?>>
                                                 <?= $opcao ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <option value="Em Andamento" <?= old('status', 'Em Andamento') == 'Em Andamento' ? 'selected' : '' ?>>Em Andamento</option>
-                                        <option value="Finalizado" <?= old('status') == 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
+                                        <option value="Em Andamento" <?= old('status') == 'Em Andamento' ? 'selected' : '' ?>>Em Andamento</option>
+                                        <option value="Finalizado" <?= old('status', 'Finalizado') == 'Finalizado' ? 'selected' : '' ?>>Finalizado</option>
                                         <option value="Cancelado" <?= old('status') == 'Cancelado' ? 'selected' : '' ?>>Cancelado</option>
                                         <option value="Aguardando" <?= old('status') == 'Aguardando' ? 'selected' : '' ?>>Aguardando</option>
                                         <option value="Suspenso" <?= old('status') == 'Suspenso' ? 'selected' : '' ?>>Suspenso</option>
@@ -284,7 +335,7 @@
                                     <?= session('validation') && session('validation')->hasError('status') ? session('validation')->getError('status') : 'Por favor, selecione o status do atendimento.' ?>
                                 </div>
                                 <small class="form-text text-muted">
-                                    <i class="bi bi-info-circle"></i> Status padrão: Em Andamento
+                                    <i class="bi bi-info-circle"></i> Status padrão: Finalizado
                                 </small>
                             </div>
 
@@ -758,6 +809,135 @@
                 </button>
                 <button type="submit" form="formNovoMedicoModal" class="btn btn-primary">
                     <i class="bi bi-check-circle"></i> Salvar Médico
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Procedimento -->
+<div class="modal fade" id="novoProcedimentoModal" tabindex="-1" aria-labelledby="novoProcedimentoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="novoProcedimentoModalLabel">
+                    <i class="bi bi-clipboard-check"></i> Novo Procedimento
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNovoProcedimentoModal" action="<?= base_url('procedimentos/store') ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="return_to_atendimento" value="1">
+                    
+                    <div class="row">
+                        <!-- Nome -->
+                        <div class="col-md-8 mb-3">
+                            <label for="procedimento_nome" class="form-label">
+                                <i class="bi bi-clipboard-check"></i> Nome do Procedimento <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="procedimento_nome" name="nome"
+                                required maxlength="255" placeholder="Ex: Curativo simples">
+                        </div>
+
+                        <!-- Código -->
+                        <div class="col-md-4 mb-3">
+                            <label for="procedimento_codigo" class="form-label">
+                                <i class="bi bi-hash"></i> Código
+                            </label>
+                            <input type="text" class="form-control" id="procedimento_codigo" name="codigo"
+                                maxlength="50" placeholder="Ex: PROC001">
+                            <div class="form-text">Código interno ou TUSS (opcional)</div>
+                        </div>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="mb-3">
+                        <label for="procedimento_descricao" class="form-label">
+                            <i class="bi bi-text-paragraph"></i> Descrição
+                        </label>
+                        <textarea class="form-control" id="procedimento_descricao" name="descricao"
+                            rows="3" placeholder="Descrição detalhada do procedimento..."></textarea>
+                        <div class="form-text">Descreva o procedimento, materiais necessários, tempo estimado, etc.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="submit" form="formNovoProcedimentoModal" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Salvar Procedimento
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Novo Exame -->
+<div class="modal fade" id="novoExameModal" tabindex="-1" aria-labelledby="novoExameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="novoExameModalLabel">
+                    <i class="bi bi-clipboard2-pulse"></i> Novo Exame
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNovoExameModal" action="<?= base_url('exames/store') ?>" method="POST">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="return_to_atendimento" value="1">
+                    
+                    <div class="row">
+                        <!-- Nome -->
+                        <div class="col-md-8 mb-3">
+                            <label for="exame_nome" class="form-label">
+                                Nome do Exame <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="exame_nome" name="nome" required>
+                        </div>
+
+                        <!-- Código -->
+                        <div class="col-md-4 mb-3">
+                            <label for="exame_codigo" class="form-label">Código</label>
+                            <input type="text" class="form-control" id="exame_codigo" name="codigo">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Tipo -->
+                        <div class="col-md-6 mb-3">
+                            <label for="exame_tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
+                            <select class="form-select" id="exame_tipo" name="tipo" required>
+                                <option value="">Selecione</option>
+                                <?php if (isset($tipos_exame)): ?>
+                                    <?php foreach ($tipos_exame as $tipo): ?>
+                                        <option value="<?= $tipo ?>"><?= ucfirst($tipo) ?></option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="laboratorial">Laboratorial</option>
+                                    <option value="imagem">Imagem</option>
+                                    <option value="funcional">Funcional</option>
+                                    <option value="outros">Outros</option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="mb-3">
+                        <label for="exame_descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="exame_descricao" name="descricao" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </button>
+                <button type="submit" form="formNovoExameModal" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Salvar Exame
                 </button>
             </div>
         </div>
@@ -1486,6 +1666,181 @@
                 }
             }, 5000);
         }
+
+        // Modal Novo Procedimento Functions
+        const novoProcedimentoModal = document.getElementById('novoProcedimentoModal');
+        const formNovoProcedimentoModal = document.getElementById('formNovoProcedimentoModal');
+
+        // Adicionar event listener ao botão de submit da modal procedimento
+        const modalProcedimentoSubmitBtn = document.querySelector('button[form="formNovoProcedimentoModal"][type="submit"]');
+        if (modalProcedimentoSubmitBtn) {
+            modalProcedimentoSubmitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                formNovoProcedimentoModal.dispatchEvent(submitEvent);
+            });
+        }
+
+        // Configurar quando o modal procedimento for aberto
+        novoProcedimentoModal.addEventListener('shown.bs.modal', function() {
+            const procedimentoNome = document.getElementById('procedimento_nome');
+            if (procedimentoNome) {
+                procedimentoNome.focus();
+            }
+        });
+
+        // Limpar formulário quando modal procedimento for fechada
+        novoProcedimentoModal.addEventListener('hidden.bs.modal', function() {
+            formNovoProcedimentoModal.reset();
+            formNovoProcedimentoModal.classList.remove('was-validated');
+        });
+
+        // Submeter formulário da modal procedimento
+        formNovoProcedimentoModal.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('procedimento_nome').value.trim();
+            
+            if (!nome) {
+                alert('Nome do procedimento é obrigatório.');
+                document.getElementById('procedimento_nome').focus();
+                return;
+            }
+
+            const submitBtn = document.querySelector('button[form="formNovoProcedimentoModal"][type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Procedimento cadastrado com sucesso!');
+                    
+                    // Adicionar o novo procedimento ao select
+                    const procedimentosSelect = document.getElementById('procedimentos');
+                    const option = document.createElement('option');
+                    option.value = data.id_procedimento;
+                    option.textContent = data.nome + (data.codigo ? ' - ' + data.codigo : '');
+                    option.selected = true;
+                    procedimentosSelect.appendChild(option);
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(novoProcedimentoModal);
+                    modal.hide();
+                } else {
+                    showAlert('danger', data.error || 'Erro ao cadastrar procedimento');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('danger', 'Erro de comunicação com o servidor');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Modal Novo Exame Functions
+        const novoExameModal = document.getElementById('novoExameModal');
+        const formNovoExameModal = document.getElementById('formNovoExameModal');
+
+        // Adicionar event listener ao botão de submit da modal exame
+        const modalExameSubmitBtn = document.querySelector('button[form="formNovoExameModal"][type="submit"]');
+        if (modalExameSubmitBtn) {
+            modalExameSubmitBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                formNovoExameModal.dispatchEvent(submitEvent);
+            });
+        }
+
+        // Configurar quando o modal exame for aberto
+        novoExameModal.addEventListener('shown.bs.modal', function() {
+            const exameNome = document.getElementById('exame_nome');
+            if (exameNome) {
+                exameNome.focus();
+            }
+        });
+
+        // Limpar formulário quando modal exame for fechada
+        novoExameModal.addEventListener('hidden.bs.modal', function() {
+            formNovoExameModal.reset();
+            formNovoExameModal.classList.remove('was-validated');
+        });
+
+        // Submeter formulário da modal exame
+        formNovoExameModal.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = document.getElementById('exame_nome').value.trim();
+            const tipo = document.getElementById('exame_tipo').value;
+            
+            if (!nome) {
+                alert('Nome do exame é obrigatório.');
+                document.getElementById('exame_nome').focus();
+                return;
+            }
+            
+            if (!tipo) {
+                alert('Tipo do exame é obrigatório.');
+                document.getElementById('exame_tipo').focus();
+                return;
+            }
+
+            const submitBtn = document.querySelector('button[form="formNovoExameModal"][type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Salvando...';
+            submitBtn.disabled = true;
+
+            const formData = new FormData(this);
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Exame cadastrado com sucesso!');
+                    
+                    // Adicionar o novo exame ao select
+                    const examesSelect = document.getElementById('exames');
+                    const option = document.createElement('option');
+                    option.value = data.id_exame;
+                    option.textContent = data.nome + ' - ' + data.tipo.charAt(0).toUpperCase() + data.tipo.slice(1) + (data.codigo ? ' (' + data.codigo + ')' : '');
+                    option.selected = true;
+                    examesSelect.appendChild(option);
+                    
+                    // Fechar modal
+                    const modal = bootstrap.Modal.getInstance(novoExameModal);
+                    modal.hide();
+                } else {
+                    showAlert('danger', data.error || 'Erro ao cadastrar exame');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('danger', 'Erro de comunicação com o servidor');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
     });
 </script>
 <?= $this->endSection() ?>
@@ -1577,6 +1932,42 @@
     .alert-info {
         border-left-color: #0dcaf0;
         background-color: #d1ecf1;
+    }
+
+    /* Estilos para selects múltiplos */
+    select[multiple] {
+        min-height: 120px;
+    }
+
+    select[multiple] option {
+        padding: 0.5rem;
+        margin: 0.2rem 0;
+    }
+
+    select[multiple] option:checked {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    /* Melhorar aparência dos input-groups com selects múltiplos */
+    .input-group select[multiple] {
+        border-right: 0;
+    }
+
+    .input-group select[multiple]:focus {
+        box-shadow: none;
+        border-color: #86b7fe;
+    }
+
+    .input-group select[multiple]:focus + .btn-outline-success {
+        border-color: #86b7fe;
+    }
+
+    /* Estilos para as modais de procedimento e exame */
+    #novoProcedimentoModal .modal-body,
+    #novoExameModal .modal-body {
+        max-height: 70vh;
+        overflow-y: auto;
     }
 </style>
 <?= $this->endSection() ?>
