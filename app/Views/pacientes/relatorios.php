@@ -14,63 +14,57 @@
                 <p class="subtitle">Análise Estatística e Relatórios Médicos</p>
             </div>
 
-            <!-- Action Bar -->
-            <div class="action-bar">
-                <div class="action-left m-4">
-                    <div class="search-container position-relative">
-                        <span class="text-muted">Filtros ativos: 
-                            <strong><?= $meses[$mes_selecionado] ?>/<?= $ano_selecionado ?></strong>
-                        </span>
-                    </div>
-                </div>
-                <div class="action-right m-4">
-                    <button type="button" class="btn btn-success" onclick="exportarRelatorios()">
-                        <i class="bi bi-file-excel"></i> Exportar Relatórios
-                    </button>
-                </div>
-            </div>
-
             <!-- Content -->
             <div class="content-wrapper">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="my-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="<?= base_url('') ?>">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="<?= base_url('pacientes') ?>">Pacientes</a></li>
+                        <li class="breadcrumb-item active">Relatórios</li>
+                    </ol>
+                </nav>
+
                 <!-- Filtros -->
-                <div class="section-card mb-4">
-                    <div class="section-header mb-3">
-                        <h3 class="section-title">
+                <div class="card my-4">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
                             <i class="bi bi-funnel"></i>
                             Filtros do Relatório
                         </h3>
                     </div>
-                    
-                    <form method="GET" action="<?= current_url() ?>" class="row g-3">
-                        <div class="col-md-4">
-                            <label for="mes" class="form-label">Mês</label>
-                            <select class="form-select" id="mes" name="mes">
-                                <?php foreach ($meses as $num => $nome): ?>
-                                    <option value="<?= $num ?>" <?= $mes_selecionado == $num ? 'selected' : '' ?>>
-                                        <?= $nome ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="ano" class="form-label">Ano</label>
-                            <select class="form-select" id="ano" name="ano">
-                                <?php foreach ($anos_disponiveis as $ano_disponivel): ?>
-                                    <option value="<?= $ano_disponivel ?>" <?= $ano_selecionado == $ano_disponivel ? 'selected' : '' ?>>
-                                        <?= $ano_disponivel ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="bi bi-funnel"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="exportarRelatorios()">
-                                <i class="bi bi-file-excel"></i> Exportar
-                            </button>
-                        </div>
-                    </form>
+                    <div class="card-body">
+                        <form method="GET" action="<?= current_url() ?>" class="row g-3">
+                            <div class="col-md-4">
+                                <label for="mes" class="form-label">Mês</label>
+                                <select class="form-select" id="mes" name="mes">
+                                    <?php foreach ($meses as $num => $nome): ?>
+                                        <option value="<?= $num ?>" <?= $mes_selecionado == $num ? 'selected' : '' ?>>
+                                            <?= $nome ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="ano" class="form-label">Ano</label>
+                                <select class="form-select" id="ano" name="ano">
+                                    <?php foreach ($anos_disponiveis as $ano_disponivel): ?>
+                                        <option value="<?= $ano_disponivel ?>" <?= $ano_selecionado == $ano_disponivel ? 'selected' : '' ?>>
+                                            <?= $ano_disponivel ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                                <button type="button" class="btn btn-success" onclick="exportarRelatorios()">
+                                    <i class="bi bi-file-excel"></i> Exportar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 
