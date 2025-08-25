@@ -163,7 +163,8 @@ class LogradouroModel extends Model
             'Rodovia' => 'Rodovia',
             'Via' => 'Via',
             'Beco' => 'Beco',
-            'Largo' => 'Largo'
+            'Largo' => 'Largo',
+            'Sítio' => 'Sítio'
         ];
     }
 
