@@ -296,7 +296,7 @@
                                                 <?php foreach ($relatorio_medico['encaminhamentos'] as $encaminhamento): ?>
                                                     <tr>
                                                         <td>
-                                                            <span class="badge bg-<?= getEncaminhamentoColor($encaminhamento['encaminhamento']) ?>">
+                                                            <span class="badge bg-<?= getEncaminhamentoColor($encaminhamento['encaminhamento']) ?> text-dark">
                                                                 <?= $encaminhamento['encaminhamento'] ?>
                                                             </span>
                                                         </td>
